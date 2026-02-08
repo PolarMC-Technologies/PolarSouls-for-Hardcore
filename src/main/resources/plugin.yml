@@ -5,6 +5,11 @@ api-version: '1.21'
 author: Mario
 description: Hardcore lives system with cross-server Limbo exile and revival mechanics
 
+# Proxy note:
+# - Install PolarSouls only on backend Spigot/Paper/Purpur servers (Main and Limbo).
+# - Do NOT install this plugin on Velocity/BungeeCord/Waterfall proxies.
+# - Configure the proxy to forward player information to backends (Velocity: MODERN forwarding; BungeeCord: IP forwarding).
+
 commands:
   revive:
     description: Revive a dead player and return them from Limbo

@@ -31,12 +31,9 @@ import com.mario.polarsouls.listener.MainServerListener;
 import com.mario.polarsouls.task.LimboCheckTask;
 import com.mario.polarsouls.task.MainReviveCheckTask;
 import com.mario.polarsouls.util.MessageUtil;
+import com.mario.polarsouls.util.UpdateChecker;
 
-/**
- * Main plugin class. Runs on both Main and Limbo backend servers
- * (configured via the is-limbo-server flag in config.yml).
- */
-@SuppressWarnings("java:S6548") // Singleton is standard Bukkit plugin pattern
+@SuppressWarnings("java:S6548")
 public final class PolarSouls extends JavaPlugin {
 
     private static PolarSouls instance;
@@ -107,10 +104,37 @@ public final class PolarSouls extends JavaPlugin {
             enableMainMode();
         }
 
-        getLogger().info("======================================");
-        getLogger().log(Level.INFO, "  PolarSouls v{0} enabled!", getDescription().getVersion());
-        getLogger().log(Level.INFO, "  Mode: {0}", isLimboServer ? "LIMBO SERVER" : "MAIN SERVER");
-        getLogger().info("======================================");
+        String mode = isLimboServer ? "LIMBO SERVER" : "MAIN SERVER";
+        String version = getDescription().getVersion();
+        
+        getLogger().info("");
+        getLogger().info("╔═══════════════════════════════════════════════════════════╗");
+        getLogger().info("║                                                           ║");
+        getLogger().info("║     ██████╗  ██████╗ ██╗      █████╗ ██████╗            ║");
+        getLogger().info("║     ██╔══██╗██╔═══██╗██║     ██╔══██╗██╔══██╗           ║");
+        getLogger().info("║     ██████╔╝██║   ██║██║     ███████║██████╔╝           ║");
+        getLogger().info("║     ██╔═══╝ ██║   ██║██║     ██╔══██║██╔══██╗           ║");
+        getLogger().info("║     ██║     ╚██████╔╝███████╗██║  ██║██║  ██║           ║");
+        getLogger().info("║     ╚═╝      ╚═════╝ ╚══════╝╚═╝  ╚═╝╚═╝  ╚═╝           ║");
+        getLogger().info("║                                                           ║");
+        getLogger().info("║      ███████╗ ██████╗ ██╗   ██╗██╗     ███████╗         ║");
+        getLogger().info("║      ██╔════╝██╔═══██╗██║   ██║██║     ██╔════╝         ║");
+        getLogger().info("║      ███████╗██║   ██║██║   ██║██║     ███████╗         ║");
+        getLogger().info("║      ╚════██║██║   ██║██║   ██║██║     ╚════██║         ║");
+        getLogger().info("║      ███████║╚██████╔╝╚██████╔╝███████╗███████║         ║");
+        getLogger().info("║      ╚══════╝ ╚═════╝  ╚═════╝ ╚══════╝╚══════╝         ║");
+        getLogger().info("║                                                           ║");
+        getLogger().info("║   Version: " + String.format("%-47s", version) + "║");
+        getLogger().info("║   Mode:    " + String.format("%-47s", mode) + "║");
+        getLogger().info("║                                                           ║");
+        getLogger().info("║   ☠ Hardcore Lives • Limbo Exile • Revive System ☠      ║");
+        getLogger().info("║                                                           ║");
+        getLogger().info("╚═══════════════════════════════════════════════════════════╝");
+        getLogger().info("");
+
+        if (getConfig().getBoolean("check-for-updates", true)) {
+            new UpdateChecker(this).checkForUpdates();
+        }
     }
 
     @Override

@@ -1,14 +1,9 @@
-# PolarSouls config
+check-for-updates: true
 
-# --- Server Identity ---
-# Set to true on the Limbo server, false on Main.
 is-limbo-server: false
-
-# Server names as registered in Velocity's velocity.toml
 main-server-name: "main"
 limbo-server-name: "limbo"
 
-# --- MySQL Database ---
 database:
   host: "localhost"
   port: 3306
@@ -18,20 +13,15 @@ database:
   pool-size: 5
   table-name: "hardcore_players"
 
-# --- Lives ---
 lives:
   default: 2
-  # Grace period (hours) for new players (0 = disabled)
   grace-period-hours: 0
   on-revive: 1
-  # -1 = unlimited
   max-lives: 5
   revive-cooldown-seconds: 30
 
-# --- Limbo Server ---
 limbo:
   check-interval-seconds: 3
-  # Set in-game with /setlimbospawn
   spawn:
     world: "world"
     x: 0.5
@@ -40,37 +30,25 @@ limbo:
     yaw: 0.0
     pitch: 0.0
 
-# --- Main Server ---
 main:
-  # Ticks before sending dead player to Limbo (20 ticks = 1 second)
-  send-to-limbo-delay-ticks: 60
-  # Prevents the "You Died" screen from locking the client
-  spectator-on-death: true
-  # Enable if you have HRM installed on Main
+  send-to-limbo-delay-ticks: 20
+  spectator-on-death: false
   detect-hrm-revive: true
-  # hybrid = spectator window then Limbo, spectator = stay on Main, limbo = immediate transfer
   death-mode: "hybrid"
-  # Hybrid mode: seconds before spectator is sent to Limbo
   hybrid-timeout-seconds: 300
 
-# --- HRM Features ---
 hrm:
   enabled: true
   drop-heads: true
   death-location-message: true
-  # 4 soul sand corners, 4 stairs edges, 1 ore center, fence, 4 wither roses, player head on top
   structure-revive: true
-  # Keep the bottom layer after a revival
   leave-structure-base: true
   head-wearing-effects: true
-  # Crafting recipe: 4 Obsidian, 2 Ghast Tears, 2 Totems, 1 Skull
   revive-skull-recipe: true
 
-# --- Extra Life Item ---
 extra-life:
   enabled: true
   item-material: "NETHER_STAR"
-  # 3-character rows, letters map to ingredients below
   recipe:
     row1: "GEG"
     row2: "ENE"
@@ -80,7 +58,6 @@ extra-life:
       E: "EMERALD"
       N: "NETHER_STAR"
 
-# --- Messages ---
 messages:
   prefix: "&8[&4☠&8] &r"
 
