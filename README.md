@@ -4,7 +4,7 @@ Spigot/Paper/Purpur plugin for Minecraft 1.21.1 that adds a lives system to a Ve
 
 ## How It Works
 
-The plugin runs on two backend servers behind a Velocity proxy: **Main** (survival) and **Limbo** (purgatory). Both share a MySQL database.
+The plugin runs on two backend servers behind a Velocity (might work on BungeeCord/Waterfall, not tetsted yet, if you manage to test it out, please make a issue in GitHub) proxy: **Main** (survival) and **Limbo** (purgatory). Both share a MySQL database.
 
 - Players start with configurable lives (default: 2)
 - Each death costs one life; optional grace period for new players
@@ -21,7 +21,7 @@ The plugin runs on two backend servers behind a Velocity proxy: **Main** (surviv
 | **`spectator`** | Dead players stay on Main as spectators permanently until revived. |
 | **`limbo`** | Dead players are immediately transferred to Limbo. |
 
-All modes support reviving via the ritual structure, Revive Skull, and `/revive`.
+All modes support reviving via the Hardcore Revive Mode, Revive Skull, and `/revive`.
 
 ## Built-in HRM Features
 (credits to https://modrinth.com/plugin/hardcore-revive-mod)
@@ -31,15 +31,13 @@ On final death, the player's head drops at their death location. They also get a
 ### Revival Ritual Structure
 3x3x3 structure to revive dead players:
 
-- **Bottom layer (3x3):** 4 Soul Sand corners, 4 Stair edges, 1 beacon ore center
-- **Middle layer:** 4 Wither Roses above the soul sand, 1 Fence on the ore
+- **Bottom layer (3x3):** 4 Soul Sand corners, 4 Stair edges, 1 ore block center
+- **Middle layer:** 4 Wither Roses on the soul sand, 1 Fence on the ore
 - **Top:** Place the dead player's head on the fence
+  
+  **Check the original page for more details https://modrinth.com/plugin/hardcore-revive-mod**
 
-Lightning strikes and the player revives with Resistance V and Glowing. Structure partially breaks after use.
-
-### Wearing Head Effects
-Wearing a player head in the helmet slot gives Nausea I (10s on equip), Slowness I, Health Boost V, and Resistance I while worn.
-
+ 
 ### Craftable Items
 
 **Revive Skull** — Right-click to open a menu of dead players and receive their head for the ritual.
@@ -50,26 +48,38 @@ Wearing a player head in the helmet slot gives Nausea I (10s on equip), Slowness
 | Totem of Undying | Any Skull | Totem of Undying |
 | Obsidian | Ghast Tear | Obsidian |
 
-**Extra Life** — Right-click to gain +1 life. Recipe is fully configurable in `config.yml`.
+ **Check the original page for more details https://modrinth.com/plugin/hardcore-revive-mod**
 
-### Limbo Visiting
+**Extra Life** — Right-click to gain +1 life. Recipe is fully configurable in `config.yml` (only on main).
+
+### "Limbo" Visiting
 Alive players can visit Limbo using `/limbo` to interact with dead players. Use `/leavelimbo` to return. Dead players cannot leave until revived.
 
 ## Requirements
 
-- Minecraft 1.21.1 (Spigot or Paper)
-- Velocity proxy with BungeeCord forwarding enabled
-- MySQL database
+- Minecraft 1.21.X (Spigot or Paper)
+- Velocity proxy 
+- MySQL database (you can share one with another plugin like CoreProtect)
 - Java 21+
-- Two backend servers: Main + Limbo (Limbo optional in `spectator` mode)
+- Two backend servers: Main + "Limbo" (Limbo optional in `spectator` mode)
 
 > **Note:** You do **not** need `hardcore=true` in `server.properties`. Leave it as `false` on both servers. If you do have it enabled, the plugin will NOT work.
+
+## Proxy / Backend installation
+
+- Do NOT install PolarSouls on your proxy (Velocity/BungeeCord/Waterfall). Install the plugin only on your backend Spigot/Paper/Purpur servers (Main and Limbo).
+- Ensure the proxy forwards player information to the backends so UUIDs and addresses remain consistent:
+  - Velocity: set `player-info-forwarding-mode: MODERN` in `velocity.toml`.
+  - BungeeCord/Waterfall: enable IP forwarding and set the appropriate `bungeecord`/proxy options in `spigot.yml`/`paper.yml`.
+- Make sure both backend servers can reach the shared MySQL database and any messaging channels you use.
+- After configuring forwarding, test a full flow: death on Main → transfer to Limbo → revive and return to Main.
+(might work on BungeeCord/Waterfall, not tetsted yet, if you manage to test it out, please make a issue in GitHub)
 
 ## Installation
 
 1. Place `PolarSouls-1.0.0.jar` in the `plugins/` folder of **both** servers
 2. Start both servers to generate `config.yml`
-3. Configure the database connection (same credentials on both)
+3. Configure the MySQL database connection (same credentials on both)
 4. On the Limbo server, set `is-limbo-server: true`
 5. Set the spawn in-game with `/setlimbospawn`
 6. Restart both servers
@@ -108,10 +118,25 @@ hrm:
 
 extra-life:
   enabled: true
-
+    recipe:
+    row1: "DED"
+    row2: "INI"
+    row3: "GEG"
+    # Letter-to-material mapping
+    ingredients:
+      G: "GOLD_BLOCK"
+      E: "EMERALD_BLOCK"
+      N: "NETHER_STAR"
+      D: "DIAMOND_BLOCK"
+      I: "NETHERITE_INGOT"
+```
+*(to edit this, change one of the letters in the rows to another one, and set the block for that letter under ingredients. A customized example is shown above)*
+```
 main-server-name: "main"
 limbo-server-name: "limbo"
 ```
+*(change this to the names that are in velocity.toml)*
+
 
 ## Commands
 
@@ -135,14 +160,7 @@ limbo-server-name: "limbo"
 | `polarsouls.visit` | Can visit Limbo as a living player | true |
 | `polarsouls.bypass` | Bypass all death mechanics | false |
 
-## Building
-
-```bash
-mvn clean package
-```
-
-Output: `target/PolarSouls-1.0.0-shaded.jar`
 
 ## License
 
-MIT
+GPL3
