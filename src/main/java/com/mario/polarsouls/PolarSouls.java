@@ -54,6 +54,9 @@ public final class PolarSouls extends JavaPlugin {
     public static final String MODE_LIMBO = "limbo";
     public static final String MODE_SPECTATOR = "spectator";
     public static final String MODE_HYBRID = "hybrid";
+    private static final String BORDER_EMPTY = "║                                                           ║";
+    private static final String BORDER_TOP = "╔═══════════════════════════════════════════════════════════╗";
+    private static final String BORDER_BOTTOM = "╚═══════════════════════════════════════════════════════════╝";
 
     private int defaultLives;
     private int gracePeriodHours;
@@ -108,28 +111,28 @@ public final class PolarSouls extends JavaPlugin {
         String version = getDescription().getVersion();
         
         getLogger().info("");
-        getLogger().info("╔═══════════════════════════════════════════════════════════╗");
-        getLogger().info("║                                                           ║");
+        getLogger().info(BORDER_TOP);
+        getLogger().info(BORDER_EMPTY);
         getLogger().info("║     ██████╗  ██████╗ ██╗      █████╗ ██████╗            ║");
         getLogger().info("║     ██╔══██╗██╔═══██╗██║     ██╔══██╗██╔══██╗           ║");
         getLogger().info("║     ██████╔╝██║   ██║██║     ███████║██████╔╝           ║");
         getLogger().info("║     ██╔═══╝ ██║   ██║██║     ██╔══██║██╔══██╗           ║");
         getLogger().info("║     ██║     ╚██████╔╝███████╗██║  ██║██║  ██║           ║");
         getLogger().info("║     ╚═╝      ╚═════╝ ╚══════╝╚═╝  ╚═╝╚═╝  ╚═╝           ║");
-        getLogger().info("║                                                           ║");
+        getLogger().info(BORDER_EMPTY);
         getLogger().info("║      ███████╗ ██████╗ ██╗   ██╗██╗     ███████╗         ║");
         getLogger().info("║      ██╔════╝██╔═══██╗██║   ██║██║     ██╔════╝         ║");
         getLogger().info("║      ███████╗██║   ██║██║   ██║██║     ███████╗         ║");
         getLogger().info("║      ╚════██║██║   ██║██║   ██║██║     ╚════██║         ║");
         getLogger().info("║      ███████║╚██████╔╝╚██████╔╝███████╗███████║         ║");
         getLogger().info("║      ╚══════╝ ╚═════╝  ╚═════╝ ╚══════╝╚══════╝         ║");
-        getLogger().info("║                                                           ║");
-        getLogger().info("║   Version: " + String.format("%-47s", version) + "║");
-        getLogger().info("║   Mode:    " + String.format("%-47s", mode) + "║");
-        getLogger().info("║                                                           ║");
+        getLogger().info(BORDER_EMPTY);
+        getLogger().log(Level.INFO, "║   Version: {0}║", String.format("%-47s", version));
+        getLogger().log(Level.INFO, "║   Mode:    {0}║", String.format("%-47s", mode));
+        getLogger().info(BORDER_EMPTY);
         getLogger().info("║   ☠ Hardcore Lives • Limbo Exile • Revive System ☠      ║");
-        getLogger().info("║                                                           ║");
-        getLogger().info("╚═══════════════════════════════════════════════════════════╝");
+        getLogger().info(BORDER_EMPTY);
+        getLogger().info(BORDER_BOTTOM);
         getLogger().info("");
 
         if (getConfig().getBoolean("check-for-updates", true)) {

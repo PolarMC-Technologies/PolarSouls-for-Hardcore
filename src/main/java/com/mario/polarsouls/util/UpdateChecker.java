@@ -1,9 +1,10 @@
 package com.mario.polarsouls.util;
 
 import java.io.BufferedReader;
+import java.io.IOException;
 import java.io.InputStreamReader;
 import java.net.HttpURLConnection;
-import java.net.URL;
+import java.net.URI;
 import java.util.logging.Level;
 
 import org.bukkit.plugin.Plugin;
@@ -14,6 +15,9 @@ import com.google.gson.JsonParser;
 public class UpdateChecker {
     private static final String GITHUB_API = "https://api.github.com/repos/PolarMC-Technologies/PolarSouls-for-Hardcore/releases/latest";
     private static final String GITHUB_RELEASES_PAGE = "https://github.com/PolarMC-Technologies/PolarSouls-for-Hardcore/releases";
+    private static final String BORDER_EMPTY = "║                                                           ║";
+    private static final String BORDER_TOP = "╔═══════════════════════════════════════════════════════════╗";
+    private static final String BORDER_BOTTOM = "╚═══════════════════════════════════════════════════════════╝";
 
     private final Plugin plugin;
     private final String currentVersion;
@@ -26,8 +30,7 @@ public class UpdateChecker {
     public void checkForUpdates() {
         plugin.getServer().getScheduler().runTaskAsynchronously(plugin, () -> {
             try {
-                URL url = new URL(GITHUB_API);
-                HttpURLConnection connection = (HttpURLConnection) url.openConnection();
+                HttpURLConnection connection = (HttpURLConnection) URI.create(GITHUB_API).toURL().openConnection();
                 connection.setRequestMethod("GET");
                 connection.setConnectTimeout(5000);
                 connection.setReadTimeout(5000);
@@ -35,22 +38,21 @@ public class UpdateChecker {
 
                 int responseCode = connection.getResponseCode();
                 if (responseCode != 200) {
-                    plugin.getLogger().log(Level.WARNING, "Failed to check for updates. HTTP response code: " + responseCode);
+                    plugin.getLogger().log(Level.WARNING, "Failed to check for updates. HTTP response code: {0}", responseCode);
                     return;
                 }
 
-                BufferedReader reader = new BufferedReader(new InputStreamReader(connection.getInputStream()));
                 StringBuilder response = new StringBuilder();
-                String line;
-                while ((line = reader.readLine()) != null) {
-                    response.append(line);
+                try (BufferedReader reader = new BufferedReader(new InputStreamReader(connection.getInputStream()))) {
+                    String line;
+                    while ((line = reader.readLine()) != null) {
+                        response.append(line);
+                    }
                 }
-                reader.close();
 
                 JsonObject json = JsonParser.parseString(response.toString()).getAsJsonObject();
                 String latestVersion = json.get("tag_name").getAsString();
 
-                // Remove 'v' prefix if present
                 if (latestVersion.startsWith("v")) {
                     latestVersion = latestVersion.substring(1);
                 }
@@ -61,8 +63,8 @@ public class UpdateChecker {
                     plugin.getLogger().info("You are running the latest version!");
                 }
 
-            } catch (Exception e) {
-                plugin.getLogger().log(Level.WARNING, "Failed to check for updates: " + e.getMessage());
+            } catch (IOException e) {
+                plugin.getLogger().log(Level.WARNING, "Failed to check for updates: {0}", e.getMessage());
             }
         });
     }
@@ -89,7 +91,7 @@ public class UpdateChecker {
 
     private int parseVersionPart(String part) {
         try {
-            return Integer.parseInt(part.replaceAll("[^0-9]", ""));
+            return Integer.parseInt(part.replaceAll("\\D", ""));
         } catch (NumberFormatException e) {
             return 0;
         }
@@ -98,16 +100,16 @@ public class UpdateChecker {
     private void showUpdateNotification(String latestVersion) {
         plugin.getServer().getScheduler().runTask(plugin, () -> {
             plugin.getLogger().info("");
-            plugin.getLogger().info("╔═══════════════════════════════════════════════════════════╗");
-            plugin.getLogger().info("║                                                           ║");
+            plugin.getLogger().info(BORDER_TOP);
+            plugin.getLogger().info(BORDER_EMPTY);
             plugin.getLogger().info("║           ⚡ UPDATE AVAILABLE ⚡                          ║");
-            plugin.getLogger().info("║                                                           ║");
-            plugin.getLogger().info("║   Current version: " + String.format("%-35s", currentVersion) + "║");
-            plugin.getLogger().info("║   Latest version:  " + String.format("%-35s", latestVersion) + "║");
-            plugin.getLogger().info("║                                                           ║");
-            plugin.getLogger().info("║   Download: " + String.format("%-43s", GITHUB_RELEASES_PAGE) + "║");
-            plugin.getLogger().info("║                                                           ║");
-            plugin.getLogger().info("╚═══════════════════════════════════════════════════════════╝");
+            plugin.getLogger().info(BORDER_EMPTY);
+            plugin.getLogger().log(Level.INFO, "║   Current version: {0}║", String.format("%-35s", currentVersion));
+            plugin.getLogger().log(Level.INFO, "║   Latest version:  {0}║", String.format("%-35s", latestVersion));
+            plugin.getLogger().info(BORDER_EMPTY);
+            plugin.getLogger().log(Level.INFO, "║   Download: {0}║", String.format("%-43s", GITHUB_RELEASES_PAGE));
+            plugin.getLogger().info(BORDER_EMPTY);
+            plugin.getLogger().info(BORDER_BOTTOM);
             plugin.getLogger().info("");
         });
     }
