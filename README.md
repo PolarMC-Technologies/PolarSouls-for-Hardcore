@@ -1,6 +1,6 @@
 # PolarSouls
 
-Spigot plugin for Minecraft 1.21.1 that adds a lives system to a Velocity proxy network. When players lose all their lives, they get sent to a Limbo server until teammates revive them.
+Spigot/Paper/Purpur plugin for Minecraft 1.21.1 that adds a lives system to a Velocity proxy network. When players lose all their lives, they get sent to a Limbo server until teammates revive them.
 
 ## How It Works
 
