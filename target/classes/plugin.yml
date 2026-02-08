@@ -1,0 +1,48 @@
+name: HardcoreLimbo
+version: 1.0.0
+main: com.mario.hardcorelimbo.HardcoreLimbo
+api-version: '1.21'
+author: Mario
+description: Custom Hardcore Limbo system with cross-server revival mechanics
+
+commands:
+  revive:
+    description: Revive a dead player and return them from Limbo
+    usage: /revive <player>
+    permission: hardcorelimbo.revive
+    permission-message: "&cYou don't have permission to revive players."
+
+  setlimbospawn:
+    description: Set the Limbo spawn location to your current position
+    usage: /setlimbospawn
+    permission: hardcorelimbo.admin
+    permission-message: "&cYou don't have permission to use this command."
+
+  hlstatus:
+    description: Check a player's hardcore status (lives, death state)
+    usage: /hlstatus [player]
+    permission: hardcorelimbo.status
+    permission-message: "&cYou don't have permission to use this command."
+
+  hlsetlives:
+    description: Set a player's life count
+    usage: /hlsetlives <player> <lives>
+    permission: hardcorelimbo.admin
+    permission-message: "&cYou don't have permission to use this command."
+
+permissions:
+  hardcorelimbo.revive:
+    description: Allows reviving dead players
+    default: op
+
+  hardcorelimbo.admin:
+    description: Full admin access to HardcoreLimbo
+    default: op
+
+  hardcorelimbo.status:
+    description: Check player status
+    default: op
+
+  hardcorelimbo.bypass:
+    description: Bypass all death and limbo mechanics
+    default: op

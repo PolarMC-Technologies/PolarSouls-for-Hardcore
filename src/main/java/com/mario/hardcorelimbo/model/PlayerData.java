@@ -1,0 +1,149 @@
+package com.mario.hardcorelimbo.model;
+
+import java.util.UUID;
+
+/**
+ * Represents a player's hardcore state in the database.
+ */
+public class PlayerData {
+
+    private final UUID uuid;
+    private String username;
+    private int lives;
+    private boolean isDead;
+    private long firstJoin;    // epoch millis
+    private long lastDeath;    // epoch millis, 0 = never died
+
+    public PlayerData(UUID uuid, String username, int lives, boolean isDead,
+                      long firstJoin, long lastDeath) {
+        this.uuid = uuid;
+        this.username = username;
+        this.lives = lives;
+        this.isDead = isDead;
+        this.firstJoin = firstJoin;
+        this.lastDeath = lastDeath;
+    }
+
+    // -------------------------------------------------------
+    // Factory for brand-new players
+    // -------------------------------------------------------
+
+    public static PlayerData createNew(UUID uuid, String username, int defaultLives) {
+        return new PlayerData(uuid, username, defaultLives, false,
+                System.currentTimeMillis(), 0L);
+    }
+
+    // -------------------------------------------------------
+    // Grace period check
+    // -------------------------------------------------------
+
+    /**
+     * Returns true if the player is still within the grace period.
+     *
+     * @param gracePeriodHours the configured grace period duration in hours
+     */
+    public boolean isInGracePeriod(int gracePeriodHours) {
+        if (gracePeriodHours <= 0) return false;
+        long gracePeriodMillis = gracePeriodHours * 3600_000L;
+        return (System.currentTimeMillis() - firstJoin) < gracePeriodMillis;
+    }
+
+    /**
+     * Returns the remaining grace period as a human-readable string,
+     * e.g. "3h 15m" or "45m".
+     */
+    public String getGraceTimeRemaining(int gracePeriodHours) {
+        long gracePeriodMillis = gracePeriodHours * 3600_000L;
+        long elapsed = System.currentTimeMillis() - firstJoin;
+        long remaining = gracePeriodMillis - elapsed;
+
+        if (remaining <= 0) return "0m";
+
+        long hours = remaining / 3600_000L;
+        long minutes = (remaining % 3600_000L) / 60_000L;
+
+        if (hours > 0) {
+            return hours + "h " + minutes + "m";
+        }
+        return minutes + "m";
+    }
+
+    // -------------------------------------------------------
+    // Life manipulation
+    // -------------------------------------------------------
+
+    /**
+     * Decrements one life. Returns the new life count.
+     */
+    public int decrementLife() {
+        if (lives > 0) {
+            lives--;
+        }
+        if (lives <= 0) {
+            lives = 0;
+            isDead = true;
+            lastDeath = System.currentTimeMillis();
+        }
+        return lives;
+    }
+
+    /**
+     * Revives the player, restoring the given number of lives.
+     */
+    public void revive(int livesToRestore) {
+        this.lives = livesToRestore;
+        this.isDead = false;
+    }
+
+    // -------------------------------------------------------
+    // Getters & Setters
+    // -------------------------------------------------------
+
+    public UUID getUuid() {
+        return uuid;
+    }
+
+    public String getUsername() {
+        return username;
+    }
+
+    public void setUsername(String username) {
+        this.username = username;
+    }
+
+    public int getLives() {
+        return lives;
+    }
+
+    public void setLives(int lives) {
+        this.lives = lives;
+    }
+
+    public boolean isDead() {
+        return isDead;
+    }
+
+    public void setDead(boolean dead) {
+        isDead = dead;
+    }
+
+    public long getFirstJoin() {
+        return firstJoin;
+    }
+
+    public long getLastDeath() {
+        return lastDeath;
+    }
+
+    public void setLastDeath(long lastDeath) {
+        this.lastDeath = lastDeath;
+    }
+
+    @Override
+    public String toString() {
+        return "PlayerData{uuid=" + uuid +
+                ", name=" + username +
+                ", lives=" + lives +
+                ", dead=" + isDead + "}";
+    }
+}

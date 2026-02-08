@@ -1,0 +1,114 @@
+# ============================================================
+# HardcoreLimbo Configuration
+# ============================================================
+# This plugin runs on BOTH servers (Main + Limbo).
+# Set 'is-limbo-server' accordingly on each server.
+# ============================================================
+
+# -----------------------------------------------------------
+# Server Identity
+# -----------------------------------------------------------
+# Set to TRUE on the Limbo server, FALSE on the Main server.
+is-limbo-server: false
+
+# Server names as registered in Velocity's velocity.toml
+main-server-name: "main"
+limbo-server-name: "limbo"
+
+# -----------------------------------------------------------
+# MySQL Database
+# -----------------------------------------------------------
+# Must be identical on BOTH servers (shared database).
+database:
+  host: "localhost"
+  port: 3306
+  name: "minecraft"
+  username: "minecraft"
+  password: "changeme"
+  # Max connections in the pool (5 is plenty for this workload)
+  pool-size: 5
+  # Table name for player data
+  table-name: "hardcore_players"
+
+# -----------------------------------------------------------
+# Lives System
+# -----------------------------------------------------------
+lives:
+  # How many lives new players start with
+  default: 2
+  # Grace period (hours) - new players are immune to life loss
+  grace-period-hours: 24
+  # How many lives are restored on revive
+  on-revive: 1
+  # Maximum lives a player can have (-1 = unlimited)
+  max-lives: 5
+
+# -----------------------------------------------------------
+# Limbo Server Settings
+# -----------------------------------------------------------
+# Only relevant when is-limbo-server: true
+limbo:
+  # How often (seconds) to poll DB for revived players
+  check-interval-seconds: 3
+  # Spawn location (set in-game with /setlimbospawn)
+  spawn:
+    world: "world"
+    x: 0.5
+    y: 65.0
+    z: 0.5
+    yaw: 0.0
+    pitch: 0.0
+
+# -----------------------------------------------------------
+# Main Server Settings
+# -----------------------------------------------------------
+# Only relevant when is-limbo-server: false
+main:
+  # Delay (ticks) before sending dead player to Limbo
+  # 20 ticks = 1 second. Gives time for death message/animation.
+  send-to-limbo-delay-ticks: 60
+  # Set dead players to spectator briefly before transfer
+  # This prevents the "You Died" screen from locking the client
+  spectator-on-death: true
+  # Detect Hardcore Revive Mode ritual (gamemode change detection)
+  # Enable if you have HRM installed on Main
+  detect-hrm-revive: true
+
+# -----------------------------------------------------------
+# Messages (supports & color codes and %placeholder%)
+# -----------------------------------------------------------
+messages:
+  # Prefix for all plugin messages
+  prefix: "&8[&4☠&8] &r"
+
+  # Death messages
+  death-life-lost: "&cYou lost a life! &7Remaining: &e%lives%"
+  death-last-life: "&c&l⚠ FINAL WARNING! &cYou are on your last life. Be careful!"
+  death-sent-to-limbo: "&4&l☠ YOU HAVE FALLEN ☠\n&cAll lives lost. Entering Limbo..."
+  death-grace-period: "&aGrace period active! &7No life lost. &e%time_remaining% &7remaining."
+
+  # Limbo messages
+  limbo-welcome: "&4&l═══════════════════\n&c&l    ☠ L I M B O ☠\n&4&l═══════════════════\n&7You are dead. Wait for\n&7teammates to revive you.\n&4&l═══════════════════"
+  limbo-cannot-leave: "&cYou are trapped in Limbo. Only revival can free you."
+
+  # Revive messages
+  revive-success: "&a&l✦ REVIVED! &aReturning to the world of the living..."
+  revive-admin-success: "&a%player% &7has been revived. &aLives: %lives%"
+  revive-not-dead: "&c%player% is not dead."
+  revive-player-not-found: "&cPlayer '%player%' not found in the database."
+
+  # Status messages
+  status-alive: "&a%player% &7- Lives: &e%lives% &7- Status: &aAlive"
+  status-dead: "&c%player% &7- Lives: &c0 &7- Status: &4Dead (Limbo)"
+  status-grace: "&a%player% &7- Lives: &e%lives% &7- &bGrace period: %time_remaining%"
+
+  # Admin messages
+  limbo-spawn-set: "&aLimbo spawn set to your current location."
+  lives-set: "&aSet &e%player%&a's lives to &e%lives%&a."
+  reload-success: "&aConfiguration reloaded."
+
+# -----------------------------------------------------------
+# Debug
+# -----------------------------------------------------------
+# Enables verbose logging to console (for troubleshooting)
+debug: false
