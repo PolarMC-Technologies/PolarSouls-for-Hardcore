@@ -24,7 +24,7 @@ The plugin runs on two backend servers behind a Velocity proxy: **Main** (surviv
 All modes support reviving via the ritual structure, Revive Skull, and `/revive`.
 
 ## Built-in HRM Features
-
+(credits to https://modrinth.com/plugin/hardcore-revive-mod)
 ### Player Head Drops
 On final death, the player's head drops at their death location. They also get a message with their death coords.
 
@@ -63,7 +63,7 @@ Alive players can visit Limbo using `/limbo` to interact with dead players. Use 
 - Java 21+
 - Two backend servers: Main + Limbo (Limbo optional in `spectator` mode)
 
-> **Note:** You do **not** need `hardcore=true` in `server.properties`. Leave it as `false` on both servers.
+> **Note:** You do **not** need `hardcore=true` in `server.properties`. Leave it as `false` on both servers. If you do have it enabled, the plugin will NOT work.
 
 ## Installation
 
