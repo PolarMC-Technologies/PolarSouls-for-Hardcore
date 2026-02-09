@@ -18,7 +18,7 @@ import com.zaxxer.hikari.HikariDataSource;
 public class DatabaseManager {
 
     private static final String COL_IS_DEAD = "is_dead";
-    private static final String SELECT_ALL = "SELECT uuid, username, lives, is_dead, first_join, last_death FROM ";
+    private static final String SELECT_ALL = "SELECT uuid, username, lives, is_dead, first_join, last_death, play_time, last_login FROM ";
     private static final String UPDATE = "UPDATE ";
 
     private final PolarSouls plugin;
@@ -80,13 +80,15 @@ public class DatabaseManager {
 
     private void createTable() throws SQLException {
         String sql = "CREATE TABLE IF NOT EXISTS " + tableName + " ("
-                + "uuid VARCHAR(36) NOT NULL PRIMARY KEY, "
-                + "username VARCHAR(16) NOT NULL, "
-                + "lives INT NOT NULL DEFAULT " + plugin.getDefaultLives() + ", "
-                + "is_dead BOOLEAN NOT NULL DEFAULT FALSE, "
-                + "first_join BIGINT NOT NULL, "
-                + "last_death BIGINT NOT NULL DEFAULT 0"
-                + ") ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;";
+            + "uuid VARCHAR(36) NOT NULL PRIMARY KEY, "
+            + "username VARCHAR(16) NOT NULL, "
+            + "lives INT NOT NULL DEFAULT " + plugin.getDefaultLives() + ", "
+            + "is_dead BOOLEAN NOT NULL DEFAULT FALSE, "
+            + "first_join BIGINT NOT NULL, "
+            + "last_death BIGINT NOT NULL DEFAULT 0, "
+            + "play_time BIGINT NOT NULL DEFAULT 0, "
+            + "last_login BIGINT NOT NULL DEFAULT 0"
+            + ") ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;";
 
         try (Connection conn = dataSource.getConnection();
              Statement stmt = conn.createStatement()) {
@@ -97,12 +99,14 @@ public class DatabaseManager {
 
     private PlayerData mapResultSet(ResultSet rs) throws SQLException {
         return new PlayerData(
-                UUID.fromString(rs.getString("uuid")),
-                rs.getString("username"),
-                rs.getInt("lives"),
-                rs.getBoolean(COL_IS_DEAD),
-                rs.getLong("first_join"),
-                rs.getLong("last_death")
+            UUID.fromString(rs.getString("uuid")),
+            rs.getString("username"),
+            rs.getInt("lives"),
+            rs.getBoolean(COL_IS_DEAD),
+            rs.getLong("first_join"),
+            rs.getLong("last_death"),
+            rs.getLong("play_time"),
+            rs.getLong("last_login")
         );
     }
 
@@ -144,13 +148,15 @@ public class DatabaseManager {
 
     public void savePlayer(PlayerData data) {
         String sql = "INSERT INTO " + tableName
-                + " (uuid, username, lives, is_dead, first_join, last_death) "
-                + "VALUES (?, ?, ?, ?, ?, ?) "
-                + "ON DUPLICATE KEY UPDATE "
-                + "username = VALUES(username), "
-                + "lives = VALUES(lives), "
-                + "is_dead = VALUES(is_dead), "
-                + "last_death = VALUES(last_death)";
+            + " (uuid, username, lives, is_dead, first_join, last_death, play_time, last_login) "
+            + "VALUES (?, ?, ?, ?, ?, ?, ?, ?) "
+            + "ON DUPLICATE KEY UPDATE "
+            + "username = VALUES(username), "
+            + "lives = VALUES(lives), "
+            + "is_dead = VALUES(is_dead), "
+            + "last_death = VALUES(last_death), "
+            + "play_time = VALUES(play_time), "
+            + "last_login = VALUES(last_login)";
 
         try (Connection conn = dataSource.getConnection();
              PreparedStatement ps = conn.prepareStatement(sql)) {
@@ -161,6 +167,8 @@ public class DatabaseManager {
             ps.setBoolean(4, data.isDead());
             ps.setLong(5, data.getFirstJoin());
             ps.setLong(6, data.getLastDeath());
+            ps.setLong(7, data.getPlayTimeMillis());
+            ps.setLong(8, data.getLastLogin());
 
             ps.executeUpdate();
             plugin.debug("Saved player data: " + data);

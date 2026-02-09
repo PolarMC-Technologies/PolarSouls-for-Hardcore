@@ -18,6 +18,7 @@ import org.bukkit.event.entity.PlayerDeathEvent;
 import org.bukkit.event.player.PlayerGameModeChangeEvent;
 import org.bukkit.event.player.PlayerJoinEvent;
 import org.bukkit.event.player.PlayerRespawnEvent;
+import org.bukkit.event.player.PlayerQuitEvent;
 import org.bukkit.scheduler.BukkitTask;
 
 import com.mario.polarsouls.PolarSouls;
@@ -62,6 +63,9 @@ public class MainServerListener implements Listener {
             handleFirstJoin(player);
             return;
         }
+        // mark last login time for playtime-based grace calculation
+        data.setLastLogin(System.currentTimeMillis());
+        db.savePlayer(data);
 
         if (!data.getUsername().equals(player.getName())) {
             data.setUsername(player.getName());
@@ -99,6 +103,23 @@ public class MainServerListener implements Listener {
                 String timeRemaining = finalData.getGraceTimeRemaining(plugin.getGracePeriodHours());
                 player.sendMessage(MessageUtil.get("death-grace-period",
                         "time_remaining", timeRemaining));
+            }
+        });
+    }
+
+    @EventHandler
+    public void onPlayerQuit(PlayerQuitEvent event) {
+        Player player = event.getPlayer();
+        Bukkit.getScheduler().runTaskAsynchronously(plugin, () -> {
+            PlayerData data = db.getPlayer(player.getUniqueId());
+            if (data == null) return;
+            long last = data.getLastLogin();
+            if (last > 0) {
+                long now = System.currentTimeMillis();
+                long delta = Math.max(0L, now - last);
+                data.setPlayTimeMillis(data.getPlayTimeMillis() + delta);
+                data.setLastLogin(0L);
+                db.savePlayer(data);
             }
         });
     }
