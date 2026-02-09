@@ -10,32 +10,44 @@ public class PlayerData {
     private boolean isDead;
     private long firstJoin;    // epoch millis
     private long lastDeath;    // epoch millis, 0 = never died
+    private long playTimeMillis; // accumulated play time in millis
+    private long lastLogin;      // epoch millis when player last logged in, 0 = offline
 
     public PlayerData(UUID uuid, String username, int lives, boolean isDead,
-                      long firstJoin, long lastDeath) {
+                      long firstJoin, long lastDeath, long playTimeMillis, long lastLogin) {
         this.uuid = uuid;
         this.username = username;
         this.lives = lives;
         this.isDead = isDead;
         this.firstJoin = firstJoin;
         this.lastDeath = lastDeath;
+        this.playTimeMillis = playTimeMillis;
+        this.lastLogin = lastLogin;
     }
 
     public static PlayerData createNew(UUID uuid, String username, int defaultLives) {
+        long now = System.currentTimeMillis();
         return new PlayerData(uuid, username, defaultLives, false,
-                System.currentTimeMillis(), 0L);
+                now, 0L, 0L, now);
     }
 
     public boolean isInGracePeriod(int gracePeriodHours) {
         if (gracePeriodHours <= 0) return false;
         long gracePeriodMillis = gracePeriodHours * 3600_000L;
-        return (System.currentTimeMillis() - firstJoin) < gracePeriodMillis;
+        long effectivePlay = playTimeMillis;
+        if (lastLogin > 0) {
+            effectivePlay += System.currentTimeMillis() - lastLogin;
+        }
+        return effectivePlay < gracePeriodMillis;
     }
 
     public String getGraceTimeRemaining(int gracePeriodHours) {
         long gracePeriodMillis = gracePeriodHours * 3600_000L;
-        long elapsed = System.currentTimeMillis() - firstJoin;
-        long remaining = gracePeriodMillis - elapsed;
+        long effectivePlay = playTimeMillis;
+        if (lastLogin > 0) {
+            effectivePlay += System.currentTimeMillis() - lastLogin;
+        }
+        long remaining = gracePeriodMillis - effectivePlay;
 
         if (remaining <= 0) return "0m";
 
@@ -63,6 +75,22 @@ public class PlayerData {
     public void revive(int livesToRestore) {
         this.lives = livesToRestore;
         this.isDead = false;
+    }
+
+    public long getPlayTimeMillis() {
+        return playTimeMillis;
+    }
+
+    public void setPlayTimeMillis(long playTimeMillis) {
+        this.playTimeMillis = playTimeMillis;
+    }
+
+    public long getLastLogin() {
+        return lastLogin;
+    }
+
+    public void setLastLogin(long lastLogin) {
+        this.lastLogin = lastLogin;
     }
 
     public UUID getUuid() {
