@@ -85,7 +85,8 @@
                         </goals>
                         <configuration>
                             <createDependencyReducedPom>false</createDependencyReducedPom>
-                            <shadedArtifactAttached>false</shadedArtifactAttached>
+                            <shadedArtifactAttached>true</shadedArtifactAttached>
+                            <shadedClassifierName>shaded</shadedClassifierName>
                             <minimizeJar>true</minimizeJar>
                             <relocations>
                                 <!-- Relocate to avoid conflicts with other plugins -->
