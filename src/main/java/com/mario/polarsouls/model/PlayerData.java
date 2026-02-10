@@ -50,7 +50,7 @@ public class PlayerData {
 
     private long getGraceElapsedMillis() {
         long now = System.currentTimeMillis();
-        long referenceTime = lastSeen > 0 && lastSeen < now ? lastSeen : now;
+        long referenceTime = lastSeen > 0 ? lastSeen : now;
         long elapsed = referenceTime - firstJoin;
         return Math.max(0L, elapsed);
     }

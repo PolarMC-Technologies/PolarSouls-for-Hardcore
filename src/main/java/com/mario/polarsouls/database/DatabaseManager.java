@@ -105,7 +105,10 @@ public class DatabaseManager {
             stmt.executeUpdate(sql);
             plugin.debug("Added last_seen column to '" + tableName + "'.");
         } catch (SQLException e) {
-            if (e.getErrorCode() != MYSQL_DUPLICATE_COLUMN) {
+            String sqlState = e.getSQLState();
+            boolean duplicateColumn = e.getErrorCode() == MYSQL_DUPLICATE_COLUMN
+                    || "42S21".equals(sqlState);
+            if (!duplicateColumn) {
                 plugin.getLogger().log(Level.WARNING, "Failed to ensure last_seen column", e);
             }
         }

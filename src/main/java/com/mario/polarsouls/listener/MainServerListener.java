@@ -71,7 +71,8 @@ public class MainServerListener implements Listener {
             if (plugin.getGracePeriodMillis() > 0 && data.getFirstJoin() > 0) {
                 long offlineDuration = now - data.getLastSeen();
                 if (offlineDuration > 0) {
-                    data.setFirstJoin(data.getFirstJoin() + offlineDuration);
+                    long adjustedFirstJoin = data.getFirstJoin() + offlineDuration;
+                    data.setFirstJoin(Math.min(adjustedFirstJoin, now));
                     shouldSave = true;
                 }
             }
