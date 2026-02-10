@@ -55,20 +55,22 @@ public class HeadDropListener implements Listener {
                     plugin.debug("Skipping head drop for " + player.getName() + " (no data).");
                     return;
                 }
+                if (!data.isDead()) {
+                    plugin.debug("Skipping head drop for " + player.getName() + " (not dead).");
+                    return;
+                }
                 if (data.isInGracePeriod(plugin.getGracePeriodMillis())) {
                     plugin.debug("Skipping head drop for " + player.getName() + " (grace period).");
                     return;
                 }
-                if (data.isDead()) {
-                    // Drop head on main thread
-                    Bukkit.getScheduler().runTask(plugin, () -> {
-                        ItemStack head = createPlayerHead(player);
-                        world.dropItemNaturally(deathLoc, head);
-                        plugin.debug("Dropped " + player.getName() + "'s head at "
-                                + deathLoc.getBlockX() + ", " + deathLoc.getBlockY()
-                                + ", " + deathLoc.getBlockZ());
-                    });
-                }
+                // Drop head on main thread
+                Bukkit.getScheduler().runTask(plugin, () -> {
+                    ItemStack head = createPlayerHead(player);
+                    world.dropItemNaturally(deathLoc, head);
+                    plugin.debug("Dropped " + player.getName() + "'s head at "
+                            + deathLoc.getBlockX() + ", " + deathLoc.getBlockY()
+                            + ", " + deathLoc.getBlockZ());
+                });
             }, 10L); // 0.5s delay beacause idfk it feels good
         }
     }
