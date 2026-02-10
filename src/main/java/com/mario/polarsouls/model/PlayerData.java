@@ -10,29 +10,31 @@ public class PlayerData {
     private boolean isDead;
     private long firstJoin;    // epoch millis
     private long lastDeath;    // epoch millis, 0 = never died (yet)
+    private long lastSeen;     // epoch millis, 0 = currently online
 
     public PlayerData(UUID uuid, String username, int lives, boolean isDead,
-                      long firstJoin, long lastDeath) {
+                      long firstJoin, long lastDeath, long lastSeen) {
         this.uuid = uuid;
         this.username = username;
         this.lives = lives;
         this.isDead = isDead;
         this.firstJoin = firstJoin;
         this.lastDeath = lastDeath;
+        this.lastSeen = lastSeen;
     }
 
     public static PlayerData createNew(UUID uuid, String username, int defaultLives) {
         return new PlayerData(uuid, username, defaultLives, false,
-                System.currentTimeMillis(), 0L);
+                System.currentTimeMillis(), 0L, 0L);
     }
 
     public boolean isInGracePeriod(long gracePeriodMillis) {
         if (gracePeriodMillis <= 0) return false;
-        return (System.currentTimeMillis() - firstJoin) < gracePeriodMillis;
+        return getGraceElapsedMillis() < gracePeriodMillis;
     }
 
     public String getGraceTimeRemaining(long gracePeriodMillis) {
-        long elapsed = System.currentTimeMillis() - firstJoin;
+        long elapsed = getGraceElapsedMillis();
         long remaining = gracePeriodMillis - elapsed;
 
         if (remaining <= 0) return "0m";
@@ -44,6 +46,13 @@ public class PlayerData {
             return hours + "h " + minutes + "m";
         }
         return minutes + "m";
+    }
+
+    private long getGraceElapsedMillis() {
+        long now = System.currentTimeMillis();
+        long referenceTime = lastSeen > 0 && lastSeen < now ? lastSeen : now;
+        long elapsed = referenceTime - firstJoin;
+        return Math.max(0L, elapsed);
     }
 
     public int decrementLife() {
@@ -105,6 +114,14 @@ public class PlayerData {
 
     public void setLastDeath(long lastDeath) {
         this.lastDeath = lastDeath;
+    }
+
+    public long getLastSeen() {
+        return lastSeen;
+    }
+
+    public void setLastSeen(long lastSeen) {
+        this.lastSeen = lastSeen;
     }
 
     @Override

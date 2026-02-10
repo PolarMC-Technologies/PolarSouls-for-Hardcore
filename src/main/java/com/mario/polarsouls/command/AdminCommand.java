@@ -177,6 +177,7 @@ public class AdminCommand implements CommandExecutor, TabCompleter {
         }
 
         db.setFirstJoin(data.getUuid(), System.currentTimeMillis());
+        updateLastSeenForGrace(data);
 
         String formattedTime = TimeUtil.formatTime(millis);
         plugin.getLogger().log(Level.INFO, "{0} set grace period for {1} ({2})",
@@ -290,6 +291,7 @@ public class AdminCommand implements CommandExecutor, TabCompleter {
         int defaultLives = plugin.getDefaultLives();
         PlayerData fresh = PlayerData.createNew(data.getUuid(), data.getUsername(), defaultLives);
         db.savePlayer(fresh);
+        updateLastSeenForGrace(fresh);
 
         plugin.getLogger().log(Level.INFO, "{0} reset {1} to defaults ({2} lives)",
                 new Object[]{sender.getName(), data.getUsername(), defaultLives});
@@ -415,6 +417,13 @@ public class AdminCommand implements CommandExecutor, TabCompleter {
                     }
                 }
             });
+        }
+    }
+
+    private void updateLastSeenForGrace(PlayerData data) {
+        Player target = Bukkit.getPlayer(data.getUuid());
+        if (target == null || !target.isOnline()) {
+            db.setLastSeen(data.getUuid(), System.currentTimeMillis());
         }
     }
 

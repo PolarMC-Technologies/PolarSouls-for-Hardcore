@@ -17,6 +17,7 @@ import org.bukkit.event.Listener;
 import org.bukkit.event.entity.PlayerDeathEvent;
 import org.bukkit.event.player.PlayerGameModeChangeEvent;
 import org.bukkit.event.player.PlayerJoinEvent;
+import org.bukkit.event.player.PlayerQuitEvent;
 import org.bukkit.event.player.PlayerRespawnEvent;
 import org.bukkit.scheduler.BukkitTask;
 
@@ -63,8 +64,27 @@ public class MainServerListener implements Listener {
             return;
         }
 
+        boolean shouldSave = false;
+        long now = System.currentTimeMillis();
+
+        if (data.getLastSeen() > 0) {
+            if (plugin.getGracePeriodMillis() > 0 && data.getFirstJoin() > 0) {
+                long offlineDuration = now - data.getLastSeen();
+                if (offlineDuration > 0) {
+                    data.setFirstJoin(data.getFirstJoin() + offlineDuration);
+                    shouldSave = true;
+                }
+            }
+            data.setLastSeen(0L);
+            shouldSave = true;
+        }
+
         if (!data.getUsername().equals(player.getName())) {
             data.setUsername(player.getName());
+            shouldSave = true;
+        }
+
+        if (shouldSave) {
             db.savePlayer(data);
         }
 
@@ -161,6 +181,16 @@ public class MainServerListener implements Listener {
         pendingLimbo.add(uuid);
 
         Bukkit.getScheduler().runTaskAsynchronously(plugin, () -> handleDeathAsync(player, uuid));
+    }
+
+    @EventHandler(priority = EventPriority.MONITOR)
+    public void onPlayerQuit(PlayerQuitEvent event) {
+        Player player = event.getPlayer();
+        if (player.hasPermission(PERM_BYPASS)) return;
+
+        UUID uuid = player.getUniqueId();
+        long now = System.currentTimeMillis();
+        Bukkit.getScheduler().runTaskAsynchronously(plugin, () -> db.setLastSeen(uuid, now));
     }
 
     private void handleDeathAsync(Player player, UUID uuid) {
