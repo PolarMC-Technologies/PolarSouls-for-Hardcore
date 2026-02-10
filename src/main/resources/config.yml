@@ -28,7 +28,10 @@ limbo-server-name: "limbo"
 # MySQL Database Configuration
 # ───────────────────────────────────────────────────────────────────────────────
 # The plugin uses MySQL to track player death states across servers.
-# This allows dead players to stay dead even after server restart!
+# This allows dead players to stay dead even after server restart!|
+# 
+# You can share the same database with other plugins, like with CoreProtect, as long as you use a unique table name (configured below). 
+# This might not work for all plugins using MySQL, so check compatibility if you have other plugins that use MySQL, otherwise, use a seperate database for PolarSouls.
 #
 # IMPORTANT: Both Main and Limbo servers MUST use the SAME database!
 #
@@ -207,7 +210,7 @@ extra-life:
   # Enable extra life items
   enabled: true
   
-  # Item used to represent an extra life (must be a valid Minecraft material)
+  # Item used to represent an extra life, this just the icon which appears in menus (must be a valid Minecraft material)
   # Other options: "NETHER_STAR" (original), "GOLDEN_APPLE", "AMETHYST_CLUSTER"
   item-material: "NETHER_STAR"
   
@@ -215,19 +218,22 @@ extra-life:
   # Pattern: 3x3 grid (row1, row2, row3)
   # Special symbol "N" = ingredient at center, "G"/"E" = other ingredients
   recipe:
-    row1: "GEG"      # Gold, Emerald, Gold
-    row2: "ENE"      # Emerald, Nether Star, Emerald
-    row3: "GEG"      # Gold, Emerald, Gold
-    
+    row1: "DED" # D = Diamond Block (sides), E = Emerald Block (center)              
+    row2: "INI" # N = Nether Star (center), I = Netherite Ingot (sides)
+    row3: "GEG" # G = Gold Block (corners), E = Emerald Block (center)  
     ingredients:
-      G: "GOLD_BLOCK"      # Gold blocks
-      E: "EMERALD"         # Emerald gems
-      N: "NETHER_STAR"     # Nether star (center)
+      G: "GOLD_BLOCK"
+      E: "EMERALD_BLOCK"
+      N: "NETHER_STAR"  # Make sure if you change one or more of the ingredients here,you spell it correctly with capital letters and underscore. Also update the recipe pattern above accordingly.
+      D: "DIAMOND_BLOCK"
+      I: "NETHERITE_INGOT"
+    # This recipe is just an example. You can customize it as you like, but make sure to update the pattern and ingredients accordingly.
 
 # ───────────────────────────────────────────────────────────────────────────────
 # Chat Message Configuration
 # All messages support Bukkit color codes: &0-&f for colors, &l for bold, etc.
 # Use \n for line breaks
+# Theres not really a good reason to edit these execpt idf you have a good reason, so pls dont touch it
 # ───────────────────────────────────────────────────────────────────────────────
 messages:
   # Prefix added to all plugin messages
