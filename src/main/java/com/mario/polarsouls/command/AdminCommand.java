@@ -19,6 +19,11 @@ import org.bukkit.command.CommandSender;
 import org.bukkit.command.TabCompleter;
 import org.bukkit.entity.Player;
 
+import net.md_5.bungee.api.chat.ClickEvent;
+import net.md_5.bungee.api.chat.HoverEvent;
+import net.md_5.bungee.api.chat.TextComponent;
+import net.md_5.bungee.api.chat.hover.content.Text;
+
 import com.mario.polarsouls.PolarSouls;
 import com.mario.polarsouls.database.DatabaseManager;
 import com.mario.polarsouls.model.PlayerData;
@@ -203,12 +208,7 @@ public class AdminCommand implements CommandExecutor, TabCompleter {
             sender.sendMessage(MessageUtil.colorize(
                     "&e" + data.getUsername() + " &7already has an active grace period (&e" + remaining + " &7remaining)."));
             sender.sendMessage(MessageUtil.colorize("&7Choose an option:"));
-            sender.sendMessage(MessageUtil.colorize(
-                    "  &a/psadmin confirm overwrite &7- Overwrite with new grace period"));
-            sender.sendMessage(MessageUtil.colorize(
-                    "  &a/psadmin confirm stack &7- Stack (add time to existing)"));
-            sender.sendMessage(MessageUtil.colorize(
-                    "  &a/psadmin confirm cancel &7- Cancel the operation"));
+            sendGraceConfirmOptions(sender);
             return;
         }
 
@@ -221,6 +221,35 @@ public class AdminCommand implements CommandExecutor, TabCompleter {
                 new Object[]{sender.getName(), data.getUsername(), formattedTime});
         sender.sendMessage(MessageUtil.colorize(
                 "&aGrace period set for &e" + data.getUsername() + "&a (" + formattedTime + " from now)."));
+    }
+
+    private static void sendGraceConfirmOptions(CommandSender sender) {
+        if (sender instanceof Player player) {
+            TextComponent overwrite = new TextComponent(MessageUtil.colorize("  &a[&lOverwrite&a]"));
+            overwrite.setClickEvent(new ClickEvent(ClickEvent.Action.RUN_COMMAND, "/psadmin confirm overwrite"));
+            overwrite.setHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT,
+                    new Text(MessageUtil.colorize("&7Overwrite with new grace period"))));
+
+            TextComponent stack = new TextComponent(MessageUtil.colorize(" &e[&lStack&e]"));
+            stack.setClickEvent(new ClickEvent(ClickEvent.Action.RUN_COMMAND, "/psadmin confirm stack"));
+            stack.setHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT,
+                    new Text(MessageUtil.colorize("&7Stack (add time to existing)"))));
+
+            TextComponent cancel = new TextComponent(MessageUtil.colorize(" &c[&lCancel&c]"));
+            cancel.setClickEvent(new ClickEvent(ClickEvent.Action.RUN_COMMAND, "/psadmin confirm cancel"));
+            cancel.setHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT,
+                    new Text(MessageUtil.colorize("&7Cancel the operation"))));
+
+            player.spigot().sendMessage(overwrite, stack, cancel);
+        } else {
+            // Console fallback: plain text instructions
+            sender.sendMessage(MessageUtil.colorize(
+                    "  &a/psadmin confirm overwrite &7- Overwrite with new grace period"));
+            sender.sendMessage(MessageUtil.colorize(
+                    "  &a/psadmin confirm stack &7- Stack (add time to existing)"));
+            sender.sendMessage(MessageUtil.colorize(
+                    "  &a/psadmin confirm cancel &7- Cancel the operation"));
+        }
     }
 
     private void handleGraceConfirm(CommandSender sender, String[] args) {
