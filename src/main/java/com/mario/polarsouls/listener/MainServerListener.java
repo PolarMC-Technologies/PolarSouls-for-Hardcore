@@ -69,6 +69,7 @@ public class MainServerListener implements Listener {
 
         if (data.getLastSeen() > 0) {
             // Pause grace period while offline: extend graceUntil by offline duration
+            // Only adjust if grace hasn't already expired before the player went offline
             if (data.getGraceUntil() > 0 && data.getGraceUntil() > data.getLastSeen()) {
                 long offlineDuration = now - data.getLastSeen();
                 if (offlineDuration > 0) {

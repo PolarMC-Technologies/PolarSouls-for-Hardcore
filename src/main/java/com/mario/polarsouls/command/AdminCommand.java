@@ -47,9 +47,10 @@ public class AdminCommand implements CommandExecutor, TabCompleter {
     private final PolarSouls plugin;
     private final DatabaseManager db;
 
-    // Tracks pending grace confirmation per sender: senderName -> {targetUUID, requestedMillis}
+    // Tracks pending grace confirmation per admin sender name
     private final Map<String, PendingGrace> pendingGraceConfirmations = new ConcurrentHashMap<>();
 
+    /** Holds context for a pending grace confirmation: target player, requested duration, and existing grace end time. */
     private record PendingGrace(UUID targetUuid, String targetName, long requestedMillis, long existingGraceUntil) {}
 
     public AdminCommand(PolarSouls plugin) {
@@ -257,6 +258,7 @@ public class AdminCommand implements CommandExecutor, TabCompleter {
                         + "&a (" + formattedTime + " from now)."));
             }
             case "stack" -> {
+                // If existing grace expired, stack from now; otherwise add to existing end time
                 long baseTime = Math.max(pending.existingGraceUntil(), now);
                 long graceUntil = baseTime + pending.requestedMillis();
                 db.setGraceUntil(pending.targetUuid(), graceUntil);
