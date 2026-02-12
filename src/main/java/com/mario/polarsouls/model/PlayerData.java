@@ -11,9 +11,10 @@ public class PlayerData {
     private long firstJoin;    // epoch millis
     private long lastDeath;    // epoch millis, 0 = never died (yet)
     private long lastSeen;     // epoch millis, 0 = currently online
+    private long graceUntil;   // epoch millis when grace expires, 0 = no active grace
 
     public PlayerData(UUID uuid, String username, int lives, boolean isDead,
-                      long firstJoin, long lastDeath, long lastSeen) {
+                      long firstJoin, long lastDeath, long lastSeen, long graceUntil) {
         this.uuid = uuid;
         this.username = username;
         this.lives = lives;
@@ -21,21 +22,39 @@ public class PlayerData {
         this.firstJoin = firstJoin;
         this.lastDeath = lastDeath;
         this.lastSeen = lastSeen;
+        this.graceUntil = graceUntil;
     }
 
     public static PlayerData createNew(UUID uuid, String username, int defaultLives) {
+        return createNew(uuid, username, defaultLives, 0L);
+    }
+
+    public static PlayerData createNew(UUID uuid, String username, int defaultLives,
+                                        long gracePeriodMillis) {
+        long graceUntil = gracePeriodMillis > 0
+                ? System.currentTimeMillis() + gracePeriodMillis : 0L;
         return new PlayerData(uuid, username, defaultLives, false,
-                System.currentTimeMillis(), 0L, 0L);
+                System.currentTimeMillis(), 0L, 0L, graceUntil);
     }
 
     public boolean isInGracePeriod(long gracePeriodMillis) {
+        if (graceUntil > 0) {
+            return System.currentTimeMillis() < graceUntil;
+        }
+        // Legacy fallback: use firstJoin + global config
         if (gracePeriodMillis <= 0) return false;
-        return getGraceElapsedMillis() < gracePeriodMillis;
+        long elapsed = System.currentTimeMillis() - firstJoin;
+        return elapsed >= 0 && elapsed < gracePeriodMillis;
     }
 
     public String getGraceTimeRemaining(long gracePeriodMillis) {
-        long elapsed = getGraceElapsedMillis();
-        long remaining = gracePeriodMillis - elapsed;
+        long remaining;
+        if (graceUntil > 0) {
+            remaining = graceUntil - System.currentTimeMillis();
+        } else {
+            long elapsed = System.currentTimeMillis() - firstJoin;
+            remaining = gracePeriodMillis - elapsed;
+        }
 
         if (remaining <= 0) return "0m";
 
@@ -46,13 +65,6 @@ public class PlayerData {
             return hours + "h " + minutes + "m";
         }
         return minutes + "m";
-    }
-
-    private long getGraceElapsedMillis() {
-        long now = System.currentTimeMillis();
-        long referenceTime = lastSeen > 0 ? lastSeen : now;
-        long elapsed = referenceTime - firstJoin;
-        return Math.max(0L, elapsed);
     }
 
     public int decrementLife() {
@@ -122,6 +134,14 @@ public class PlayerData {
 
     public void setLastSeen(long lastSeen) {
         this.lastSeen = lastSeen;
+    }
+
+    public long getGraceUntil() {
+        return graceUntil;
+    }
+
+    public void setGraceUntil(long graceUntil) {
+        this.graceUntil = graceUntil;
     }
 
     @Override

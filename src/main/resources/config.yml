@@ -38,6 +38,9 @@
 # ⚙️ BOTH SERVERS: Keep the same on both
 check-for-updates: true
 
+# Display hardcore-style hearts on the client (cosmetic only, no gameplay change)
+hardcore-hearts: true
+
 # ───────────────────────────────────────────────────────────────────────────────
 # Server Role Configuration
 # ───────────────────────────────────────────────────────────────────────────────

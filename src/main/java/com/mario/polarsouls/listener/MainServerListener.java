@@ -68,13 +68,24 @@ public class MainServerListener implements Listener {
         long now = System.currentTimeMillis();
         boolean shouldSave = false;
 
-        Long adjustedFirstJoin = adjustGracePeriodIfNeeded(data, now);
-        if (adjustedFirstJoin != null) {
+        if (data.getLastSeen() > 0) {
+            // Pause grace period while offline: extend graceUntil by offline duration
+            // Only adjust if grace hasn't already expired before the player went offline
+            if (data.getGraceUntil() > 0 && data.getGraceUntil() > data.getLastSeen()) {
+                long offlineDuration = now - data.getLastSeen();
+                if (offlineDuration > 0) {
+                    long adjustedGraceUntil = data.getGraceUntil() + offlineDuration;
+                    data.setGraceUntil(adjustedGraceUntil);
+                    db.setGraceUntil(player.getUniqueId(), adjustedGraceUntil);
+                    shouldSave = true;
+                }
+            }
+            data.setLastSeen(0L);
             shouldSave = true;
-            db.setFirstJoin(uuid, adjustedFirstJoin);
         }
 
-        if (updateUsernameIfChanged(data, player)) {
+        if (!data.getUsername().equals(player.getName())) {
+            data.setUsername(player.getName());
             shouldSave = true;
         }
 
@@ -85,67 +96,41 @@ public class MainServerListener implements Listener {
         if (data.isDead()) {
             redirectToLimbo(player);
         } else {
-            restoreAlivePlayer(player, uuid);
+            // gamemode check must happen on the main thread
+            final boolean wasPreviouslyDead = data.getLastDeath() > 0;
+            Bukkit.getScheduler().runTask(plugin, () -> {
+                if (!player.isOnline()) return;
+                if (player.getGameMode() != GameMode.SURVIVAL) {
+                    plugin.debug(player.getName() + " returned alive, restoring to survival.");
+                    UUID uuid = player.getUniqueId();
+                    grantReviveCooldown(uuid);
+                    hybridWindowUsed.remove(uuid);
+                    expectedGamemodeChanges.add(uuid);
+                    player.setGameMode(GameMode.SURVIVAL);
+                    if (wasPreviouslyDead) {
+                        player.sendMessage(MessageUtil.get("revive-success"));
+                    }
+                }
+            });
         }
-    }
-
-    private Long adjustGracePeriodIfNeeded(PlayerData data, long now) {
-        if (data.getLastSeen() <= 0) {
-            return null;
-        }
-
-        if (plugin.getGracePeriodMillis() > 0
-                && data.getFirstJoin() > 0
-                && data.getLastSeen() >= data.getFirstJoin()) {
-            long offlineDuration = now - data.getLastSeen();
-            if (offlineDuration > 0) {
-                Long adjustedFirstJoin = data.getFirstJoin() + offlineDuration;
-                data.setFirstJoin(adjustedFirstJoin);
-                return adjustedFirstJoin;
-            }
-        }
-
-        data.setLastSeen(0L);
-        return null;
-    }
-
-    private boolean updateUsernameIfChanged(PlayerData data, Player player) {
-        if (!data.getUsername().equals(player.getName())) {
-            data.setUsername(player.getName());
-            return true;
-        }
-        return false;
-    }
-
-    private void restoreAlivePlayer(Player player, UUID uuid) {
-        // gamemode check must happen on the main thread
-        Bukkit.getScheduler().runTask(plugin, () -> {
-            if (!player.isOnline()) return;
-            if (player.getGameMode() != GameMode.SURVIVAL) {
-                plugin.debug(player.getName() + " returned alive, restoring to survival.");
-                grantReviveCooldown(uuid);
-                hybridWindowUsed.remove(uuid);
-                expectedGamemodeChanges.add(uuid);
-                player.setGameMode(GameMode.SURVIVAL);
-                player.sendMessage(MessageUtil.get("revive-success"));
-            }
-        });
     }
 
     private void handleFirstJoin(Player player) {
         PlayerData data = PlayerData.createNew(player.getUniqueId(), player.getName(),
-                plugin.getDefaultLives());
+                plugin.getDefaultLives(), plugin.getGracePeriodMillis());
         db.savePlayer(data);
         plugin.debug("Created new player record for " + player.getName());
 
-        final PlayerData finalData = data;
-        Bukkit.getScheduler().runTask(plugin, () -> {
-            if (player.isOnline()) {
-                String timeRemaining = finalData.getGraceTimeRemaining(plugin.getGracePeriodMillis());
-                player.sendMessage(MessageUtil.get("death-grace-period",
-                        "time_remaining", timeRemaining));
-            }
-        });
+        if (data.getGraceUntil() > 0) {
+            final PlayerData finalData = data;
+            Bukkit.getScheduler().runTask(plugin, () -> {
+                if (player.isOnline()) {
+                    String timeRemaining = finalData.getGraceTimeRemaining(plugin.getGracePeriodMillis());
+                    player.sendMessage(MessageUtil.get("death-grace-period",
+                            "time_remaining", timeRemaining));
+                }
+            });
+        }
     }
 
     private void redirectToLimbo(Player player) {

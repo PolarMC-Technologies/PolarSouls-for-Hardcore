@@ -43,7 +43,8 @@ public class MainReviveCheckTask extends BukkitRunnable {
         List<UUID> list = new ArrayList<>();
         for (Player player : Bukkit.getOnlinePlayers()) {
             if (player.getGameMode() == GameMode.SPECTATOR
-                    && !player.hasPermission(PERM_BYPASS)) {
+                    && !player.hasPermission(PERM_BYPASS)
+                    && plugin.getDatabaseManager().isPlayerDead(player.getUniqueId())) {
                 list.add(player.getUniqueId());
             }
         }

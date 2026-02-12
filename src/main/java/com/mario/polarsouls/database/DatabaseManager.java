@@ -18,7 +18,7 @@ import com.zaxxer.hikari.HikariDataSource;
 public class DatabaseManager {
 
     private static final String COL_IS_DEAD = "is_dead";
-    private static final String SELECT_ALL = "SELECT uuid, username, lives, is_dead, first_join, last_death, last_seen FROM ";
+    private static final String SELECT_ALL = "SELECT uuid, username, lives, is_dead, first_join, last_death, last_seen, grace_until FROM ";
     private static final String UPDATE = "UPDATE ";
     private static final int MYSQL_DUPLICATE_COLUMN = 1060;
 
@@ -87,13 +87,15 @@ public class DatabaseManager {
                 + "is_dead BOOLEAN NOT NULL DEFAULT FALSE, "
                 + "first_join BIGINT NOT NULL, "
                 + "last_death BIGINT NOT NULL DEFAULT 0, "
-                + "last_seen BIGINT NOT NULL DEFAULT 0"
+                + "last_seen BIGINT NOT NULL DEFAULT 0, "
+                + "grace_until BIGINT NOT NULL DEFAULT 0"
                 + ") ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;";
 
         try (Connection conn = dataSource.getConnection();
               Statement stmt = conn.createStatement()) {
             stmt.executeUpdate(sql);
             ensureLastSeenColumn(conn);
+            ensureGraceUntilColumn(conn);
             plugin.debug("Table '" + tableName + "' verified/created.");
         }
     }
@@ -114,6 +116,22 @@ public class DatabaseManager {
         }
     }
 
+    private void ensureGraceUntilColumn(Connection conn) {
+        String sql = "ALTER TABLE " + tableName
+                + " ADD COLUMN grace_until BIGINT NOT NULL DEFAULT 0";
+        try (Statement stmt = conn.createStatement()) {
+            stmt.executeUpdate(sql);
+            plugin.debug("Added grace_until column to '" + tableName + "'.");
+        } catch (SQLException e) {
+            String sqlState = e.getSQLState();
+            boolean duplicateColumn = e.getErrorCode() == MYSQL_DUPLICATE_COLUMN
+                    || "42S21".equals(sqlState);
+            if (!duplicateColumn) {
+                plugin.getLogger().log(Level.WARNING, "Failed to ensure grace_until column", e);
+            }
+        }
+    }
+
     private PlayerData mapResultSet(ResultSet rs) throws SQLException {
         return new PlayerData(
                 UUID.fromString(rs.getString("uuid")),
@@ -122,7 +140,8 @@ public class DatabaseManager {
                 rs.getBoolean(COL_IS_DEAD),
                 rs.getLong("first_join"),
                 rs.getLong("last_death"),
-                rs.getLong("last_seen")
+                rs.getLong("last_seen"),
+                rs.getLong("grace_until")
         );
     }
 
@@ -164,14 +183,15 @@ public class DatabaseManager {
 
     public void savePlayer(PlayerData data) {
         String sql = "INSERT INTO " + tableName
-                + " (uuid, username, lives, is_dead, first_join, last_death, last_seen) "
-                + "VALUES (?, ?, ?, ?, ?, ?, ?) "
+                + " (uuid, username, lives, is_dead, first_join, last_death, last_seen, grace_until) "
+                + "VALUES (?, ?, ?, ?, ?, ?, ?, ?) "
                 + "ON DUPLICATE KEY UPDATE "
                 + "username = VALUES(username), "
                 + "lives = VALUES(lives), "
                 + "is_dead = VALUES(is_dead), "
                 + "last_death = VALUES(last_death), "
-                + "last_seen = VALUES(last_seen)";
+                + "last_seen = VALUES(last_seen), "
+                + "grace_until = VALUES(grace_until)";
 
         try (Connection conn = dataSource.getConnection();
              PreparedStatement ps = conn.prepareStatement(sql)) {
@@ -183,6 +203,7 @@ public class DatabaseManager {
             ps.setLong(5, data.getFirstJoin());
             ps.setLong(6, data.getLastDeath());
             ps.setLong(7, data.getLastSeen());
+            ps.setLong(8, data.getGraceUntil());
 
             ps.executeUpdate();
             plugin.debug("Saved player data: " + data);
@@ -272,6 +293,20 @@ public class DatabaseManager {
             ps.executeUpdate();
         } catch (SQLException e) {
             plugin.getLogger().log(Level.WARNING, () -> "Failed to set last_seen for " + uuid);
+        }
+    }
+
+    public void setGraceUntil(UUID uuid, long graceUntil) {
+        String sql = UPDATE + tableName + " SET grace_until = ? WHERE uuid = ?";
+
+        try (Connection conn = dataSource.getConnection();
+             PreparedStatement ps = conn.prepareStatement(sql)) {
+
+            ps.setLong(1, graceUntil);
+            ps.setString(2, uuid.toString());
+            ps.executeUpdate();
+        } catch (SQLException e) {
+            plugin.getLogger().log(Level.WARNING, () -> "Failed to set grace_until for " + uuid);
         }
     }
 

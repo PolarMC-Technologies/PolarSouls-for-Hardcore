@@ -79,6 +79,8 @@ public final class PolarSouls extends JavaPlugin {
     private boolean hrmLeaveStructureBase;
     private boolean hrmHeadEffects;
     private boolean hrmReviveSkullRecipe;
+    private boolean hardcoreHearts;
+    private boolean wasOriginallyHardcore;
     private ReviveSkullManager reviveSkullManager;
     private ExtraLifeManager extraLifeManager;
 
@@ -89,6 +91,9 @@ public final class PolarSouls extends JavaPlugin {
     public void onEnable() {
         setInstance(this);
         saveDefaultConfig();
+
+        wasOriginallyHardcore = getServer().isHardcore();
+
         loadConfigValues();
 
         getServer().getMessenger().registerOutgoingPluginChannel(this, "BungeeCord");
@@ -148,6 +153,10 @@ public final class PolarSouls extends JavaPlugin {
     @Override
     public void onDisable() {
         getServer().getMessenger().unregisterOutgoingPluginChannel(this);
+
+        if (hardcoreHearts) {
+            getServer().setHardcore(wasOriginallyHardcore);
+        }
 
         if (reviveSkullManager != null) {
             reviveSkullManager.unregisterRecipe();
@@ -272,6 +281,9 @@ public final class PolarSouls extends JavaPlugin {
         hybridTimeoutSeconds = cfg.getInt("main.hybrid-timeout-seconds", 300);
         reviveCooldownSeconds = cfg.getInt("lives.revive-cooldown-seconds", 30);
         extraLifeEnabled    = cfg.getBoolean("extra-life.enabled", true);
+        hardcoreHearts      = cfg.getBoolean("hardcore-hearts", true);
+
+        getServer().setHardcore(hardcoreHearts || wasOriginallyHardcore);
 
         hrmEnabled            = cfg.getBoolean("hrm.enabled", true);
         hrmDropHeads          = cfg.getBoolean("hrm.drop-heads", true);

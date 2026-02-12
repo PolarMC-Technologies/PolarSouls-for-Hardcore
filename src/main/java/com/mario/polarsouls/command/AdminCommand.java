@@ -6,6 +6,9 @@ import java.util.Arrays;
 import java.util.Collections;
 import java.util.Date;
 import java.util.List;
+import java.util.Map;
+import java.util.UUID;
+import java.util.concurrent.ConcurrentHashMap;
 import java.util.logging.Level;
 
 import org.bukkit.Bukkit;
@@ -16,8 +19,14 @@ import org.bukkit.command.CommandSender;
 import org.bukkit.command.TabCompleter;
 import org.bukkit.entity.Player;
 
+import net.md_5.bungee.api.chat.ClickEvent;
+import net.md_5.bungee.api.chat.HoverEvent;
+import net.md_5.bungee.api.chat.TextComponent;
+import net.md_5.bungee.api.chat.hover.content.Text;
+
 import com.mario.polarsouls.PolarSouls;
 import com.mario.polarsouls.database.DatabaseManager;
+import com.mario.polarsouls.hrm.HeadDropListener;
 import com.mario.polarsouls.model.PlayerData;
 import com.mario.polarsouls.util.MessageUtil;
 import com.mario.polarsouls.util.ServerTransferUtil;
@@ -34,12 +43,19 @@ public class AdminCommand implements CommandExecutor, TabCompleter {
     private static final String ERR_NUMBER = "&cInvalid number: ";
 
     private static final List<String> SUB_COMMANDS = Arrays.asList(
-            SUB_LIVES, SUB_GRACE, "kill", SUB_REVIVE, "reset", "info", "reload");
+            SUB_LIVES, SUB_GRACE, "kill", SUB_REVIVE, "reset", "info", "reload", "confirm");
     private static final List<String> LIVES_ACTIONS = Arrays.asList("set", "give", "take");
     private static final List<String> GRACE_ACTIONS = Arrays.asList("set", "remove");
+    private static final List<String> CONFIRM_ACTIONS = Arrays.asList("overwrite", "stack", "cancel");
 
     private final PolarSouls plugin;
     private final DatabaseManager db;
+
+    // Tracks pending grace confirmation per admin sender name
+    private final Map<String, PendingGrace> pendingGraceConfirmations = new ConcurrentHashMap<>();
+
+    /** Holds context for a pending grace confirmation: target player, requested duration, and existing grace end time. */
+    private record PendingGrace(UUID targetUuid, String targetName, long requestedMillis, long existingGraceUntil) {}
 
     public AdminCommand(PolarSouls plugin) {
         this.plugin = plugin;
@@ -65,6 +81,7 @@ public class AdminCommand implements CommandExecutor, TabCompleter {
             case "reset"    -> handleReset(sender, args);
             case "info"     -> handleInfo(sender, args);
             case "reload"   -> handleReload(sender);
+            case "confirm"  -> handleGraceConfirm(sender, args);
             default -> sender.sendMessage(MessageUtil.colorize(
                     "&cUsage: /psadmin <subcommand> [args]"));
         }
@@ -149,7 +166,12 @@ public class AdminCommand implements CommandExecutor, TabCompleter {
         }
 
         if ("remove".equals(action)) {
-            db.setFirstJoin(data.getUuid(), 0L);
+            if (data.getGraceUntil() <= 0 || data.getGraceUntil() <= System.currentTimeMillis()) {
+                sender.sendMessage(MessageUtil.colorize(
+                        "&e" + data.getUsername() + " &7does not have an active grace period."));
+                return;
+            }
+            db.setGraceUntil(data.getUuid(), 0L);
             plugin.getLogger().log(Level.INFO, "{0} removed grace period for {1}",
                     new Object[]{sender.getName(), data.getUsername()});
             sender.sendMessage(MessageUtil.get("admin-grace-removed",
@@ -174,14 +196,117 @@ public class AdminCommand implements CommandExecutor, TabCompleter {
             return;
         }
 
-        db.setFirstJoin(data.getUuid(), System.currentTimeMillis());
-        updateLastSeenForGrace(data);
+        long now = System.currentTimeMillis();
+
+        // Issue #21: Check if grace is already active and prompt for confirmation
+        if (data.getGraceUntil() > now) {
+            String remaining = data.getGraceTimeRemaining(plugin.getGracePeriodMillis());
+            pendingGraceConfirmations.put(sender.getName(),
+                    new PendingGrace(data.getUuid(), data.getUsername(), millis, data.getGraceUntil()));
+
+            sender.sendMessage(MessageUtil.colorize(
+                    "&e" + data.getUsername() + " &7already has an active grace period (&e" + remaining + " &7remaining)."));
+            sender.sendMessage(MessageUtil.colorize("&7Choose an option:"));
+            sendGraceConfirmOptions(sender);
+            return;
+        }
+
+        // No existing grace — apply directly
+        long graceUntil = now + millis;
+        db.setGraceUntil(data.getUuid(), graceUntil);
 
         String formattedTime = TimeUtil.formatTime(millis);
         plugin.getLogger().log(Level.INFO, "{0} set grace period for {1} ({2})",
                 new Object[]{sender.getName(), data.getUsername(), formattedTime});
         sender.sendMessage(MessageUtil.colorize(
                 "&aGrace period set for &e" + data.getUsername() + "&a (" + formattedTime + " from now)."));
+    }
+
+    private static void sendGraceConfirmOptions(CommandSender sender) {
+        if (sender instanceof Player player) {
+            TextComponent overwrite = new TextComponent(MessageUtil.colorize("  &a[&lOverwrite&a]"));
+            overwrite.setClickEvent(new ClickEvent(ClickEvent.Action.RUN_COMMAND, "/psadmin confirm overwrite"));
+            overwrite.setHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT,
+                    new Text(MessageUtil.colorize("&7Overwrite with new grace period"))));
+
+            TextComponent stack = new TextComponent(MessageUtil.colorize(" &e[&lStack&e]"));
+            stack.setClickEvent(new ClickEvent(ClickEvent.Action.RUN_COMMAND, "/psadmin confirm stack"));
+            stack.setHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT,
+                    new Text(MessageUtil.colorize("&7Stack (add time to existing)"))));
+
+            TextComponent cancel = new TextComponent(MessageUtil.colorize(" &c[&lCancel&c]"));
+            cancel.setClickEvent(new ClickEvent(ClickEvent.Action.RUN_COMMAND, "/psadmin confirm cancel"));
+            cancel.setHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT,
+                    new Text(MessageUtil.colorize("&7Cancel the operation"))));
+
+            player.spigot().sendMessage(overwrite, stack, cancel);
+        } else {
+            // Console fallback: plain text instructions
+            sender.sendMessage(MessageUtil.colorize(
+                    "  &a/psadmin confirm overwrite &7- Overwrite with new grace period"));
+            sender.sendMessage(MessageUtil.colorize(
+                    "  &a/psadmin confirm stack &7- Stack (add time to existing)"));
+            sender.sendMessage(MessageUtil.colorize(
+                    "  &a/psadmin confirm cancel &7- Cancel the operation"));
+        }
+    }
+
+    private void handleGraceConfirm(CommandSender sender, String[] args) {
+        if (args.length < 2) {
+            sender.sendMessage(MessageUtil.colorize(
+                    "&cUsage: /psadmin confirm <overwrite|stack|cancel>"));
+            return;
+        }
+
+        PendingGrace pending = pendingGraceConfirmations.remove(sender.getName());
+        if (pending == null) {
+            sender.sendMessage(MessageUtil.colorize(
+                    "&cNo pending grace confirmation found. Use /psadmin grace set first."));
+            return;
+        }
+
+        String choice = args[1].toLowerCase();
+        Bukkit.getScheduler().runTaskAsynchronously(plugin, () ->
+                executeGraceConfirm(sender, pending, choice));
+    }
+
+    private void executeGraceConfirm(CommandSender sender, PendingGrace pending, String choice) {
+        long now = System.currentTimeMillis();
+
+        switch (choice) {
+            case "overwrite" -> {
+                long graceUntil = now + pending.requestedMillis();
+                db.setGraceUntil(pending.targetUuid(), graceUntil);
+
+                String formattedTime = TimeUtil.formatTime(pending.requestedMillis());
+                plugin.getLogger().log(Level.INFO, "{0} overwrote grace period for {1} ({2})",
+                        new Object[]{sender.getName(), pending.targetName(), formattedTime});
+                sender.sendMessage(MessageUtil.colorize(
+                        "&aGrace period overwritten for &e" + pending.targetName()
+                        + "&a (" + formattedTime + " from now)."));
+            }
+            case "stack" -> {
+                // If existing grace expired, stack from now; otherwise add to existing end time
+                long baseTime = Math.max(pending.existingGraceUntil(), now);
+                long graceUntil = baseTime + pending.requestedMillis();
+                db.setGraceUntil(pending.targetUuid(), graceUntil);
+
+                String totalRemaining = TimeUtil.formatTime(graceUntil - now);
+                plugin.getLogger().log(Level.INFO, "{0} stacked grace period for {1} (total: {2})",
+                        new Object[]{sender.getName(), pending.targetName(), totalRemaining});
+                sender.sendMessage(MessageUtil.colorize(
+                        "&aGrace period stacked for &e" + pending.targetName()
+                        + "&a (total remaining: " + totalRemaining + ")."));
+            }
+            case "cancel" -> sender.sendMessage(MessageUtil.colorize(
+                    "&7Grace period operation cancelled."));
+            default -> {
+                // Invalid choice, re-add the pending confirmation
+                pendingGraceConfirmations.put(sender.getName(), pending);
+                sender.sendMessage(MessageUtil.colorize(
+                        "&cInvalid option. Use: /psadmin confirm <overwrite|stack|cancel>"));
+            }
+        }
     }
 
     private void handleKill(CommandSender sender, String[] args) {
@@ -202,6 +327,12 @@ public class AdminCommand implements CommandExecutor, TabCompleter {
             return;
         }
 
+        if (data.isDead()) {
+            sender.sendMessage(MessageUtil.colorize(
+                    "&c" + data.getUsername() + " is already dead."));
+            return;
+        }
+
         db.setLives(data.getUuid(), 0);
 
         plugin.getLogger().log(Level.INFO, "{0} force-killed {1}",
@@ -212,14 +343,37 @@ public class AdminCommand implements CommandExecutor, TabCompleter {
         Player target = Bukkit.getPlayer(data.getUuid());
         if (target != null && target.isOnline()) {
             Bukkit.getScheduler().runTask(plugin, () ->
-                    applySpectatorIfOnline(target));
+                    applyDeathTransition(target));
         }
     }
 
-    private static void applySpectatorIfOnline(Player target) {
-        if (target.isOnline()) {
-            target.setGameMode(GameMode.SPECTATOR);
-            target.sendMessage(MessageUtil.get("death-now-spectator"));
+    private void applyDeathTransition(Player target) {
+        if (!target.isOnline()) return;
+
+        String deathMode = plugin.getDeathMode();
+        switch (deathMode) {
+            case PolarSouls.MODE_SPECTATOR -> {
+                target.setGameMode(GameMode.SPECTATOR);
+                target.sendMessage(MessageUtil.get("death-now-spectator"));
+            }
+            case PolarSouls.MODE_HYBRID -> {
+                target.setGameMode(GameMode.SPECTATOR);
+                target.sendMessage(MessageUtil.get("death-now-spectator"));
+                Bukkit.getScheduler().runTaskLater(plugin, () -> {
+                    if (target.isOnline()) {
+                        target.sendMessage(MessageUtil.get("death-sent-to-limbo"));
+                        ServerTransferUtil.sendToLimbo(target);
+                    }
+                }, plugin.getHybridTimeoutSeconds() * 20L);
+            }
+            default -> {
+                target.sendMessage(MessageUtil.get("death-sent-to-limbo"));
+                Bukkit.getScheduler().runTaskLater(plugin, () -> {
+                    if (target.isOnline()) {
+                        ServerTransferUtil.sendToLimbo(target);
+                    }
+                }, plugin.getSendToLimboDelayTicks());
+            }
         }
     }
 
@@ -262,6 +416,10 @@ public class AdminCommand implements CommandExecutor, TabCompleter {
                     KEY_PLAYER, data.getUsername(),
                     KEY_LIVES, livesToRestore));
             restoreOnlineSpectator(data);
+
+            // Remove any dropped player head items from all worlds
+            Bukkit.getScheduler().runTask(plugin, () ->
+                    HeadDropListener.removeDroppedHeads(data.getUuid()));
         } else {
             sender.sendMessage(MessageUtil.colorize(
                     "&cFailed to revive " + data.getUsername()));
@@ -287,10 +445,9 @@ public class AdminCommand implements CommandExecutor, TabCompleter {
         }
 
         int defaultLives = plugin.getDefaultLives();
-        PlayerData fresh = PlayerData.createNew(data.getUuid(), data.getUsername(), defaultLives);
+        PlayerData fresh = PlayerData.createNew(data.getUuid(), data.getUsername(),
+                defaultLives, plugin.getGracePeriodMillis());
         db.savePlayer(fresh);
-        db.setFirstJoin(data.getUuid(), fresh.getFirstJoin());
-        updateLastSeenForGrace(fresh);
 
         plugin.getLogger().log(Level.INFO, "{0} reset {1} to defaults ({2} lives)",
                 new Object[]{sender.getName(), data.getUsername(), defaultLives});
@@ -353,8 +510,11 @@ public class AdminCommand implements CommandExecutor, TabCompleter {
     }
 
     private String buildGraceStatus(PlayerData data) {
+        if (data.getGraceUntil() > 0 && data.getGraceUntil() > System.currentTimeMillis()) {
+            return "&a" + data.getGraceTimeRemaining(plugin.getGracePeriodMillis()) + " remaining";
+        }
         long graceMillis = plugin.getGracePeriodMillis();
-        if (graceMillis <= 0) {
+        if (graceMillis <= 0 && data.getGraceUntil() <= 0) {
             return "&7Disabled";
         }
         if (data.isInGracePeriod(graceMillis)) {
@@ -376,6 +536,7 @@ public class AdminCommand implements CommandExecutor, TabCompleter {
         sender.sendMessage(MessageUtil.colorize("&e/psadmin lives take <player> <n> &7- Remove lives"));
         sender.sendMessage(MessageUtil.colorize("&e/psadmin grace set <player> <time> &7- Grant grace (e.g., 1h30m, 2h, 90m)"));
         sender.sendMessage(MessageUtil.colorize("&e/psadmin grace remove <player>   &7- Remove grace"));
+        sender.sendMessage(MessageUtil.colorize("&e/psadmin confirm <overwrite|stack|cancel> &7- Confirm grace operation"));
         sender.sendMessage(MessageUtil.colorize("&e/psadmin kill <player>           &7- Force-kill"));
         sender.sendMessage(MessageUtil.colorize("&e/psadmin revive <player> [lives] &7- Revive"));
         sender.sendMessage(MessageUtil.colorize("&e/psadmin reset <player>          &7- Reset to defaults"));
@@ -419,15 +580,6 @@ public class AdminCommand implements CommandExecutor, TabCompleter {
         }
     }
 
-    private void updateLastSeenForGrace(PlayerData data) {
-        Player target = Bukkit.getPlayer(data.getUuid());
-        if (target != null && target.isOnline()) {
-            db.setLastSeen(data.getUuid(), 0L);
-        } else {
-            db.setLastSeen(data.getUuid(), System.currentTimeMillis());
-        }
-    }
-
     private static String formatTimestamp(long millis) {
         if (millis <= 0) return "N/A";
         SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm");
@@ -455,6 +607,7 @@ public class AdminCommand implements CommandExecutor, TabCompleter {
         return switch (sub) {
             case SUB_LIVES -> filterStartsWith(LIVES_ACTIONS, partial);
             case SUB_GRACE -> filterStartsWith(GRACE_ACTIONS, partial);
+            case "confirm" -> filterStartsWith(CONFIRM_ACTIONS, partial);
             default -> playerNames(partial);
         };
     }
