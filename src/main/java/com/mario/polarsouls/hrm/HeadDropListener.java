@@ -5,10 +5,13 @@ import java.util.UUID;
 
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
+import org.bukkit.Chunk;
 import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.OfflinePlayer;
+import org.bukkit.Tag;
 import org.bukkit.World;
+import org.bukkit.block.BlockState;
 import org.bukkit.entity.Item;
 import org.bukkit.entity.ItemFrame;
 import org.bukkit.entity.Player;
@@ -16,8 +19,11 @@ import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
 import org.bukkit.event.entity.PlayerDeathEvent;
+import org.bukkit.inventory.Inventory;
+import org.bukkit.inventory.InventoryHolder;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.PlayerInventory;
+import org.bukkit.inventory.meta.BlockStateMeta;
 import org.bukkit.inventory.meta.SkullMeta;
 
 import com.mario.polarsouls.PolarSouls;
@@ -96,8 +102,9 @@ public class HeadDropListener implements Listener {
 
     /**
      * Removes all player head items belonging to the specified player from:
-     * dropped item entities, player inventories (including armor/offhand),
-     * and item frames across all worlds. Must be called on the main server thread.
+     * dropped item entities, player inventories (including armor/offhand/ender chest),
+     * item frames, and container blocks (chests, barrels, hoppers, shulker boxes, etc.)
+     * in all loaded chunks. Must be called on the main server thread.
      */
     public static void removeDroppedHeads(UUID ownerUuid) {
         for (World world : Bukkit.getWorlds()) {
@@ -114,9 +121,18 @@ public class HeadDropListener implements Listener {
                     frame.setItem(null);
                 }
             }
+
+            // Remove from container blocks in loaded chunks
+            for (Chunk chunk : world.getLoadedChunks()) {
+                for (BlockState state : chunk.getTileEntities()) {
+                    if (state instanceof InventoryHolder holder) {
+                        removeFromInventory(holder.getInventory(), ownerUuid);
+                    }
+                }
+            }
         }
 
-        // Remove from all online player inventories (main, armor, offhand)
+        // Remove from all online player inventories (main, armor, offhand) and ender chests
         for (Player player : Bukkit.getOnlinePlayers()) {
             PlayerInventory inv = player.getInventory();
             for (int i = 0; i < inv.getSize(); i++) {
@@ -124,7 +140,52 @@ public class HeadDropListener implements Listener {
                     inv.setItem(i, null);
                 }
             }
+            removeFromInventory(player.getEnderChest(), ownerUuid);
         }
+    }
+
+    /**
+     * Removes owned heads from an inventory, including heads inside shulker boxes.
+     */
+    private static void removeFromInventory(Inventory inv, UUID ownerUuid) {
+        for (int i = 0; i < inv.getSize(); i++) {
+            ItemStack item = inv.getItem(i);
+            if (item == null) continue;
+
+            if (isOwnedHead(item, ownerUuid)) {
+                inv.setItem(i, null);
+            } else if (isShulkerBox(item.getType())) {
+                removeFromShulkerItem(inv, i, item, ownerUuid);
+            }
+        }
+    }
+
+    /**
+     * Checks a shulker box item for owned heads, removing them and updating the item.
+     */
+    private static void removeFromShulkerItem(Inventory inv, int slot, ItemStack item, UUID ownerUuid) {
+        if (!item.hasItemMeta()) return;
+        if (!(item.getItemMeta() instanceof BlockStateMeta bsm)) return;
+        BlockState blockState = bsm.getBlockState();
+        if (!(blockState instanceof InventoryHolder shulkerHolder)) return;
+
+        Inventory shulkerInv = shulkerHolder.getInventory();
+        boolean changed = false;
+        for (int j = 0; j < shulkerInv.getSize(); j++) {
+            if (isOwnedHead(shulkerInv.getItem(j), ownerUuid)) {
+                shulkerInv.setItem(j, null);
+                changed = true;
+            }
+        }
+        if (changed) {
+            bsm.setBlockState(blockState);
+            item.setItemMeta(bsm);
+            inv.setItem(slot, item);
+        }
+    }
+
+    private static boolean isShulkerBox(Material type) {
+        return Tag.SHULKER_BOXES.isTagged(type);
     }
 
     private static boolean isOwnedHead(ItemStack stack, UUID ownerUuid) {
