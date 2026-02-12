@@ -96,6 +96,7 @@ public class MainServerListener implements Listener {
             redirectToLimbo(player);
         } else {
             // gamemode check must happen on the main thread
+            final boolean wasPreviouslyDead = data.getLastDeath() > 0;
             Bukkit.getScheduler().runTask(plugin, () -> {
                 if (!player.isOnline()) return;
                 if (player.getGameMode() != GameMode.SURVIVAL) {
@@ -105,7 +106,9 @@ public class MainServerListener implements Listener {
                     hybridWindowUsed.remove(uuid);
                     expectedGamemodeChanges.add(uuid);
                     player.setGameMode(GameMode.SURVIVAL);
-                    player.sendMessage(MessageUtil.get("revive-success"));
+                    if (wasPreviouslyDead) {
+                        player.sendMessage(MessageUtil.get("revive-success"));
+                    }
                 }
             });
         }
