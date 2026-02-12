@@ -37,8 +37,6 @@ public class AdminCommand implements CommandExecutor, TabCompleter {
     private static final String KEY_PLAYER = "player";
     private static final String KEY_LIVES = "lives";
     private static final String KEY_ACTION = "action";
-    private static final String KEY_HOURS = "hours";
-    private static final String KEY_TIME = "time";
     private static final String SUB_LIVES = "lives";
     private static final String SUB_GRACE = "grace";
     private static final String SUB_REVIVE = "revive";

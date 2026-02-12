@@ -325,4 +325,61 @@ public class DatabaseManager {
         }
         return result;
     }
+
+    /**
+     * Retrieve the stored plugin version from a metadata table.
+     * Returns null if no version is stored yet (first run).
+     */
+    public String getPluginVersion() {
+        String metaTable = "polarsouls_meta";
+        try (Connection conn = dataSource.getConnection()) {
+            // Check if metadata table exists (and create if needed)
+            createMetadataTableIfNeeded(conn, metaTable);
+
+            String sql = "SELECT version FROM " + metaTable + " WHERE key_ = 'plugin_version'";
+            try (PreparedStatement ps = conn.prepareStatement(sql);
+                 ResultSet rs = ps.executeQuery()) {
+                if (rs.next()) {
+                    return rs.getString("version");
+                }
+            }
+        } catch (SQLException e) {
+            plugin.getLogger().log(Level.WARNING, () -> "Failed to get plugin version from database");
+        }
+        return null;
+    }
+
+    /**
+     * Save the current plugin version to the metadata table.
+     */
+    public void savePluginVersion(String version) {
+        String metaTable = "polarsouls_meta";
+        try (Connection conn = dataSource.getConnection()) {
+            createMetadataTableIfNeeded(conn, metaTable);
+
+            String sql = "INSERT INTO " + metaTable + " (key_, version) VALUES (?, ?) "
+                    + "ON DUPLICATE KEY UPDATE version = VALUES(version)";
+            try (PreparedStatement ps = conn.prepareStatement(sql)) {
+                ps.setString(1, "plugin_version");
+                ps.setString(2, version);
+                ps.executeUpdate();
+            }
+        } catch (SQLException e) {
+            plugin.getLogger().log(Level.WARNING, () -> "Failed to save plugin version to database");
+        }
+    }
+
+    /**
+     * Create the metadata table if it doesn't exist.
+     */
+    private void createMetadataTableIfNeeded(Connection conn, String metaTable) throws SQLException {
+        String createTableSql = "CREATE TABLE IF NOT EXISTS " + metaTable + " ("
+                + "key_ VARCHAR(50) PRIMARY KEY,"
+                + "version VARCHAR(50)"
+                + ") DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci";
+        try (Statement stmt = conn.createStatement()) {
+            stmt.execute(createTableSql);
+        }
+    }
 }
+

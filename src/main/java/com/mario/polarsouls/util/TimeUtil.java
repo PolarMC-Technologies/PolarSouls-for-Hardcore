@@ -3,10 +3,6 @@ package com.mario.polarsouls.util;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-/**
- * Utility class for parsing time duration strings.
- * Supports formats like "2h", "30m", "1h30m", "90m", etc.
- */
 public final class TimeUtil {
 
     private static final Pattern TIME_PATTERN = Pattern.compile("(\\d+)([hms])");
@@ -15,14 +11,6 @@ public final class TimeUtil {
         throw new UnsupportedOperationException("Utility class");
     }
 
-    /**
-     * Parse a time string into milliseconds.
-     * Supports formats: "2h", "30m", "1h30m", "90m", "45s", "1h30m45s"
-     * Also supports plain integer values (interpreted as hours for backward compatibility).
-     *
-     * @param timeStr The time string to parse
-     * @return The time in milliseconds, or -1 if parsing failed
-     */
     public static long parseTimeToMillis(String timeStr) {
         if (timeStr == null || timeStr.trim().isEmpty()) {
             return -1;
@@ -30,15 +18,14 @@ public final class TimeUtil {
 
         timeStr = timeStr.trim().toLowerCase();
 
-        // Try to parse as plain integer (backward compatibility - treat as hours)
         try {
             int hours = Integer.parseInt(timeStr);
             return hours * 3600_000L;
         } catch (NumberFormatException e) {
-            // Not a plain integer, continue with pattern matching
+            // not a plain integer
         }
 
-        // Parse time components (hours, minutes, seconds)
+        // parse time components
         Matcher matcher = TIME_PATTERN.matcher(timeStr);
         long totalMillis = 0;
         boolean foundAny = false;
@@ -59,15 +46,9 @@ public final class TimeUtil {
         return foundAny ? totalMillis : -1;
     }
 
-    /**
-     * Format milliseconds into a human-readable time string.
-     * Note: Seconds are only shown if hours is 0, to keep common durations concise.
-     *
-     * @param millis The time in milliseconds
-     * @return A formatted string like "2h 30m" or "45m" or "30s", or "0s" for non-positive values
-     */
+
     public static String formatTime(long millis) {
-        if (millis < 0) return "0s";  // Treat negative as 0
+        if (millis < 0) return "0s";  //
         if (millis == 0) return "0s";
 
         long hours = millis / 3600_000L;
@@ -82,7 +63,7 @@ public final class TimeUtil {
             if (!sb.isEmpty()) sb.append(" ");
             sb.append(minutes).append("m");
         }
-        if (seconds > 0 && hours == 0) {  // Only show seconds if no hours, to keep display concise
+        if (seconds > 0 && hours == 0) {  
             if (!sb.isEmpty()) sb.append(" ");
             sb.append(seconds).append("s");
         }

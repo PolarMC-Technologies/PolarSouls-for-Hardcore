@@ -64,8 +64,9 @@ public class MainServerListener implements Listener {
             return;
         }
 
-        boolean shouldSave = false;
+        UUID uuid = player.getUniqueId();
         long now = System.currentTimeMillis();
+        boolean shouldSave = false;
 
         if (data.getLastSeen() > 0) {
             // Pause grace period while offline: extend graceUntil by offline duration

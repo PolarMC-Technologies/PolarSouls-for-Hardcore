@@ -33,6 +33,7 @@ import com.mario.polarsouls.model.PlayerData;
 public class HeadDropListener implements Listener {
 
     private static final String PERM_BYPASS = "PolarSouls.bypass";
+    private static final String SKIP_HEAD_DROP_MSG = "Skipping head drop for ";
 
     private final PolarSouls plugin;
     private final DatabaseManager db;
@@ -63,15 +64,15 @@ public class HeadDropListener implements Listener {
             Bukkit.getScheduler().runTaskLaterAsynchronously(plugin, () -> {
                 PlayerData data = db.getPlayer(player.getUniqueId());
                 if (data == null) {
-                    plugin.debug("Skipping head drop for " + player.getName() + " (no data).");
+                    plugin.debug(SKIP_HEAD_DROP_MSG + player.getName() + " (no data).");
                     return;
                 }
                 if (!data.isDead()) {
-                    plugin.debug("Skipping head drop for " + player.getName() + " (not dead).");
+                    plugin.debug(SKIP_HEAD_DROP_MSG + player.getName() + " (not dead).");
                     return;
                 }
                 if (data.isInGracePeriod(plugin.getGracePeriodMillis())) {
-                    plugin.debug("Skipping head drop for " + player.getName() + " (grace period).");
+                    plugin.debug(SKIP_HEAD_DROP_MSG + player.getName() + " (grace period).");
                     return;
                 }
                 // Drop head on main thread
