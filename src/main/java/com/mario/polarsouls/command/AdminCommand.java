@@ -204,6 +204,12 @@ public class AdminCommand implements CommandExecutor, TabCompleter {
             return;
         }
 
+        if (data.isDead()) {
+            sender.sendMessage(MessageUtil.colorize(
+                    "&c" + data.getUsername() + " is already dead."));
+            return;
+        }
+
         db.setLives(data.getUuid(), 0);
 
         plugin.getLogger().log(Level.INFO, "{0} force-killed {1}",
@@ -214,14 +220,37 @@ public class AdminCommand implements CommandExecutor, TabCompleter {
         Player target = Bukkit.getPlayer(data.getUuid());
         if (target != null && target.isOnline()) {
             Bukkit.getScheduler().runTask(plugin, () ->
-                    applySpectatorIfOnline(target));
+                    applyDeathTransition(target));
         }
     }
 
-    private static void applySpectatorIfOnline(Player target) {
-        if (target.isOnline()) {
-            target.setGameMode(GameMode.SPECTATOR);
-            target.sendMessage(MessageUtil.get("death-now-spectator"));
+    private void applyDeathTransition(Player target) {
+        if (!target.isOnline()) return;
+
+        String deathMode = plugin.getDeathMode();
+        switch (deathMode) {
+            case PolarSouls.MODE_SPECTATOR -> {
+                target.setGameMode(GameMode.SPECTATOR);
+                target.sendMessage(MessageUtil.get("death-now-spectator"));
+            }
+            case PolarSouls.MODE_HYBRID -> {
+                target.setGameMode(GameMode.SPECTATOR);
+                target.sendMessage(MessageUtil.get("death-now-spectator"));
+                Bukkit.getScheduler().runTaskLater(plugin, () -> {
+                    if (target.isOnline()) {
+                        target.sendMessage(MessageUtil.get("death-sent-to-limbo"));
+                        ServerTransferUtil.sendToLimbo(target);
+                    }
+                }, plugin.getHybridTimeoutSeconds() * 20L);
+            }
+            default -> {
+                target.sendMessage(MessageUtil.get("death-sent-to-limbo"));
+                Bukkit.getScheduler().runTaskLater(plugin, () -> {
+                    if (target.isOnline()) {
+                        ServerTransferUtil.sendToLimbo(target);
+                    }
+                }, plugin.getSendToLimboDelayTicks());
+            }
         }
     }
 
