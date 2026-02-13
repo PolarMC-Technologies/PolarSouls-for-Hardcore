@@ -193,9 +193,10 @@ Alive players can visit Limbo using `/limbo` to interact with dead teammates.
   - **Main** - Survival/gameplay server
   - **Limbo** - Purgatory server (optional if using `spectator` death mode)
 
-> **⚠️ IMPORTANT:** Do **NOT** enable `hardcore=true` in `server.properties` on either server. Leave it as `false`. The plugin manages hardcore mechanics internally - enabling Minecraft's built-in hardcore mode will break the plugin.
+> **⚠️ IMPORTANT:** Do **NOT** enable `hardcore=true` in `server.properties` on either server. Leave it as `false`. The plugin manages hardcore mechanics internally - enabling Minecraft's built-in hardcore mode will break the plugin. If you already have it on, either delete your world or search up how you edit the game files.
 
 > **💡 Cosmetic Hearts:** The plugin can display hardcore-style hearts on clients (`hardcore-hearts: true` in config) without enabling actual hardcore mode.
+> **This is inspired by https://github.com/cerus-mc/hardcore-hearts.**
 
 ## Proxy / Backend Installation
 
@@ -547,7 +548,7 @@ Variables you can use:
 - ✅ Confirm `extra-life.enabled: true`
 - ✅ Check recipe is valid (all material names must be correct)
 - ✅ Verify player doesn't have max lives already
-- ✅ Can't use while dead - player must be alive
+- ✅ Can't use while dead, player must be alive
 
 ### Hardcore hearts not showing
 - ✅ Enable in config: `hardcore-hearts: true`
@@ -576,8 +577,8 @@ PolarSouls includes automatic update checking via Modrinth:
 
 ## Credits
 
-- **Revival mechanics** inspired by [Hardcore Revive Mod](https://modrinth.com/plugin/hardcore-revive-mod)
-- **Author:** Mario
+- **Revival mechanics** "inspired" by [Hardcore Revive Mod](https://modrinth.com/plugin/hardcore-revive-mod)
+- **Author:** SSoggyTacoMan and GitHub Copilot for some bug fixes
 - **License:** GPL-3.0
 
 ## Contributing
