@@ -6,6 +6,8 @@
 
 A comprehensive hardcore lives system plugin designed for Velocity proxy networks. When players lose all their lives, they're exiled to a Limbo server until teammates revive them through various methods.
 
+> 📚 **[Read the Full Documentation →](https://ssoggytacoblud.github.io/PolarSouls-for-Hardcore/)** - Complete installation guides, configuration reference, troubleshooting, and more!
+
 ---
 
 ## Features
@@ -250,11 +252,11 @@ All messages are customizable with Minecraft color codes!
 - Both servers MUST run the same PolarSouls version
 - Update both simultaneously
 
-**Need more help?** [Open an issue on GitHub](https://github.com/SSoggyTacoBlud/PolarSouls-for-Hardcore/issues) with:
-- PolarSouls version
-- Minecraft version
-- Proxy type
-- Console errors
+**Need more help?**
+- 📚 [Full Documentation Wiki](https://ssoggytacoblud.github.io/PolarSouls-for-Hardcore/)
+- 🔧 [Troubleshooting Guide](https://ssoggytacoblud.github.io/PolarSouls-for-Hardcore/troubleshooting.html)
+- ❓ [FAQ](https://ssoggytacoblud.github.io/PolarSouls-for-Hardcore/faq.html)
+- 🐛 [Open an issue](https://github.com/SSoggyTacoBlud/PolarSouls-for-Hardcore/issues) with your version, Minecraft version, proxy type, and console errors
 
 ---
 

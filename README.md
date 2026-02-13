@@ -6,6 +6,15 @@
 
 A comprehensive hardcore lives system plugin for Minecraft 1.21.X (Spigot/Paper/Purpur) designed for Velocity proxy networks. Features a sophisticated lives-based death mechanic where players are exiled to a Limbo server upon losing all lives, with multiple revival methods to bring them back.
 
+> 📚 **[Complete Documentation Wiki →](https://ssoggytacoblud.github.io/PolarSouls-for-Hardcore/)** - Installation guides, configuration reference, commands, troubleshooting, and more!
+>
+> **Quick Links:**
+> - 🚀 [Quick Start Guide](https://ssoggytacoblud.github.io/PolarSouls-for-Hardcore/quick-start.html)
+> - 📖 [Installation Guide](https://ssoggytacoblud.github.io/PolarSouls-for-Hardcore/installation.html)
+> - ⚙️ [Configuration Reference](https://ssoggytacoblud.github.io/PolarSouls-for-Hardcore/configuration.html)
+> - 🔧 [Troubleshooting](https://ssoggytacoblud.github.io/PolarSouls-for-Hardcore/troubleshooting.html)
+> - ❓ [FAQ](https://ssoggytacoblud.github.io/PolarSouls-for-Hardcore/faq.html)
+
 ## Features Overview
 
 **Lives System** - Configurable starting lives (default: 2), with maximum cap (default: 5)
