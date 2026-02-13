@@ -128,7 +128,13 @@ Wearing a dead player's head grants **Speed II** and **Night Vision** - useful f
 
 6. **Set Limbo spawn** - Join Limbo server, stand at spawn point, run `/setlimbospawn`
 
-7. **Configure remaining options** - The `config.yml` has detailed comments explaining each setting. Customize lives, death modes, grace periods, recipes, and messages to your preference.
+7. **Configure remaining options** - The `config.yml` has detailed comments explaining each setting. Review and customize:
+   - Lives system (default lives, max cap, grace period)
+   - Death mode (hybrid/spectator/limbo)
+   - HRM features (revival structures, heads, recipes)
+   - Messages and colors
+   
+   See the **Configuration** section below for key settings. If you need help, reach out via [GitHub Issues](https://github.com/SSoggyTacoBlud/PolarSouls-for-Hardcore/issues).
 
 8. **Restart & test** - Start both servers and test the full death → Limbo → revival flow!
 
