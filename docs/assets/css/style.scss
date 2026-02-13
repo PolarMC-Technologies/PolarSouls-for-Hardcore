@@ -1,0 +1,417 @@
+---
+---
+
+@import "{{ site.theme }}";
+
+/* ========================================
+   PolarSouls Custom Documentation Styles
+   ======================================== */
+
+/* Color Variables */
+:root {
+  --primary-color: #159957;
+  --primary-dark: #0e7042;
+  --secondary-color: #155799;
+  --accent-color: #00d4ff;
+  --text-dark: #333;
+  --text-light: #606c71;
+  --bg-code: #f3f6fa;
+  --border-color: #dce6f0;
+  --success-color: #28a745;
+  --warning-color: #ffc107;
+  --danger-color: #dc3545;
+  --info-color: #17a2b8;
+}
+
+/* Typography Improvements */
+body {
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+  line-height: 1.6;
+  color: var(--text-dark);
+}
+
+.main-content {
+  max-width: 1000px;
+  margin: 0 auto;
+  padding: 2rem 6rem;
+}
+
+@media screen and (max-width: 768px) {
+  .main-content {
+    padding: 1rem 1.5rem;
+  }
+}
+
+/* Headings */
+.main-content h1,
+.main-content h2,
+.main-content h3,
+.main-content h4,
+.main-content h5,
+.main-content h6 {
+  margin-top: 2rem;
+  margin-bottom: 1rem;
+  font-weight: 600;
+  color: var(--text-dark);
+}
+
+.main-content h1 {
+  font-size: 2.5rem;
+  border-bottom: 3px solid var(--primary-color);
+  padding-bottom: 0.5rem;
+  margin-bottom: 1.5rem;
+}
+
+.main-content h2 {
+  font-size: 2rem;
+  border-bottom: 2px solid var(--border-color);
+  padding-bottom: 0.3rem;
+}
+
+.main-content h3 {
+  font-size: 1.5rem;
+  color: var(--primary-dark);
+}
+
+.main-content h4 {
+  font-size: 1.25rem;
+}
+
+/* Links */
+.main-content a {
+  color: var(--secondary-color);
+  text-decoration: none;
+  transition: color 0.3s ease;
+}
+
+.main-content a:hover {
+  color: var(--primary-color);
+  text-decoration: underline;
+}
+
+/* Code Blocks */
+.main-content pre {
+  background-color: var(--bg-code);
+  border: 1px solid var(--border-color);
+  border-radius: 6px;
+  padding: 1rem;
+  overflow-x: auto;
+  font-size: 0.9rem;
+  line-height: 1.5;
+  margin: 1rem 0;
+}
+
+.main-content code {
+  background-color: var(--bg-code);
+  border: 1px solid var(--border-color);
+  border-radius: 3px;
+  padding: 0.2rem 0.4rem;
+  font-family: 'Monaco', 'Menlo', 'Ubuntu Mono', 'Consolas', monospace;
+  font-size: 0.9em;
+  color: #e83e8c;
+}
+
+.main-content pre code {
+  background-color: transparent;
+  border: none;
+  padding: 0;
+  color: inherit;
+}
+
+/* Blockquotes */
+.main-content blockquote {
+  padding: 1rem 1.5rem;
+  margin: 1.5rem 0;
+  border-left: 4px solid var(--primary-color);
+  background-color: #f8f9fa;
+  border-radius: 0 6px 6px 0;
+}
+
+.main-content blockquote p {
+  margin-bottom: 0.5rem;
+}
+
+.main-content blockquote strong {
+  color: var(--primary-dark);
+}
+
+/* Tables */
+.main-content table {
+  width: 100%;
+  border-collapse: collapse;
+  margin: 1.5rem 0;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.main-content table thead {
+  background: linear-gradient(135deg, var(--primary-color) 0%, var(--secondary-color) 100%);
+  color: white;
+}
+
+.main-content table th {
+  padding: 0.75rem 1rem;
+  text-align: left;
+  font-weight: 600;
+  border-bottom: 2px solid var(--border-color);
+}
+
+.main-content table td {
+  padding: 0.75rem 1rem;
+  border-bottom: 1px solid var(--border-color);
+}
+
+.main-content table tbody tr:nth-child(even) {
+  background-color: #f8f9fa;
+}
+
+.main-content table tbody tr:hover {
+  background-color: #e9ecef;
+  transition: background-color 0.2s ease;
+}
+
+/* Lists */
+.main-content ul,
+.main-content ol {
+  margin: 1rem 0;
+  padding-left: 2rem;
+}
+
+.main-content li {
+  margin-bottom: 0.5rem;
+}
+
+/* Horizontal Rules */
+.main-content hr {
+  border: none;
+  border-top: 2px solid var(--border-color);
+  margin: 2rem 0;
+}
+
+/* Images */
+.main-content img {
+  max-width: 100%;
+  height: auto;
+  border-radius: 6px;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+  margin: 1rem 0;
+}
+
+/* Badges and Labels */
+.badge {
+  display: inline-block;
+  padding: 0.25rem 0.5rem;
+  font-size: 0.875rem;
+  font-weight: 600;
+  border-radius: 4px;
+  margin-right: 0.5rem;
+}
+
+.badge-success {
+  background-color: var(--success-color);
+  color: white;
+}
+
+.badge-warning {
+  background-color: var(--warning-color);
+  color: var(--text-dark);
+}
+
+.badge-danger {
+  background-color: var(--danger-color);
+  color: white;
+}
+
+.badge-info {
+  background-color: var(--info-color);
+  color: white;
+}
+
+/* Navigation Enhancement */
+.page-header {
+  background: linear-gradient(135deg, var(--primary-color) 0%, var(--secondary-color) 100%);
+  padding: 3rem 1rem;
+}
+
+.project-name {
+  margin-top: 0;
+  margin-bottom: 0.5rem;
+  font-size: 3rem;
+  font-weight: 700;
+  text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.2);
+}
+
+.project-tagline {
+  font-size: 1.25rem;
+  opacity: 0.9;
+  margin-bottom: 1rem;
+}
+
+/* Button Styles */
+.btn {
+  display: inline-block;
+  padding: 0.75rem 1.5rem;
+  margin: 0.5rem;
+  font-size: 1rem;
+  font-weight: 600;
+  text-align: center;
+  text-decoration: none;
+  border-radius: 6px;
+  transition: all 0.3s ease;
+  border: 2px solid transparent;
+}
+
+.btn-primary {
+  background-color: white;
+  color: var(--secondary-color);
+  border-color: white;
+}
+
+.btn-primary:hover {
+  background-color: transparent;
+  color: white;
+  border-color: white;
+}
+
+/* Callout Boxes */
+.callout {
+  padding: 1rem 1.5rem;
+  margin: 1.5rem 0;
+  border-radius: 6px;
+  border-left: 4px solid;
+}
+
+.callout-info {
+  background-color: #d1ecf1;
+  border-color: var(--info-color);
+}
+
+.callout-warning {
+  background-color: #fff3cd;
+  border-color: var(--warning-color);
+}
+
+.callout-danger {
+  background-color: #f8d7da;
+  border-color: var(--danger-color);
+}
+
+.callout-success {
+  background-color: #d4edda;
+  border-color: var(--success-color);
+}
+
+/* Syntax Highlighting Enhancement */
+.highlight {
+  background-color: var(--bg-code);
+  border-radius: 6px;
+  padding: 1rem;
+  margin: 1rem 0;
+}
+
+.highlight pre {
+  background-color: transparent;
+  border: none;
+  padding: 0;
+  margin: 0;
+}
+
+/* Footer Styling */
+.site-footer {
+  padding: 2rem 1rem;
+  margin-top: 3rem;
+  border-top: 2px solid var(--border-color);
+  color: var(--text-light);
+  text-align: center;
+}
+
+/* Responsive Design */
+@media screen and (max-width: 768px) {
+  .page-header {
+    padding: 2rem 1rem;
+  }
+
+  .project-name {
+    font-size: 2rem;
+  }
+
+  .project-tagline {
+    font-size: 1rem;
+  }
+
+  .main-content h1 {
+    font-size: 2rem;
+  }
+
+  .main-content h2 {
+    font-size: 1.5rem;
+  }
+
+  .main-content table {
+    font-size: 0.9rem;
+  }
+
+  .main-content table th,
+  .main-content table td {
+    padding: 0.5rem;
+  }
+}
+
+/* Print Styles */
+@media print {
+  .page-header,
+  .site-footer {
+    display: none;
+  }
+
+  .main-content {
+    max-width: 100%;
+    padding: 0;
+  }
+
+  .main-content a {
+    color: var(--text-dark);
+    text-decoration: underline;
+  }
+
+  .main-content pre {
+    border: 1px solid var(--text-dark);
+  }
+}
+
+/* Accessibility Improvements */
+*:focus {
+  outline: 2px solid var(--primary-color);
+  outline-offset: 2px;
+}
+
+/* Skip to content link */
+.skip-to-content {
+  position: absolute;
+  top: -40px;
+  left: 0;
+  background: var(--primary-color);
+  color: white;
+  padding: 8px;
+  text-decoration: none;
+  z-index: 100;
+}
+
+.skip-to-content:focus {
+  top: 0;
+}
+
+/* Smooth Scrolling */
+html {
+  scroll-behavior: smooth;
+}
+
+/* Selection Color */
+::selection {
+  background-color: var(--accent-color);
+  color: white;
+}
+
+::-moz-selection {
+  background-color: var(--accent-color);
+  color: white;
+}
