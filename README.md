@@ -1,6 +1,8 @@
 # PolarSouls
 
-**Version 1.3.6**
+![PolarSouls Banner](https://cdn.modrinth.com/data/Pb03qu6T/images/70ce5f45786d4716bb6d47d242ee3238a2b4ec4a.jpeg)
+
+**Version 1.3.6** | [Modrinth](https://modrinth.com/plugin/polarsouls) | [GitHub](https://github.com/SSoggyTacoBlud/PolarSouls-for-Hardcore)
 
 A comprehensive hardcore lives system plugin for Minecraft 1.21.X (Spigot/Paper/Purpur) designed for Velocity proxy networks. Features a sophisticated lives-based death mechanic where players are exiled to a Limbo server upon losing all lives, with multiple revival methods to bring them back.
 
@@ -309,6 +311,8 @@ Adjust settings in `config.yml` to match your server's needs:
 - Grace period duration
 - Extra Life recipe
 - Messages and colors
+
+The `config.yml` includes detailed comments explaining each setting. If you need help, feel free to reach out via [GitHub Issues](https://github.com/SSoggyTacoBlud/PolarSouls-for-Hardcore/issues).
 
 ## Configuration
 
