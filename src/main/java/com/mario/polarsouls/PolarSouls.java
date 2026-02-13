@@ -1,5 +1,7 @@
 package com.mario.polarsouls;
 
+import java.util.HashMap;
+import java.util.Map;
 import java.util.Objects;
 import java.util.Set;
 import java.util.UUID;
@@ -11,6 +13,9 @@ import org.bukkit.Location;
 import org.bukkit.World;
 import org.bukkit.command.PluginCommand;
 import org.bukkit.configuration.file.FileConfiguration;
+import org.bukkit.event.EventHandler;
+import org.bukkit.event.Listener;
+import org.bukkit.event.world.WorldLoadEvent;
 import org.bukkit.plugin.java.JavaPlugin;
 
 import com.mario.polarsouls.command.AdminCommand;
@@ -35,7 +40,7 @@ import com.mario.polarsouls.util.TimeUtil;
 import com.mario.polarsouls.util.UpdateChecker;
 
 @SuppressWarnings("java:S6548")
-public final class PolarSouls extends JavaPlugin {
+public final class PolarSouls extends JavaPlugin implements Listener {
 
     private static PolarSouls instance;
 
@@ -80,7 +85,7 @@ public final class PolarSouls extends JavaPlugin {
     private boolean hrmHeadEffects;
     private boolean hrmReviveSkullRecipe;
     private boolean hardcoreHearts;
-    private boolean wasOriginallyHardcore;
+    private final Map<String, Boolean> originalWorldHardcore = new HashMap<>();
     private ReviveSkullManager reviveSkullManager;
     private ExtraLifeManager extraLifeManager;
 
@@ -92,11 +97,14 @@ public final class PolarSouls extends JavaPlugin {
         setInstance(this);
         saveDefaultConfig();
 
-        wasOriginallyHardcore = getServer().isHardcore();
+        for (World w : getServer().getWorlds()) {
+            originalWorldHardcore.put(w.getName(), w.isHardcore());
+        }
 
         loadConfigValues();
 
         getServer().getMessenger().registerOutgoingPluginChannel(this, "BungeeCord");
+        getServer().getPluginManager().registerEvents(this, this);
 
         databaseManager = new DatabaseManager(this);
         if (!databaseManager.initialize()) {
@@ -155,7 +163,10 @@ public final class PolarSouls extends JavaPlugin {
         getServer().getMessenger().unregisterOutgoingPluginChannel(this);
 
         if (hardcoreHearts) {
-            getServer().setHardcore(wasOriginallyHardcore);
+            for (World w : getServer().getWorlds()) {
+                boolean original = originalWorldHardcore.getOrDefault(w.getName(), false);
+                w.setHardcore(original);
+            }
         }
 
         if (reviveSkullManager != null) {
@@ -283,7 +294,10 @@ public final class PolarSouls extends JavaPlugin {
         extraLifeEnabled    = cfg.getBoolean("extra-life.enabled", true);
         hardcoreHearts      = cfg.getBoolean("hardcore-hearts", true);
 
-        getServer().setHardcore(hardcoreHearts || wasOriginallyHardcore);
+        for (World w : getServer().getWorlds()) {
+            boolean original = originalWorldHardcore.getOrDefault(w.getName(), false);
+            w.setHardcore(hardcoreHearts || original);
+        }
 
         hrmEnabled            = cfg.getBoolean("hrm.enabled", true);
         hrmDropHeads          = cfg.getBoolean("hrm.drop-heads", true);
@@ -367,6 +381,15 @@ public final class PolarSouls extends JavaPlugin {
         cfg.set(CFG_SPAWN_YAW, (double) loc.getYaw());
         cfg.set(CFG_SPAWN_PITCH, (double) loc.getPitch());
         saveConfig();
+    }
+
+    @EventHandler
+    public void onWorldLoad(WorldLoadEvent event) {
+        World w = event.getWorld();
+        originalWorldHardcore.putIfAbsent(w.getName(), w.isHardcore());
+        if (hardcoreHearts) {
+            w.setHardcore(true);
+        }
     }
 
     public void debug(String message) {
