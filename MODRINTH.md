@@ -277,9 +277,9 @@ PolarSouls includes automatic update checking via Modrinth:
 ## Credits
 
 - Revival mechanics inspired by [Hardcore Revive Mod](https://modrinth.com/plugin/hardcore-revive-mod)
-- Author: Mario
+- Author: SSoggyTacoMan
 - GitHub: [SSoggyTacoBlud/PolarSouls-for-Hardcore](https://github.com/SSoggyTacoBlud/PolarSouls-for-Hardcore)
 
 ---
 
-**Enjoying PolarSouls?** Leave a review on Modrinth and star the [GitHub repo](https://github.com/SSoggyTacoBlud/PolarSouls-for-Hardcore)!
+**Enjoying PolarSouls?** Heart it on Modrinth and star the [GitHub repo](https://github.com/SSoggyTacoBlud/PolarSouls-for-Hardcore)!
