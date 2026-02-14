@@ -46,8 +46,8 @@ public class MainReviveCheckTask extends BukkitRunnable {
         List<UUID> list = new ArrayList<>();
         for (Player player : Bukkit.getOnlinePlayers()) {
             if (player.getGameMode() == GameMode.SPECTATOR
-                    && !player.hasPermission(PERM_BYPASS)) {
-                // Add all spectators without DB query - we'll check death status in findRevivedPlayers
+                    && !player.hasPermission(PERM_BYPASS)
+                    && plugin.getDatabaseManager().isPlayerDead(player.getUniqueId())) {
                 list.add(player.getUniqueId());
             }
         }
@@ -57,7 +57,7 @@ public class MainReviveCheckTask extends BukkitRunnable {
     private List<UUID> findRevivedPlayers(List<UUID> spectators) {
         List<UUID> revived = new ArrayList<>();
         for (UUID uuid : spectators) {
-            // Single DB query per spectator - checks if they're no longer dead
+            // Check if dead spectator is no longer dead (i.e., revived)
             if (!plugin.getDatabaseManager().isPlayerDead(uuid)) {
                 revived.add(uuid);
                 // Avoid string concatenation overhead unless debug is enabled
