@@ -15,7 +15,9 @@ import org.bukkit.command.TabCompleter;
 import com.mario.polarsouls.PolarSouls;
 import com.mario.polarsouls.database.DatabaseManager;
 import com.mario.polarsouls.model.PlayerData;
+import com.mario.polarsouls.util.CommandUtil;
 import com.mario.polarsouls.util.MessageUtil;
+import com.mario.polarsouls.util.TabCompleteUtil;
 
 public class SetLivesCommand implements CommandExecutor, TabCompleter {
 
@@ -29,8 +31,7 @@ public class SetLivesCommand implements CommandExecutor, TabCompleter {
 
     @Override
     public boolean onCommand(CommandSender sender, Command command, String label, String[] args) {
-        if (!sender.hasPermission("polarsouls.admin")) {
-            sender.sendMessage(MessageUtil.colorize("&cYou don't have permission to use this command."));
+        if (!CommandUtil.checkPermission(sender, "polarsouls.admin")) {
             return true;
         }
 
@@ -85,14 +86,7 @@ public class SetLivesCommand implements CommandExecutor, TabCompleter {
     public List<String> onTabComplete(CommandSender sender, Command command,
                                        String alias, String[] args) {
         if (args.length == 1) {
-            List<String> suggestions = new ArrayList<>();
-            String partial = args[0].toLowerCase();
-            for (var player : Bukkit.getOnlinePlayers()) {
-                if (player.getName().toLowerCase().startsWith(partial)) {
-                    suggestions.add(player.getName());
-                }
-            }
-            return suggestions;
+            return TabCompleteUtil.getOnlinePlayerNames(args[0]);
         }
         if (args.length == 2) {
             return Arrays.asList("1", "2", "3", "5");

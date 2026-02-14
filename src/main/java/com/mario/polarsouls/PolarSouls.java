@@ -101,8 +101,8 @@ public final class PolarSouls extends JavaPlugin implements Listener {
         setInstance(this);
         saveDefaultConfig();
 
-        for (World w : getServer().getWorlds()) {
-            originalWorldHardcore.put(w.getName(), w.isHardcore());
+        for (World world : getServer().getWorlds()) {
+            originalWorldHardcore.put(world.getName(), world.isHardcore());
         }
 
         loadConfigValues();
@@ -167,9 +167,9 @@ public final class PolarSouls extends JavaPlugin implements Listener {
         getServer().getMessenger().unregisterOutgoingPluginChannel(this);
 
         if (hardcoreHearts) {
-            for (World w : getServer().getWorlds()) {
-                boolean original = originalWorldHardcore.getOrDefault(w.getName(), false);
-                w.setHardcore(original);
+            for (World world : getServer().getWorlds()) {
+                boolean original = originalWorldHardcore.getOrDefault(world.getName(), false);
+                world.setHardcore(original);
             }
         }
 
@@ -298,9 +298,9 @@ public final class PolarSouls extends JavaPlugin implements Listener {
         extraLifeEnabled    = cfg.getBoolean("extra-life.enabled", true);
         hardcoreHearts      = cfg.getBoolean("hardcore-hearts", true);
 
-        for (World w : getServer().getWorlds()) {
-            boolean original = originalWorldHardcore.getOrDefault(w.getName(), false);
-            w.setHardcore(hardcoreHearts || original);
+        for (World world : getServer().getWorlds()) {
+            boolean original = originalWorldHardcore.getOrDefault(world.getName(), false);
+            world.setHardcore(hardcoreHearts || original);
         }
 
         hrmEnabled            = cfg.getBoolean("hrm.enabled", true);
@@ -360,9 +360,9 @@ public final class PolarSouls extends JavaPlugin implements Listener {
 
         if (world == null) { // world not loaded yet, defer
             Bukkit.getScheduler().runTaskLater(this, () -> {
-                World w = Bukkit.getWorld(resolvedWorldName);
-                if (w != null) {
-                    limboSpawn = buildSpawnLocation(w, cfg);
+                World limboWorld = Bukkit.getWorld(resolvedWorldName);
+                if (limboWorld != null) {
+                    limboSpawn = buildSpawnLocation(limboWorld, cfg);
                     debug("Limbo spawn loaded: " + limboSpawn);
                 } else {
                     getLogger().log(Level.WARNING, "Limbo spawn world ''{0}'' not found!", resolvedWorldName);
@@ -402,10 +402,10 @@ public final class PolarSouls extends JavaPlugin implements Listener {
 
     @EventHandler
     public void onWorldLoad(WorldLoadEvent event) {
-        World w = event.getWorld();
-        originalWorldHardcore.putIfAbsent(w.getName(), w.isHardcore());
+        World world = event.getWorld();
+        originalWorldHardcore.putIfAbsent(world.getName(), world.isHardcore());
         if (hardcoreHearts) {
-            w.setHardcore(true);
+            world.setHardcore(true);
         }
     }
 

@@ -17,8 +17,11 @@ import com.mario.polarsouls.PolarSouls;
 import com.mario.polarsouls.database.DatabaseManager;
 import com.mario.polarsouls.hrm.HeadDropListener;
 import com.mario.polarsouls.model.PlayerData;
+import com.mario.polarsouls.util.CommandUtil;
 import com.mario.polarsouls.util.MessageUtil;
+import com.mario.polarsouls.util.PlayerRevivalUtil;
 import com.mario.polarsouls.util.ServerTransferUtil;
+import com.mario.polarsouls.util.TabCompleteUtil;
 
 public class ReviveCommand implements CommandExecutor, TabCompleter {
 
@@ -34,8 +37,7 @@ public class ReviveCommand implements CommandExecutor, TabCompleter {
 
     @Override
     public boolean onCommand(CommandSender sender, Command command, String label, String[] args) {
-        if (!sender.hasPermission("polarsouls.revive")) {
-            sender.sendMessage(MessageUtil.colorize("&cYou don't have permission to revive players."));
+        if (!CommandUtil.checkPermission(sender, "polarsouls.revive", "&cYou don't have permission to revive players.")) {
             return true;
         }
 
@@ -85,39 +87,14 @@ public class ReviveCommand implements CommandExecutor, TabCompleter {
     }
 
     private void restoreOnlineSpectator(PlayerData data) {
-        Player target = Bukkit.getPlayer(data.getUuid());
-        if (target != null && target.isOnline()
-                && target.getGameMode() != GameMode.SURVIVAL) {
-            Bukkit.getScheduler().runTask(plugin, () -> {
-                if (target.isOnline()) {
-                    plugin.getLimboDeadPlayers().remove(target.getUniqueId());
-                    target.setGameMode(GameMode.SURVIVAL);
-                    target.sendMessage(MessageUtil.get("revive-success"));
-
-                    if (plugin.isLimboServer()) {
-                        Bukkit.getScheduler().runTaskLater(plugin, () -> {
-                            if (target.isOnline()) {
-                                ServerTransferUtil.sendToMain(target);
-                            }
-                        }, 40L);
-                    }
-                }
-            });
-        }
+        PlayerRevivalUtil.restoreOnlineSpectator(plugin, data);
     }
 
     @Override
     public List<String> onTabComplete(CommandSender sender, Command command,
                                        String alias, String[] args) {
         if (args.length == 1) {
-            List<String> suggestions = new ArrayList<>();
-            String partial = args[0].toLowerCase();
-            for (var player : Bukkit.getOnlinePlayers()) {
-                if (player.getName().toLowerCase().startsWith(partial)) {
-                    suggestions.add(player.getName());
-                }
-            }
-            return suggestions;
+            return TabCompleteUtil.getOnlinePlayerNames(args[0]);
         }
         return Collections.emptyList();
     }

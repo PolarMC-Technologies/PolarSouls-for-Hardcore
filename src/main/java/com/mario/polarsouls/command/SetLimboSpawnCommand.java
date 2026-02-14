@@ -10,6 +10,7 @@ import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 
 import com.mario.polarsouls.PolarSouls;
+import com.mario.polarsouls.util.CommandUtil;
 import com.mario.polarsouls.util.MessageUtil;
 
 public class SetLimboSpawnCommand implements CommandExecutor {
@@ -25,8 +26,7 @@ public class SetLimboSpawnCommand implements CommandExecutor {
         if (sender == null) {
             return false;
         }
-        if (!sender.hasPermission("polarsouls.admin")) {
-            sender.sendMessage(MessageUtil.colorize("&cYou don't have permission to use this command."));
+        if (!CommandUtil.checkPermission(sender, "polarsouls.admin")) {
             return true;
         }
 

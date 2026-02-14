@@ -121,33 +121,31 @@ public class DatabaseManager {
     }
 
     private void ensureLastSeenColumn(Connection conn) {
-        String sql = "ALTER TABLE " + tableName
-                + " ADD COLUMN last_seen BIGINT NOT NULL DEFAULT 0";
-        try (Statement stmt = conn.createStatement()) {
-            stmt.executeUpdate(sql);
-            plugin.debug("Added last_seen column to '" + tableName + "'.");
-        } catch (SQLException e) {
-            String sqlState = e.getSQLState();
-            boolean duplicateColumn = e.getErrorCode() == MYSQL_DUPLICATE_COLUMN
-                    || "42S21".equals(sqlState);
-            if (!duplicateColumn) {
-                plugin.getLogger().log(Level.WARNING, "Failed to ensure last_seen column", e);
-            }
-        }
+        ensureColumn(conn, "last_seen", "BIGINT NOT NULL DEFAULT 0");
     }
 
     private void ensureGraceUntilColumn(Connection conn) {
-        String sql = "ALTER TABLE " + tableName
-                + " ADD COLUMN grace_until BIGINT NOT NULL DEFAULT 0";
+        ensureColumn(conn, "grace_until", "BIGINT NOT NULL DEFAULT 0");
+    }
+
+    /**
+     * Ensure a column exists in the table. If it already exists, the error is silently ignored.
+     *
+     * @param conn       Database connection
+     * @param columnName Name of the column to add
+     * @param definition SQL definition of the column (e.g., "BIGINT NOT NULL DEFAULT 0")
+     */
+    private void ensureColumn(Connection conn, String columnName, String definition) {
+        String sql = "ALTER TABLE " + tableName + " ADD COLUMN " + columnName + " " + definition;
         try (Statement stmt = conn.createStatement()) {
             stmt.executeUpdate(sql);
-            plugin.debug("Added grace_until column to '" + tableName + "'.");
+            plugin.debug("Added " + columnName + " column to '" + tableName + "'.");
         } catch (SQLException e) {
             String sqlState = e.getSQLState();
             boolean duplicateColumn = e.getErrorCode() == MYSQL_DUPLICATE_COLUMN
                     || "42S21".equals(sqlState);
             if (!duplicateColumn) {
-                plugin.getLogger().log(Level.WARNING, "Failed to ensure grace_until column", e);
+                plugin.getLogger().log(Level.WARNING, "Failed to ensure " + columnName + " column", e);
             }
         }
     }

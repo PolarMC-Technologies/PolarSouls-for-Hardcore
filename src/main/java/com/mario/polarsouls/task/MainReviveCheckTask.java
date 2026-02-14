@@ -43,15 +43,15 @@ public class MainReviveCheckTask extends BukkitRunnable {
     }
 
     private List<UUID> collectDeadSpectators() {
-        List<UUID> list = new ArrayList<>();
+        List<UUID> deadSpectatorUuids = new ArrayList<>();
         for (Player player : Bukkit.getOnlinePlayers()) {
             if (player.getGameMode() == GameMode.SPECTATOR
                     && !player.hasPermission(PERM_BYPASS)
                     && plugin.getDatabaseManager().isPlayerDead(player.getUniqueId())) {
-                list.add(player.getUniqueId());
+                deadSpectatorUuids.add(player.getUniqueId());
             }
         }
-        return list;
+        return deadSpectatorUuids;
     }
 
     private List<UUID> findRevivedPlayers(List<UUID> spectators) {

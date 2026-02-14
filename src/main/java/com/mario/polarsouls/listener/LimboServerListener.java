@@ -112,14 +112,14 @@ public class LimboServerListener implements Listener {
         if (world == null) return safe;
 
         int maxY = world.getMaxHeight();
-        int x = safe.getBlockX();
-        int z = safe.getBlockZ();
+        int safeBlockX = safe.getBlockX();
+        int safeBlockZ = safe.getBlockZ();
         int startY = safe.getBlockY();
 
-        for (int y = startY; y < maxY - 1; y++) {
-            if (world.getBlockAt(x, y, z).getType().isAir()
-                    && world.getBlockAt(x, y + 1, z).getType().isAir()) {
-                safe.setY(y);
+        for (int blockY = startY; blockY < maxY - 1; blockY++) {
+            if (world.getBlockAt(safeBlockX, blockY, safeBlockZ).getType().isAir()
+                    && world.getBlockAt(safeBlockX, blockY + 1, safeBlockZ).getType().isAir()) {
+                safe.setY(blockY);
                 return safe;
             }
         }
