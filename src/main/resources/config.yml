@@ -336,7 +336,7 @@ messages:
 
   # --- Limbo Messages ---
   # Welcome message shown when player enters Limbo
-  limbo-welcome: "&4&l═══════════════════\n&c&l    ☠ L I M B O ☠\n&4&l═══════════════════\n&7You are dead. Your teammates can\n&7revive you using the &erevival ritual&7,\n&7an admin with &e/psadmin revive <player>&7, or &e/revive&7.\n&7You will be sent back automatically.\n&4&l═══════════════════"
+  limbo-welcome: "&4&l═══════════════════\n&c&l    ☠ L I M B O ☠\n&4&l═══════════════════\n&7You are dead. Your teammates can\n&7revive you using the &erevival ritual&7,\n&7an admin with &e/psadmin revive <player>&7. \n&7You will be sent back automatically.\n&4&l═══════════════════"
   
   # Message sent to dead player trying to leave Limbo
   limbo-cannot-leave: "&cYou are trapped in Limbo. Only revival can free you."
