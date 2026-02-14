@@ -35,9 +35,14 @@ public class MainServerListener implements Listener {
 
     private final PolarSouls plugin;
     private final DatabaseManager db;
+    
+    // Cache frequently accessed config values to avoid repeated lookups
+    private String cachedDeathMode;
+    private int cachedHybridTimeout;
+    
     private final Set<UUID> pendingLimbo = ConcurrentHashMap.newKeySet();
     private final Set<UUID> pendingSurvivalRestore = ConcurrentHashMap.newKeySet();
-    private final Set<UUID> expectedGamemodeChanges = new HashSet<>();
+    private final Set<UUID> expectedGamemodeChanges = ConcurrentHashMap.newKeySet();
     private final Set<UUID> hybridWindowUsed = ConcurrentHashMap.newKeySet();
     private final Map<UUID, BukkitTask> hybridPendingTransfers = new HashMap<>();
     private final Map<UUID, Long> reviveCooldowns = new ConcurrentHashMap<>();
@@ -45,13 +50,25 @@ public class MainServerListener implements Listener {
     public MainServerListener(PolarSouls plugin) {
         this.plugin = plugin;
         this.db = plugin.getDatabaseManager();
+        // Initialize cached config values
+        refreshConfigCache();
+    }
+    
+    /**
+     * Refresh cached config values (call on config reload)
+     */
+    public void refreshConfigCache() {
+        this.cachedDeathMode = plugin.getDeathMode();
+        this.cachedHybridTimeout = plugin.getHybridTimeoutSeconds();
     }
 
     @EventHandler(priority = EventPriority.HIGHEST)
     public void onPlayerJoin(PlayerJoinEvent event) {
         Player player = event.getPlayer();
         if (player.hasPermission(PERM_BYPASS)) {
-            plugin.debug(player.getName() + " has bypass permission, skipping checks.");
+            if (plugin.isDebugMode()) {
+                plugin.debug(player.getName() + " has bypass permission, skipping checks.");
+            }
             return;
         }
         Bukkit.getScheduler().runTaskAsynchronously(plugin, () -> handleJoinAsync(player));
@@ -102,7 +119,9 @@ public class MainServerListener implements Listener {
             Bukkit.getScheduler().runTask(plugin, () -> {
                 if (!player.isOnline()) return;
                 if (player.getGameMode() != GameMode.SURVIVAL) {
-                    plugin.debug(player.getName() + " returned alive, restoring to survival.");
+                    if (plugin.isDebugMode()) {
+                        plugin.debug(player.getName() + " returned alive, restoring to survival.");
+                    }
                     grantReviveCooldown(uuid);
                     hybridWindowUsed.remove(uuid);
                     expectedGamemodeChanges.add(uuid);
@@ -119,7 +138,10 @@ public class MainServerListener implements Listener {
         PlayerData data = PlayerData.createNew(player.getUniqueId(), player.getName(),
                 plugin.getDefaultLives(), plugin.getGracePeriodMillis());
         db.savePlayer(data);
-        plugin.debug("Created new player record for " + player.getName());
+        
+        if (plugin.isDebugMode()) {
+            plugin.debug("Created new player record for " + player.getName());
+        }
 
         if (data.getGraceUntil() > 0) {
             final PlayerData finalData = data;
@@ -134,7 +156,7 @@ public class MainServerListener implements Listener {
     }
 
     private void redirectToLimbo(Player player) {
-        String deathMode = plugin.getDeathMode();
+        String deathMode = cachedDeathMode; // Use cached value
         plugin.debug(player.getName() + " is dead (mode: " + deathMode + ")");
 
         Bukkit.getScheduler().runTask(plugin, () -> {
@@ -178,7 +200,9 @@ public class MainServerListener implements Listener {
         // Skip if still in post-revive immunity
         Long cooldownExpiry = reviveCooldowns.get(uuid);
         if (cooldownExpiry != null && System.currentTimeMillis() < cooldownExpiry) {
-            plugin.debug(player.getName() + " death ignored (revive cooldown active)");
+            if (plugin.isDebugMode()) {
+                plugin.debug(player.getName() + " death ignored (revive cooldown active)");
+            }
             pendingSurvivalRestore.add(uuid);
             Bukkit.getScheduler().runTask(plugin, () -> {
                 if (player.isOnline()) {
@@ -220,8 +244,11 @@ public class MainServerListener implements Listener {
 
         int remainingLives = data.decrementLife();
         db.savePlayer(data);
-        plugin.debug(player.getName() + " died. Lives remaining: " + remainingLives
-                + ", isDead: " + data.isDead());
+        
+        if (plugin.isDebugMode()) {
+            plugin.debug(player.getName() + " died. Lives remaining: " + remainingLives
+                    + ", isDead: " + data.isDead());
+        }
 
         if (data.isDead()) {
             // UUID stays in pendingLimbo
@@ -267,7 +294,7 @@ public class MainServerListener implements Listener {
     }
 
     private void handleFinalDeath(Player player, UUID uuid) {
-        String deathMode = plugin.getDeathMode();
+        String deathMode = cachedDeathMode; // Use cached value
 
         // send death message only, gamemode change sent to onPlayerRespawn
         Bukkit.getScheduler().runTask(plugin, () -> {
@@ -281,7 +308,7 @@ public class MainServerListener implements Listener {
                     player.sendMessage(MessageUtil.get(MSG_NOW_SPECTATOR));
                 case PolarSouls.MODE_HYBRID ->
                     player.sendMessage(MessageUtil.get("death-hybrid-warning",
-                            "timeout", formatTime(plugin.getHybridTimeoutSeconds())));
+                            "timeout", formatTime(cachedHybridTimeout))); // Use cached value
                 default ->
                     player.sendMessage(MessageUtil.get(MSG_SENT_TO_LIMBO));
             }
@@ -291,14 +318,14 @@ public class MainServerListener implements Listener {
     private void applyHybridOnJoin(Player player, UUID uuid) {
         hybridWindowUsed.add(uuid);
         player.sendMessage(MessageUtil.get("death-hybrid-warning",
-                "timeout", formatTime(plugin.getHybridTimeoutSeconds())));
+                "timeout", formatTime(cachedHybridTimeout))); // Use cached value
         expectedGamemodeChanges.add(uuid);
         player.setGameMode(GameMode.SPECTATOR);
         scheduleHybridTimeout(player, uuid);
     }
 
     private void scheduleHybridTimeout(Player player, UUID uuid) {
-        int timeoutSeconds = plugin.getHybridTimeoutSeconds();
+        int timeoutSeconds = cachedHybridTimeout; // Use cached value
         int delayTicks = timeoutSeconds * 20;
         BukkitTask task = Bukkit.getScheduler().runTaskLater(plugin, () -> {
             hybridPendingTransfers.remove(uuid);
@@ -342,7 +369,7 @@ public class MainServerListener implements Listener {
         // only handle players who died their final actual death
         if (!pendingLimbo.remove(uuid)) return;
 
-        String deathMode = plugin.getDeathMode();
+        String deathMode = cachedDeathMode; // Use cached value
 
         // 1 tick delay so client doesn lag behind
         Bukkit.getScheduler().runTaskLater(plugin, () -> {
@@ -378,7 +405,7 @@ public class MainServerListener implements Listener {
     @EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)
     public void onGameModeChange(PlayerGameModeChangeEvent event) {
         // detect external SPECTATOR->SURVIVAL change (HRM or other plugin revive)
-        String deathMode = plugin.getDeathMode();
+        String deathMode = cachedDeathMode; // Use cached value
         boolean shouldDetect = !PolarSouls.MODE_LIMBO.equals(deathMode) || plugin.isDetectHrmRevive();
         if (!shouldDetect) return;
 

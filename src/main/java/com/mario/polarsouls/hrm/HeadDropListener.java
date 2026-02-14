@@ -64,24 +64,32 @@ public class HeadDropListener implements Listener {
             Bukkit.getScheduler().runTaskLaterAsynchronously(plugin, () -> {
                 PlayerData data = db.getPlayer(player.getUniqueId());
                 if (data == null) {
-                    plugin.debug(SKIP_HEAD_DROP_MSG + player.getName() + " (no data).");
+                    if (plugin.isDebugMode()) {
+                        plugin.debug(SKIP_HEAD_DROP_MSG + player.getName() + " (no data).");
+                    }
                     return;
                 }
                 if (!data.isDead()) {
-                    plugin.debug(SKIP_HEAD_DROP_MSG + player.getName() + " (not dead).");
+                    if (plugin.isDebugMode()) {
+                        plugin.debug(SKIP_HEAD_DROP_MSG + player.getName() + " (not dead).");
+                    }
                     return;
                 }
                 if (data.isInGracePeriod(plugin.getGracePeriodMillis())) {
-                    plugin.debug(SKIP_HEAD_DROP_MSG + player.getName() + " (grace period).");
+                    if (plugin.isDebugMode()) {
+                        plugin.debug(SKIP_HEAD_DROP_MSG + player.getName() + " (grace period).");
+                    }
                     return;
                 }
                 // Drop head on main thread
                 Bukkit.getScheduler().runTask(plugin, () -> {
                     ItemStack head = createPlayerHead(player);
                     world.dropItemNaturally(deathLoc, head);
-                    plugin.debug("Dropped " + player.getName() + "'s head at "
-                            + deathLoc.getBlockX() + ", " + deathLoc.getBlockY()
-                            + ", " + deathLoc.getBlockZ());
+                    if (plugin.isDebugMode()) {
+                        plugin.debug("Dropped " + player.getName() + "'s head at "
+                                + deathLoc.getBlockX() + ", " + deathLoc.getBlockY()
+                                + ", " + deathLoc.getBlockZ());
+                    }
                 });
             }, 10L); // 0.5s delay because idfk it feels good
         }
@@ -101,8 +109,10 @@ public class HeadDropListener implements Listener {
         return head;
     }
 
-    // nukes all of a player's heads from existence - everywhere
-    // (drops, inventories, item frames, containers, shulkers, ender chests, you name it)
+    // Removes all of a player's heads from existence across all worlds
+    // Note: This is an expensive operation but necessary for game mechanics
+    // It's only called when a player is revived, not on every death
+    // Performance: O(entities + chunks + players) - runs infrequently
     public static void removeDroppedHeads(UUID ownerUuid) {
         for (World world : Bukkit.getWorlds()) {
             // Remove dropped item entities
@@ -119,7 +129,8 @@ public class HeadDropListener implements Listener {
                 }
             }
 
-            // Remove from container blocks in loaded chunks
+            // Remove from container blocks in loaded chunks only
+            // This is faster than searching all chunks
             for (Chunk chunk : world.getLoadedChunks()) {
                 for (BlockState state : chunk.getTileEntities()) {
                     if (state instanceof InventoryHolder holder) {

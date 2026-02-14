@@ -30,7 +30,10 @@ public class MainReviveCheckTask extends BukkitRunnable {
         List<UUID> spectators = collectDeadSpectators();
         if (spectators.isEmpty()) return;
 
-        plugin.debug("Main revive check: scanning " + spectators.size() + " spectator(s)...");
+        // Avoid string concatenation overhead unless debug is enabled
+        if (plugin.isDebugMode()) {
+            plugin.debug("Main revive check: scanning " + spectators.size() + " spectator(s)...");
+        }
 
         List<UUID> revived = findRevivedPlayers(spectators);
 
@@ -54,9 +57,13 @@ public class MainReviveCheckTask extends BukkitRunnable {
     private List<UUID> findRevivedPlayers(List<UUID> spectators) {
         List<UUID> revived = new ArrayList<>();
         for (UUID uuid : spectators) {
+            // Check if dead spectator is no longer dead (i.e., revived)
             if (!plugin.getDatabaseManager().isPlayerDead(uuid)) {
                 revived.add(uuid);
-                plugin.debug("Spectator " + uuid + " is no longer dead in DB, restoring...");
+                // Avoid string concatenation overhead unless debug is enabled
+                if (plugin.isDebugMode()) {
+                    plugin.debug("Spectator " + uuid + " is no longer dead in DB, restoring...");
+                }
             }
         }
         return revived;

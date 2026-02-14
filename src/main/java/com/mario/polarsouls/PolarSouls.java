@@ -47,6 +47,10 @@ public final class PolarSouls extends JavaPlugin implements Listener {
     private DatabaseManager databaseManager;
     private boolean isLimboServer;
     private boolean debugMode;
+    
+    // Store listeners to call refresh methods on config reload
+    private MainServerListener mainServerListener;
+    private LimboServerListener limboServerListener;
 
     private String mainServerName;
     private String limboServerName;
@@ -190,8 +194,8 @@ public final class PolarSouls extends JavaPlugin implements Listener {
 
     private void enableMainMode() {
         getLogger().info("Registering MAIN server listeners...");
-        getServer().getPluginManager().registerEvents(
-                new MainServerListener(this), this);
+        mainServerListener = new MainServerListener(this);
+        getServer().getPluginManager().registerEvents(mainServerListener, this);
 
         int intervalSeconds = getConfig().getInt("limbo.check-interval-seconds", 3);
         int intervalTicks = intervalSeconds * 20;
@@ -229,8 +233,8 @@ public final class PolarSouls extends JavaPlugin implements Listener {
 
     private void enableLimboMode() {
         getLogger().info("Registering LIMBO server listeners and tasks...");
-        getServer().getPluginManager().registerEvents(
-                new LimboServerListener(this), this);
+        limboServerListener = new LimboServerListener(this);
+        getServer().getPluginManager().registerEvents(limboServerListener, this);
 
         int intervalSeconds = getConfig().getInt("limbo.check-interval-seconds", 3);
         int intervalTicks = intervalSeconds * 20;
@@ -312,6 +316,14 @@ public final class PolarSouls extends JavaPlugin implements Listener {
         }
 
         MessageUtil.loadMessages(cfg);
+        
+        // Refresh cached config values in listeners after config reload
+        if (mainServerListener != null) {
+            mainServerListener.refreshConfigCache();
+        }
+        if (limboServerListener != null) {
+            limboServerListener.refreshLimboSpawnCache();
+        }
     }
 
     private long loadGracePeriod(FileConfiguration cfg) {
@@ -381,6 +393,11 @@ public final class PolarSouls extends JavaPlugin implements Listener {
         cfg.set(CFG_SPAWN_YAW, (double) loc.getYaw());
         cfg.set(CFG_SPAWN_PITCH, (double) loc.getPitch());
         saveConfig();
+        
+        // Refresh cached limbo spawn in listener
+        if (limboServerListener != null) {
+            limboServerListener.refreshLimboSpawnCache();
+        }
     }
 
     @EventHandler
@@ -396,6 +413,10 @@ public final class PolarSouls extends JavaPlugin implements Listener {
         if (debugMode && getLogger().isLoggable(Level.INFO)) {
             getLogger().log(Level.INFO, "[DEBUG] {0}", message);
         }
+    }
+
+    public boolean isDebugMode() {
+        return debugMode;
     }
 
     public static PolarSouls getInstance() {
