@@ -122,7 +122,7 @@ public class HeadDropListener implements Listener {
             
             // Remove dropped item entities (with safety limit)
             for (Item itemEntity : world.getEntitiesByClass(Item.class)) {
-                if (++entityCount > maxEntitiesPerWorld) break; // Prevent infinite loops
+                if (++entityCount > maxEntitiesPerWorld) break; // Safety limit to prevent lag on servers with many entities
                 if (isOwnedHead(itemEntity.getItemStack(), ownerUuid)) {
                     itemEntity.remove();
                 }

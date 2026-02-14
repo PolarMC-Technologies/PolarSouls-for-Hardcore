@@ -46,12 +46,12 @@ public class HeadEffectsTask extends BukkitRunnable {
                 applyEffects(player);
                 wearingHead.add(uuid);
                 // Avoid string concatenation - only log if debug is enabled
-                if (plugin.getConfig().getBoolean("debug", false)) {
+                if (plugin.isDebugMode()) {
                     plugin.debug(player.getName() + " equipped a player head, applying effects.");
                 }
             } else if (!wearing && wearingHead.remove(uuid)) {
                 removeEffects(player);
-                if (plugin.getConfig().getBoolean("debug", false)) {
+                if (plugin.isDebugMode()) {
                     plugin.debug(player.getName() + " removed player head, removing effects.");
                 }
             }
