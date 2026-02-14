@@ -34,6 +34,11 @@ public class ReviveCommand implements CommandExecutor, TabCompleter {
 
     @Override
     public boolean onCommand(CommandSender sender, Command command, String label, String[] args) {
+        if (!sender.hasPermission("polarsouls.revive")) {
+            sender.sendMessage(MessageUtil.colorize("&cYou don't have permission to revive players."));
+            return true;
+        }
+
         if (args.length != 1) {
             sender.sendMessage(MessageUtil.colorize("&cUsage: /revive <player>"));
             return false;

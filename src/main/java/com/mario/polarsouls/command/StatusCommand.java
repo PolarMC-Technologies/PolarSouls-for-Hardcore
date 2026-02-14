@@ -40,7 +40,7 @@ public class StatusCommand implements CommandExecutor, TabCompleter {
         } else if (sender instanceof org.bukkit.entity.Player player) {
             targetName = player.getName();
         } else {
-            String msg = MessageUtil.colorize("&cUsage: /hlstatus <player>");
+            String msg = MessageUtil.colorize("&cUsage: /pstatus <player>");
             if (msg != null) {
                 sender.sendMessage(msg);
             }

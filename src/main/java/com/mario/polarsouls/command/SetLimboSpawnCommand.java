@@ -25,6 +25,11 @@ public class SetLimboSpawnCommand implements CommandExecutor {
         if (sender == null) {
             return false;
         }
+        if (!sender.hasPermission("polarsouls.admin")) {
+            sender.sendMessage(MessageUtil.colorize("&cYou don't have permission to use this command."));
+            return true;
+        }
+
         if (!(sender instanceof Player player)) {
             String msg = MessageUtil.colorize("&cThis command can only be used in-game.");
             if (msg != null) {
