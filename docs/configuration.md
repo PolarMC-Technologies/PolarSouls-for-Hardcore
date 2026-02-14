@@ -602,11 +602,11 @@ To reload configuration without restarting:
 
 ## Need Help?
 
-- [Installation Guide](installation.md)
-- [Troubleshooting Guide](troubleshooting.md)
-- 📋 [Commands Reference](commands.md)
-- [FAQ](faq.md)
+- [Installation Guide](installation)
+- [Troubleshooting Guide](troubleshooting)
+- 📋 [Commands Reference](commands)
+- [FAQ](faq)
 
 ---
 
-[← Commands Reference](commands.md) | [Back to Home](index.md) | [Revival System →](revival-system.md)
+[← Commands Reference](commands) | [Back to Home](index) | [Revival System →](revival-system)

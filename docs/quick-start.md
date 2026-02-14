@@ -5,7 +5,7 @@ title: Quick Start Guide
 
 # Quick Start Guide
 
-This guide will help you get PolarSouls up and running in 8 simple steps. For more detailed instructions, see the [Installation Guide](installation.md).
+This guide will help you get PolarSouls up and running in 8 simple steps. For more detailed instructions, see the [Installation Guide](installation).
 
 ## Prerequisites
 
@@ -121,17 +121,17 @@ Review and customize these important settings in `config.yml`:
 - **Extra Life recipe** materials
 - **Messages** and colors
 
-See the [Configuration Reference](configuration.md) for details on all options.
+See the [Configuration Reference](configuration) for details on all options.
 
 ### Learn About Features
 
-- [Revival System](revival-system.md) - Learn how to revive players using ritual structures and items
-- [Commands](commands.md) - Full list of available commands
+- [Revival System](revival-system) - Learn how to revive players using ritual structures and items
+- [Commands](commands) - Full list of available commands
 - [Death Modes](configuration.md#death-modes) - Understand the three death mode options
 
 ### Troubleshooting
 
-Having issues? Check the [Troubleshooting Guide](troubleshooting.md) for solutions to common problems.
+Having issues? Check the [Troubleshooting Guide](troubleshooting) for solutions to common problems.
 
 ## Quick Reference
 
@@ -153,16 +153,16 @@ Having issues? Check the [Troubleshooting Guide](troubleshooting.md) for solutio
 | `/psadmin grace <player> <hours>` | Set grace period |
 | `/setlimbospawn` | Set Limbo spawn point |
 
-For the complete command list, see [Commands](commands.md).
+For the complete command list, see [Commands](commands).
 
 ## Need Help?
 
-- [Full Installation Guide](installation.md)
-- [Configuration Reference](configuration.md)
-- [Troubleshooting](troubleshooting.md)
-- [FAQ](faq.md)
+- [Full Installation Guide](installation)
+- [Configuration Reference](configuration)
+- [Troubleshooting](troubleshooting)
+- [FAQ](faq)
 - [Report Issues](https://github.com/SSoggyTacoBlud/PolarSouls-for-Hardcore/issues)
 
 ---
 
-[← Back to Home](index.md) | [Installation Guide →](installation.md)
+[← Back to Home](index) | [Installation Guide →](installation)

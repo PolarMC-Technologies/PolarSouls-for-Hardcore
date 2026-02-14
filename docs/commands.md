@@ -485,4 +485,4 @@ For quick help in-game, many servers support:
 
 ---
 
-[← Back to Home](index.md) | [Configuration Reference →](configuration.md)
+[← Back to Home](index) | [Configuration Reference →](configuration)

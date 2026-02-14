@@ -1,0 +1,80 @@
+<nav class="sidebar">
+  <div class="sidebar-header">
+    <h3>📚 Documentation</h3>
+  </div>
+  
+  <ul class="sidebar-nav">
+    <li class="nav-item {% if page.url == '/index.html' or page.url == '/' %}active{% endif %}">
+      <a href="{{ site.baseurl }}/">
+        <span class="nav-icon">🏠</span>
+        <span class="nav-text">Home</span>
+      </a>
+    </li>
+    
+    <li class="nav-item {% if page.url contains 'quick-start' %}active{% endif %}">
+      <a href="{{ site.baseurl }}/quick-start">
+        <span class="nav-icon">⚡</span>
+        <span class="nav-text">Quick Start</span>
+      </a>
+    </li>
+    
+    <li class="nav-item {% if page.url contains 'installation' %}active{% endif %}">
+      <a href="{{ site.baseurl }}/installation">
+        <span class="nav-icon">📦</span>
+        <span class="nav-text">Installation</span>
+      </a>
+    </li>
+    
+    <li class="nav-item {% if page.url contains 'configuration' %}active{% endif %}">
+      <a href="{{ site.baseurl }}/configuration">
+        <span class="nav-icon">⚙️</span>
+        <span class="nav-text">Configuration</span>
+      </a>
+    </li>
+    
+    <li class="nav-item {% if page.url contains 'commands' %}active{% endif %}">
+      <a href="{{ site.baseurl }}/commands">
+        <span class="nav-icon">💬</span>
+        <span class="nav-text">Commands</span>
+      </a>
+    </li>
+    
+    <li class="nav-item {% if page.url contains 'revival-system' %}active{% endif %}">
+      <a href="{{ site.baseurl }}/revival-system">
+        <span class="nav-icon">💀</span>
+        <span class="nav-text">Revival System</span>
+      </a>
+    </li>
+    
+    <li class="nav-item {% if page.url contains 'troubleshooting' %}active{% endif %}">
+      <a href="{{ site.baseurl }}/troubleshooting">
+        <span class="nav-icon">🔧</span>
+        <span class="nav-text">Troubleshooting</span>
+      </a>
+    </li>
+    
+    <li class="nav-item {% if page.url contains 'faq' %}active{% endif %}">
+      <a href="{{ site.baseurl }}/faq">
+        <span class="nav-icon">❓</span>
+        <span class="nav-text">FAQ</span>
+      </a>
+    </li>
+  </ul>
+  
+  <div class="sidebar-footer">
+    <div class="sidebar-links">
+      <a href="https://github.com/SSoggyTacoBlud/PolarSouls-for-Hardcore" target="_blank" title="GitHub Repository">
+        <span class="nav-icon">🔗</span> GitHub
+      </a>
+      <a href="https://modrinth.com/plugin/polarsouls" target="_blank" title="Modrinth Page">
+        <span class="nav-icon">📥</span> Modrinth
+      </a>
+    </div>
+  </div>
+</nav>
+
+<button class="sidebar-toggle" id="sidebarToggle" aria-label="Toggle sidebar">
+  <span></span>
+  <span></span>
+  <span></span>
+</button>

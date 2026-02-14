@@ -601,10 +601,10 @@ After revival, player has this many seconds of protection where they cannot lose
 
 ## See Also
 
-- 📋 [Commands Reference](commands.md)
-- [Configuration Reference](configuration.md)
-- [FAQ](faq.md)
+- 📋 [Commands Reference](commands)
+- [Configuration Reference](configuration)
+- [FAQ](faq)
 
 ---
 
-[← Configuration Reference](configuration.md) | [Back to Home](index.md) | [FAQ →](faq.md)
+[← Configuration Reference](configuration) | [Back to Home](index) | [FAQ →](faq)

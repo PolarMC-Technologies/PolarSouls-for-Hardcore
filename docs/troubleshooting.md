@@ -5,7 +5,7 @@ title: Troubleshooting
 
 # Troubleshooting Guide
 
-This guide covers common issues and their solutions. If you don't find your issue here, check the [FAQ](faq.md) or [open an issue](https://github.com/SSoggyTacoBlud/PolarSouls-for-Hardcore/issues).
+This guide covers common issues and their solutions. If you don't find your issue here, check the [FAQ](faq) or [open an issue](https://github.com/SSoggyTacoBlud/PolarSouls-for-Hardcore/issues).
 
 ## Table of Contents
 
@@ -628,11 +628,11 @@ If your issue isn't covered here:
 
 ## Related Resources
 
-- [Installation Guide](installation.md)
-- [Configuration Reference](configuration.md)
-- [Commands](commands.md)
-- [FAQ](faq.md)
+- [Installation Guide](installation)
+- [Configuration Reference](configuration)
+- [Commands](commands)
+- [FAQ](faq)
 
 ---
 
-[← Back to Home](index.md) | [FAQ →](faq.md)
+[← Back to Home](index) | [FAQ →](faq)

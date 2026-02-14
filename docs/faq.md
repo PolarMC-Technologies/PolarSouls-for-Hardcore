@@ -565,12 +565,12 @@ Or set `enabled: false` to disable everything.
 
 ## Need More Help?
 
-- [Installation Guide](installation.md)
-- 📋 [Commands Reference](commands.md)
-- [Configuration Reference](configuration.md)
-- 🏗️ [Revival System Guide](revival-system.md)
+- [Installation Guide](installation)
+- 📋 [Commands Reference](commands)
+- [Configuration Reference](configuration)
+- 🏗️ [Revival System Guide](revival-system)
 - [Report Issues](https://github.com/SSoggyTacoBlud/PolarSouls-for-Hardcore/issues)
 
 ---
 
-[← Revival System Guide](revival-system.md) | [Back to Home](index.md)
+[← Revival System Guide](revival-system) | [Back to Home](index)

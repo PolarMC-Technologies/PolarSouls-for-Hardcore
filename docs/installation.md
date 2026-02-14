@@ -376,18 +376,18 @@ Check console logs for:
 
 Now that PolarSouls is installed:
 
-1. **Customize Settings** - Review the [Configuration Reference](configuration.md)
-2. **Learn Commands** - Check out the [Commands Guide](commands.md)
-3. **Understand Revival System** - Read the [Revival System Guide](revival-system.md)
-4. **Prepare for Issues** - Familiarize yourself with [Troubleshooting](troubleshooting.md)
+1. **Customize Settings** - Review the [Configuration Reference](configuration)
+2. **Learn Commands** - Check out the [Commands Guide](commands)
+3. **Understand Revival System** - Read the [Revival System Guide](revival-system)
+4. **Prepare for Issues** - Familiarize yourself with [Troubleshooting](troubleshooting)
 
 ## Need Help?
 
-- [Configuration Reference](configuration.md)
-- [Troubleshooting Guide](troubleshooting.md)
-- [FAQ](faq.md)
+- [Configuration Reference](configuration)
+- [Troubleshooting Guide](troubleshooting)
+- [FAQ](faq)
 - [Report Issues](https://github.com/SSoggyTacoBlud/PolarSouls-for-Hardcore/issues)
 
 ---
 
-[← Quick Start](quick-start.md) | [Back to Home](index.md) | [Configuration →](configuration.md)
+[← Quick Start](quick-start) | [Back to Home](index) | [Configuration →](configuration)

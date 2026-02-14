@@ -37,25 +37,25 @@ PolarSouls features a lives-based death mechanic where players are exiled to a L
 
 This documentation is organized to help you get started quickly and find advanced information when you need it:
 
-### [Quick Start Guide →](quick-start.md)
+### [Quick Start Guide →](quick-start)
 Get PolarSouls up and running in 8 simple steps. Perfect for first-time setup.
 
-### [Installation Guide →](installation.md)
+### [Installation Guide →](installation)
 Detailed installation instructions including proxy setup, network configuration, and testing procedures.
 
-### [Configuration Reference →](configuration.md)
+### [Configuration Reference →](configuration)
 Complete reference for all configuration options with examples and best practices.
 
-### [Commands →](commands.md)
+### [Commands →](commands)
 Full list of player and admin commands with examples and permission details.
 
-### [Revival System →](revival-system.md)
+### [Revival System →](revival-system)
 In-depth guide to the HRM (Hardcore Revive Mode) system including ritual structures, craftable items, and revival mechanics.
 
-### [Troubleshooting →](troubleshooting.md)
+### [Troubleshooting →](troubleshooting)
 Solutions to common issues and problems you might encounter.
 
-### [FAQ →](faq.md)
+### [FAQ →](faq)
 Frequently asked questions about PolarSouls features and functionality.
 
 ## Requirements
@@ -77,7 +77,7 @@ Frequently asked questions about PolarSouls features and functionality.
 
 ## Getting Started
 
-New to PolarSouls? Start with the [Quick Start Guide](quick-start.md) to get your server running in minutes!
+New to PolarSouls? Start with the [Quick Start Guide](quick-start) to get your server running in minutes!
 
 Already familiar with the basics? Jump to specific sections using the navigation above.
 
@@ -85,8 +85,8 @@ Already familiar with the basics? Jump to specific sections using the navigation
 
 Need help? Here's how to get support:
 
-1. Check the [Troubleshooting](troubleshooting.md) page for common issues
-2. Review the [FAQ](faq.md) for frequently asked questions
+1. Check the [Troubleshooting](troubleshooting) page for common issues
+2. Review the [FAQ](faq) for frequently asked questions
 3. Search [existing issues](https://github.com/SSoggyTacoBlud/PolarSouls-for-Hardcore/issues) on GitHub
 4. [Open a new issue](https://github.com/SSoggyTacoBlud/PolarSouls-for-Hardcore/issues/new) with detailed information
 
