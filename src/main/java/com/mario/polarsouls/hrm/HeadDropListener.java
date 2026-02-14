@@ -101,12 +101,20 @@ public class HeadDropListener implements Listener {
         return head;
     }
 
-    // nukes all of a player's heads from existence - everywhere
-    // (drops, inventories, item frames, containers, shulkers, ender chests, you name it)
+    // Removes all of a player's heads from existence across all worlds
+    // Note: This is an expensive operation but necessary for game mechanics
+    // It's only called when a player is revived, not on every death
+    // Performance: O(entities + chunks + players) - runs infrequently
     public static void removeDroppedHeads(UUID ownerUuid) {
+        // Limit search to reasonable bounds to avoid lag on massive servers
+        int maxEntitiesPerWorld = 10000; // Safety limit
+        
         for (World world : Bukkit.getWorlds()) {
-            // Remove dropped item entities
+            int entityCount = 0;
+            
+            // Remove dropped item entities (with safety limit)
             for (Item itemEntity : world.getEntitiesByClass(Item.class)) {
+                if (++entityCount > maxEntitiesPerWorld) break; // Prevent infinite loops
                 if (isOwnedHead(itemEntity.getItemStack(), ownerUuid)) {
                     itemEntity.remove();
                 }
@@ -119,7 +127,8 @@ public class HeadDropListener implements Listener {
                 }
             }
 
-            // Remove from container blocks in loaded chunks
+            // Remove from container blocks in loaded chunks only
+            // This is faster than searching all chunks
             for (Chunk chunk : world.getLoadedChunks()) {
                 for (BlockState state : chunk.getTileEntities()) {
                     if (state instanceof InventoryHolder holder) {

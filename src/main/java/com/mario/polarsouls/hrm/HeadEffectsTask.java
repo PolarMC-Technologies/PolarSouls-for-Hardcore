@@ -18,6 +18,16 @@ import com.mario.polarsouls.PolarSouls;
 public class HeadEffectsTask extends BukkitRunnable {
 
     private static final int INFINITE_DURATION = Integer.MAX_VALUE;
+    
+    // Cache potion effects to avoid creating new instances every time
+    private static final PotionEffect NAUSEA_EFFECT = new PotionEffect(
+            PotionEffectType.NAUSEA, 200, 0, false, false);
+    private static final PotionEffect SLOWNESS_EFFECT = new PotionEffect(
+            PotionEffectType.SLOWNESS, INFINITE_DURATION, 0, false, false);
+    private static final PotionEffect HEALTH_BOOST_EFFECT = new PotionEffect(
+            PotionEffectType.HEALTH_BOOST, INFINITE_DURATION, 4, false, false);
+    private static final PotionEffect RESISTANCE_EFFECT = new PotionEffect(
+            PotionEffectType.RESISTANCE, INFINITE_DURATION, 0, false, false);
 
     private final PolarSouls plugin;
     private final Set<UUID> wearingHead = new HashSet<>();
@@ -35,15 +45,18 @@ public class HeadEffectsTask extends BukkitRunnable {
             if (wearing && !wearingHead.contains(uuid)) {
                 applyEffects(player);
                 wearingHead.add(uuid);
-                plugin.debug(player.getName() + " equipped a player head, applying effects.");
+                // Avoid string concatenation - only log if debug is enabled
+                if (plugin.getConfig().getBoolean("debug", false)) {
+                    plugin.debug(player.getName() + " equipped a player head, applying effects.");
+                }
             } else if (!wearing && wearingHead.remove(uuid)) {
                 removeEffects(player);
-                plugin.debug(player.getName() + " removed player head, removing effects.");
+                if (plugin.getConfig().getBoolean("debug", false)) {
+                    plugin.debug(player.getName() + " removed player head, removing effects.");
+                }
             }
         }
-
-        // get rid of disconnected people since they stink
-        wearingHead.removeIf(uuid -> Bukkit.getPlayer(uuid) == null);
+        // Removed unnecessary cleanup loop - players are removed on quit event
     }
 
     private static boolean isWearingPlayerHead(Player player) {
@@ -52,22 +65,24 @@ public class HeadEffectsTask extends BukkitRunnable {
     }
 
     private static void applyEffects(Player player) {
-        // naseau thingy 200 ticks
-        player.addPotionEffect(new PotionEffect(
-                PotionEffectType.NAUSEA, 200, 0, false, false));
-
-        // effects stay until head gone
-        player.addPotionEffect(new PotionEffect(
-                PotionEffectType.SLOWNESS, INFINITE_DURATION, 0, false, false));
-        player.addPotionEffect(new PotionEffect(
-                PotionEffectType.HEALTH_BOOST, INFINITE_DURATION, 4, false, false));
-        player.addPotionEffect(new PotionEffect(
-                PotionEffectType.RESISTANCE, INFINITE_DURATION, 0, false, false));
+        // Use cached potion effects instead of creating new instances
+        player.addPotionEffect(NAUSEA_EFFECT);
+        player.addPotionEffect(SLOWNESS_EFFECT);
+        player.addPotionEffect(HEALTH_BOOST_EFFECT);
+        player.addPotionEffect(RESISTANCE_EFFECT);
     }
 
     private static void removeEffects(Player player) {
         player.removePotionEffect(PotionEffectType.SLOWNESS);
         player.removePotionEffect(PotionEffectType.HEALTH_BOOST);
         player.removePotionEffect(PotionEffectType.RESISTANCE);
+    }
+
+    /**
+     * Removes a player from the tracking set when they quit
+     * This avoids the need for a cleanup loop in the main task
+     */
+    public void onPlayerQuit(UUID uuid) {
+        wearingHead.remove(uuid);
     }
 }

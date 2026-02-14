@@ -8,6 +8,8 @@ import java.sql.Statement;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
+import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
 import java.util.logging.Level;
 
 import com.mario.polarsouls.PolarSouls;
@@ -21,10 +23,28 @@ public class DatabaseManager {
     private static final String SELECT_ALL = "SELECT uuid, username, lives, is_dead, first_join, last_death, last_seen, grace_until FROM ";
     private static final String UPDATE = "UPDATE ";
     private static final int MYSQL_DUPLICATE_COLUMN = 1060;
+    
+    // Simple cache for death status with TTL to reduce DB queries
+    private static final long CACHE_TTL_MS = 2000; // 2 second cache
+    private final Map<UUID, CachedDeathStatus> deathStatusCache = new ConcurrentHashMap<>();
 
     private final PolarSouls plugin;
     private HikariDataSource dataSource;
     private String tableName;
+    
+    private static class CachedDeathStatus {
+        final boolean isDead;
+        final long timestamp;
+        
+        CachedDeathStatus(boolean isDead) {
+            this.isDead = isDead;
+            this.timestamp = System.currentTimeMillis();
+        }
+        
+        boolean isExpired() {
+            return System.currentTimeMillis() - timestamp > CACHE_TTL_MS;
+        }
+    }
 
     public DatabaseManager(PolarSouls plugin) {
         this.plugin = plugin;
@@ -206,7 +226,11 @@ public class DatabaseManager {
             ps.setLong(8, data.getGraceUntil());
 
             ps.executeUpdate();
-            plugin.debug("Saved player data: " + data);
+            
+            // Avoid string concatenation overhead unless debug is enabled
+            if (plugin.isDebugMode()) {
+                plugin.debug("Saved player data: " + data);
+            }
 
         } catch (SQLException e) {
             plugin.getLogger().log(Level.WARNING, () -> "Failed to save player " + data.getUuid());
@@ -214,6 +238,13 @@ public class DatabaseManager {
     }
 
     public boolean isPlayerDead(UUID uuid) {
+        // Check cache first
+        CachedDeathStatus cached = deathStatusCache.get(uuid);
+        if (cached != null && !cached.isExpired()) {
+            return cached.isDead;
+        }
+        
+        // Cache miss or expired, query database
         String sql = "SELECT is_dead FROM " + tableName + " WHERE uuid = ?";
 
         try (Connection conn = dataSource.getConnection();
@@ -222,7 +253,10 @@ public class DatabaseManager {
             ps.setString(1, uuid.toString());
             try (ResultSet rs = ps.executeQuery()) {
                 if (rs.next()) {
-                    return rs.getBoolean(COL_IS_DEAD);
+                    boolean isDead = rs.getBoolean(COL_IS_DEAD);
+                    // Update cache
+                    deathStatusCache.put(uuid, new CachedDeathStatus(isDead));
+                    return isDead;
                 }
             }
         } catch (SQLException e) {
@@ -242,7 +276,16 @@ public class DatabaseManager {
             ps.setString(2, uuid.toString());
 
             int rows = ps.executeUpdate();
-            plugin.debug("Revived player " + uuid + " (rows affected: " + rows + ")");
+            
+            // Invalidate cache on death status change
+            if (rows > 0) {
+                deathStatusCache.remove(uuid);
+            }
+            
+            // Avoid string concatenation overhead unless debug is enabled
+            if (plugin.isDebugMode()) {
+                plugin.debug("Revived player " + uuid + " (rows affected: " + rows + ")");
+            }
             return rows > 0;
 
         } catch (SQLException e) {
@@ -263,6 +306,9 @@ public class DatabaseManager {
             ps.setString(3, uuid.toString());
 
             ps.executeUpdate();
+            
+            // Invalidate cache on death status change
+            deathStatusCache.remove(uuid);
         } catch (SQLException e) {
             plugin.getLogger().log(Level.WARNING, () -> "Failed to set lives for " + uuid);
         }

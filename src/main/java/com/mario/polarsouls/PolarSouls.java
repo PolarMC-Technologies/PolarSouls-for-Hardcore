@@ -398,6 +398,10 @@ public final class PolarSouls extends JavaPlugin implements Listener {
         }
     }
 
+    public boolean isDebugMode() {
+        return debugMode;
+    }
+
     public static PolarSouls getInstance() {
         return instance;
     }
