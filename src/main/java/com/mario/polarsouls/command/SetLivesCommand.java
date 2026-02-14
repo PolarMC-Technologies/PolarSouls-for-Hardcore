@@ -35,7 +35,7 @@ public class SetLivesCommand implements CommandExecutor, TabCompleter {
         }
 
         if (args.length != 2) {
-            sender.sendMessage(MessageUtil.colorize("&cUsage: /hlsetlives <player> <lives>"));
+            sender.sendMessage(MessageUtil.colorize("&cUsage: /psetlives <player> <lives>"));
             return false;
         }
 
