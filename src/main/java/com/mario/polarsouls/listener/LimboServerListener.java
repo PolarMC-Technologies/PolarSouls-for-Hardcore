@@ -23,9 +23,20 @@ public class LimboServerListener implements Listener {
     private static final String PERM_BYPASS = "PolarSouls.bypass";
 
     private final PolarSouls plugin;
+    
+    // Cache limbo spawn location to avoid repeated lookups
+    private Location cachedLimboSpawn;
 
     public LimboServerListener(PolarSouls plugin) {
         this.plugin = plugin;
+        refreshLimboSpawnCache();
+    }
+    
+    /**
+     * Refresh cached limbo spawn (call on config reload or spawn change)
+     */
+    public void refreshLimboSpawnCache() {
+        this.cachedLimboSpawn = plugin.getLimboSpawn();
     }
 
     @EventHandler(priority = EventPriority.HIGHEST)
@@ -79,7 +90,7 @@ public class LimboServerListener implements Listener {
         player.setFoodLevel(20);
         player.setSaturation(20f);
 
-        Location spawn = plugin.getLimboSpawn();
+        Location spawn = cachedLimboSpawn; // Use cached value
         if (spawn != null && spawn.getWorld() != null) {
             player.teleport(findSafeLocation(spawn));
         } else {
@@ -169,7 +180,7 @@ public class LimboServerListener implements Listener {
 
         Location to = event.getTo();
         if (to != null && to.getY() < -64) {
-            Location spawn = plugin.getLimboSpawn();
+            Location spawn = cachedLimboSpawn; // Use cached value
             if (spawn != null && spawn.getWorld() != null) {
                 player.teleport(spawn);
             } else {
