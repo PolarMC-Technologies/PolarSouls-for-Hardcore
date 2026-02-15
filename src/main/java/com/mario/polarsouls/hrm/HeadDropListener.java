@@ -113,43 +113,49 @@ public class HeadDropListener implements Listener {
     // Note: This is an expensive operation but necessary for game mechanics
     // It's only called when a player is revived, not on every death
     // Performance: O(entities + chunks + players) - runs infrequently
-    public static void removeDroppedHeads(UUID ownerUuid) {
-        for (World world : Bukkit.getWorlds()) {
-            // Remove dropped item entities
-            for (Item itemEntity : world.getEntitiesByClass(Item.class)) {
-                if (isOwnedHead(itemEntity.getItemStack(), ownerUuid)) {
-                    itemEntity.remove();
+    // This method runs asynchronously to avoid blocking the main thread
+    public static void removeDroppedHeads(PolarSouls plugin, UUID ownerUuid) {
+        Bukkit.getScheduler().runTaskAsynchronously(plugin, () -> {
+            for (World world : Bukkit.getWorlds()) {
+                // Remove dropped item entities
+                for (Item itemEntity : world.getEntitiesByClass(Item.class)) {
+                    if (isOwnedHead(itemEntity.getItemStack(), ownerUuid)) {
+                        Bukkit.getScheduler().runTask(plugin, itemEntity::remove);
+                    }
                 }
-            }
 
-            // Remove from item frames
-            for (ItemFrame frame : world.getEntitiesByClass(ItemFrame.class)) {
-                if (isOwnedHead(frame.getItem(), ownerUuid)) {
-                    frame.setItem(null);
+                // Remove from item frames
+                for (ItemFrame frame : world.getEntitiesByClass(ItemFrame.class)) {
+                    if (isOwnedHead(frame.getItem(), ownerUuid)) {
+                        Bukkit.getScheduler().runTask(plugin, () -> frame.setItem(null));
+                    }
                 }
-            }
 
-            // Remove from container blocks in loaded chunks only
-            // This is faster than searching all chunks
-            for (Chunk chunk : world.getLoadedChunks()) {
-                for (BlockState state : chunk.getTileEntities()) {
-                    if (state instanceof InventoryHolder holder) {
-                        removeFromInventory(holder.getInventory(), ownerUuid);
+                // Remove from container blocks in loaded chunks only
+                // This is faster than searching all chunks
+                for (Chunk chunk : world.getLoadedChunks()) {
+                    for (BlockState state : chunk.getTileEntities()) {
+                        if (state instanceof InventoryHolder holder) {
+                            Bukkit.getScheduler().runTask(plugin, () -> 
+                                removeFromInventory(holder.getInventory(), ownerUuid));
+                        }
                     }
                 }
             }
-        }
 
-        // Remove from all online player inventories (main, armor, offhand) and ender chests
-        for (Player player : Bukkit.getOnlinePlayers()) {
-            PlayerInventory inv = player.getInventory();
-            for (int i = 0; i < inv.getSize(); i++) {
-                if (isOwnedHead(inv.getItem(i), ownerUuid)) {
-                    inv.setItem(i, null);
-                }
+            // Remove from all online player inventories (main, armor, offhand) and ender chests
+            for (Player player : Bukkit.getOnlinePlayers()) {
+                Bukkit.getScheduler().runTask(plugin, () -> {
+                    PlayerInventory inv = player.getInventory();
+                    for (int i = 0; i < inv.getSize(); i++) {
+                        if (isOwnedHead(inv.getItem(i), ownerUuid)) {
+                            inv.setItem(i, null);
+                        }
+                    }
+                    removeFromInventory(player.getEnderChest(), ownerUuid);
+                });
             }
-            removeFromInventory(player.getEnderChest(), ownerUuid);
-        }
+        });
     }
 
     private static void removeFromInventory(Inventory inv, UUID ownerUuid) {

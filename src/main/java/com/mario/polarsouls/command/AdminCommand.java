@@ -427,7 +427,7 @@ public class AdminCommand implements CommandExecutor, TabCompleter {
 
             // Remove any dropped player head items from all worlds
             Bukkit.getScheduler().runTask(plugin, () ->
-                    HeadDropListener.removeDroppedHeads(playerData.getUuid()));
+                    HeadDropListener.removeDroppedHeads(plugin, playerData.getUuid()));
         } else {
             sender.sendMessage(MessageUtil.colorize(
                     "&cFailed to revive " + playerData.getUsername()));

@@ -289,7 +289,7 @@ extra-life:
   
   # Crafting recipe for extra life item
   # Pattern: 3x3 grid (row1, row2, row3)
-  # Special symbol it so"N" = ingredient at center, "G"/"E" = other ingredients
+  # Special symbols: "N" = ingredient at center, "G"/"E" = other ingredients
   # ⚙️ BOTH
   recipe:
     row1: "DED" # D = Diamond Block (sides), E = Emerald Block (center)              
@@ -298,7 +298,7 @@ extra-life:
     ingredients:
       G: "GOLD_BLOCK"
       E: "EMERALD_BLOCK"
-      N: "NETHER_STAR"  # Make sure if you change one or more of the ingredients here,you spell it correctly with capital letters and underscore. Also update the recipe pattern above accordingly.
+      N: "NETHER_STAR"  # Make sure if you change one or more of the ingredients here, you spell it correctly with capital letters and underscore. Also update the recipe pattern above accordingly.
       D: "DIAMOND_BLOCK"
       I: "NETHERITE_INGOT"
     # This recipe is just an example. You can customize it as you like, but make sure to update the pattern and ingredients accordingly.
@@ -401,5 +401,5 @@ messages:
 # ───────────────────────────────────────────────────────────────────────────────
 # Enable debug logging to console
 # Shows detailed information about player events, DB queries, etc.
-# Only enable for troubleshooting - disables for production!
+# Only enable for troubleshooting - disable for production!
 debug: false
