@@ -57,8 +57,14 @@ public class AdminCommand implements CommandExecutor, TabCompleter {
     // Tracks pending grace confirmation per admin sender name
     private final Map<String, PendingGrace> pendingGraceConfirmations = new ConcurrentHashMap<>();
 
-    // stores pending grace confirmations so we can ask before overwriting
-    // createdAt is used for TTL cleanup
+    /**
+     * Stores pending grace confirmations so we can ask before overwriting.
+     * @param targetUuid The UUID of the player whose grace is being set
+     * @param targetName The username of the target player
+     * @param requestedMillis The requested grace period duration in milliseconds
+     * @param existingGraceUntil The existing grace_until timestamp (if any)
+     * @param createdAt Timestamp when this pending confirmation was created (for TTL cleanup)
+     */
     private record PendingGrace(UUID targetUuid, String targetName, long requestedMillis, long existingGraceUntil, long createdAt) {}
 
     public AdminCommand(PolarSouls plugin) {
@@ -330,8 +336,16 @@ public class AdminCommand implements CommandExecutor, TabCompleter {
             case "cancel" -> sender.sendMessage(MessageUtil.colorize(
                     "&7Grace period operation cancelled."));
             default -> {
-                // Invalid choice, re-add the pending confirmation
-                pendingGraceConfirmations.put(getConfirmationKey(sender), pending);
+                // Invalid choice, re-add the pending confirmation with updated timestamp
+                // to prevent premature cleanup
+                PendingGrace renewed = new PendingGrace(
+                    pending.targetUuid(), 
+                    pending.targetName(), 
+                    pending.requestedMillis(), 
+                    pending.existingGraceUntil(), 
+                    System.currentTimeMillis()
+                );
+                pendingGraceConfirmations.put(getConfirmationKey(sender), renewed);
                 sender.sendMessage(MessageUtil.colorize(
                         "&cInvalid option. Use: /psadmin confirm <overwrite|stack|cancel>"));
             }
