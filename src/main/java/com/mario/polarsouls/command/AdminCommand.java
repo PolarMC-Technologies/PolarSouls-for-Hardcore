@@ -87,9 +87,7 @@ public class AdminCommand implements CommandExecutor, TabCompleter {
     private void cleanupStalePendingConfirmations() {
         long now = System.currentTimeMillis();
         long fiveMinutes = 5 * 60 * 1000L;
-        pendingGraceConfirmations.entrySet().removeIf(entry -> 
-            (now - entry.getValue().createdAt()) > fiveMinutes
-        );
+        pendingGraceConfirmations.entrySet().removeIf(entry -> (now - entry.getValue().createdAt()) > fiveMinutes);
     }
 
     @Override
