@@ -198,12 +198,12 @@ public class AdminCommand implements CommandExecutor, TabCompleter {
         }
 
         if ("remove".equals(action)) {
-            if (playerData.getGraceUntil() <= 0 || playerData.getGraceUntil() <= System.currentTimeMillis()) {
+            if (!playerData.isInGracePeriod()) {
                 sender.sendMessage(MessageUtil.colorize(
                         "&e" + playerData.getUsername() + " &7does not have an active grace period."));
                 return;
             }
-            databaseManager.setGraceUntil(playerData.getUuid(), 0L);
+            databaseManager.setGraceUntil(playerData.getUuid(), -1L);
             plugin.getLogger().log(Level.INFO, "{0} removed grace period for {1}",
                     new Object[]{sender.getName(), playerData.getUsername()});
             sender.sendMessage(MessageUtil.get("admin-grace-removed",
