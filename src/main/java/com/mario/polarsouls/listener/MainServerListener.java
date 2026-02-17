@@ -225,7 +225,9 @@ public class MainServerListener implements Listener {
 
         UUID uuid = player.getUniqueId();
         long now = System.currentTimeMillis();
-        Bukkit.getScheduler().runTaskAsynchronously(plugin, () -> db.setLastSeen(uuid, now));
+        // Use a synchronous save on the main thread to favor data integrity on server crash.
+        // Note: this can still block on DB access under load; monitor if quit lag becomes an issue.
+        db.setLastSeen(uuid, now);
     }
 
     private void handleDeathAsync(Player player, UUID uuid) {
@@ -328,7 +330,7 @@ public class MainServerListener implements Listener {
 
     private void scheduleHybridTimeout(Player player, UUID uuid) {
         int timeoutSeconds = cachedHybridTimeout; // Use cached value
-        int delayTicks = timeoutSeconds * 20;
+        long delayTicks = (long) timeoutSeconds * 20L;
         BukkitTask task = Bukkit.getScheduler().runTaskLater(plugin, () -> {
             hybridPendingTransfers.remove(uuid);
             if (player.isOnline()) {

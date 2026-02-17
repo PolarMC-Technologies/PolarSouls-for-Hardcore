@@ -198,7 +198,7 @@ public final class PolarSouls extends JavaPlugin implements Listener {
         getServer().getPluginManager().registerEvents(mainServerListener, this);
 
         int intervalSeconds = getConfig().getInt("limbo.check-interval-seconds", 3);
-        int intervalTicks = intervalSeconds * 20;
+        long intervalTicks = (long) intervalSeconds * 20L;
         new MainReviveCheckTask(this).runTaskTimerAsynchronously(this, 60L, intervalTicks);
         getLogger().log(Level.INFO, "Main revive check task started (every {0}s).", intervalSeconds);
 
@@ -237,7 +237,7 @@ public final class PolarSouls extends JavaPlugin implements Listener {
         getServer().getPluginManager().registerEvents(limboServerListener, this);
 
         int intervalSeconds = getConfig().getInt("limbo.check-interval-seconds", 3);
-        int intervalTicks = intervalSeconds * 20;
+        long intervalTicks = (long) intervalSeconds * 20L;
         new LimboCheckTask(this).runTaskTimerAsynchronously(this, 60L, intervalTicks);
         getLogger().log(Level.INFO, "Limbo check task started (every {0}s).", intervalSeconds);
     }
