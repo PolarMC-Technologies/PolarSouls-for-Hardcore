@@ -338,6 +338,14 @@ main-server-name: "main"
 limbo-server-name: "limbo"
 ```
 
+#### Security
+```yaml
+# Block Limbo OPs from using admin commands (recommended: true)
+limbo-op-security-check: true
+```
+
+Prevents OP users on the Limbo server from abusing `/revive` and `/psadmin` commands. OPs need the `polarsouls.bypass-limbo-op-security` permission to use admin commands on Limbo. See [Permissions](#permissions) for details.
+
 #### Database
 ```yaml
 database:
@@ -511,7 +519,30 @@ Variables you can use:
 | `polarsouls.status` | Can check player status | true |
 | `polarsouls.visit` | Can visit Limbo as a living player | true |
 | `polarsouls.bypass` | Bypass all death mechanics | false |
+| `polarsouls.bypass-limbo-op-security` | Allow OPs to use admin commands on Limbo server | false |
 
+### Limbo OP Security
+
+**Important:** By default, OP users on the Limbo server are blocked from using `/revive` and `/psadmin` commands to prevent abuse. This stops someone who only has OP on the Limbo server from messing with player data.
+
+**How it works:**
+- **Main server:** Admin commands work normally (OP or explicit permissions)
+- **Limbo server:** OP users are blocked unless they have `polarsouls.bypass-limbo-op-security`
+- **Console:** Always works on both servers
+
+**To allow an OP to use admin commands on Limbo:**
+```bash
+# Using LuckPerms (or similar permissions plugin)
+/lp user <player> permission set polarsouls.bypass-limbo-op-security true
+```
+
+**Or remove OP and grant explicit permissions:**
+```bash
+/deop <player>
+/lp user <player> permission set polarsouls.admin true
+```
+
+This security check can be disabled with `limbo-op-security-check: false` in config (not recommended).
 
 ## Troubleshooting
 
@@ -533,6 +564,13 @@ Variables you can use:
 - Check grace period is configured: `grace-period: "24h"` (not `"0"`)
 - Grace period counts only online time - verify with `/pstatus <player>`
 - If player joined before enabling grace, use `/psadmin grace <player> <hours>` to set manually
+
+### Admin commands not working on Limbo server
+- This is normal security behavior! OPs are blocked on Limbo by default
+- Grant bypass permission: `/lp user <player> permission set polarsouls.bypass-limbo-op-security true`
+- Or disable the security check: `limbo-op-security-check: false` in config (not recommended)
+- Console commands always work
+- See [Permissions](#permissions) section for full details
 
 ### Version mismatch warnings
 - Both servers MUST run the same PolarSouls version

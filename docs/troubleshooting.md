@@ -12,15 +12,16 @@ This guide covers common issues and their solutions. If you don't find your issu
 1. [Players Not Transferring to Limbo](#players-not-transferring-to-limbo)
 2. [Revivals Not Working](#revivals-not-working)
 3. [Players Lose Lives During Grace Period](#players-lose-lives-during-grace-period)
-4. [Version Mismatch Warnings](#version-mismatch-warnings)
-5. [Database Connection Errors](#database-connection-errors)
-6. [Players Reconnecting Go Straight to Limbo](#players-reconnecting-go-straight-to-limbo)
-7. [Extra Life Items Not Working](#extra-life-items-not-working)
-8. [Hardcore Hearts Not Showing](#hardcore-hearts-not-showing)
-9. [Revival Ritual Structure Not Triggering](#revival-ritual-structure-not-triggering)
-10. [Revive Skull Recipe Not Working](#revive-skull-recipe-not-working)
-11. [Players Can't Visit Limbo](#players-cant-visit-limbo)
-12. [Plugin Not Loading](#plugin-not-loading)
+4. [Admin Commands Not Working on Limbo Server](#admin-commands-not-working-on-limbo-server)
+5. [Version Mismatch Warnings](#version-mismatch-warnings)
+6. [Database Connection Errors](#database-connection-errors)
+7. [Players Reconnecting Go Straight to Limbo](#players-reconnecting-go-straight-to-limbo)
+8. [Extra Life Items Not Working](#extra-life-items-not-working)
+9. [Hardcore Hearts Not Showing](#hardcore-hearts-not-showing)
+10. [Revival Ritual Structure Not Triggering](#revival-ritual-structure-not-triggering)
+11. [Revive Skull Recipe Not Working](#revive-skull-recipe-not-working)
+12. [Players Can't Visit Limbo](#players-cant-visit-limbo)
+13. [Plugin Not Loading](#plugin-not-loading)
 
 ---
 
@@ -209,6 +210,53 @@ Grace period only counts while player is online:
 - Playing 3 hours → 21 hours remaining
 - Logging off → timer pauses
 - Logging back in → timer resumes
+
+---
+
+## Admin Commands Not Working on Limbo Server
+
+### Symptoms
+- `/revive` or `/psadmin` commands don't work on Limbo server
+- "Security Error: On the Limbo server, OP status cannot be used..." message
+- Commands work on Main server but not Limbo
+
+### Solution
+
+**This is normal security behavior!** By default, OP users are blocked from using admin commands on the Limbo server to prevent abuse.
+
+#### - Grant Bypass Permission (Recommended)
+
+Use a permissions plugin like LuckPerms:
+```
+/lp user <player> permission set polarsouls.bypass-limbo-op-security true
+```
+
+This allows the OP to use admin commands on Limbo.
+
+#### - Alternative: Remove OP and Use Explicit Permissions
+
+```
+/deop <player>
+/lp user <player> permission set polarsouls.admin true
+/lp user <player> permission set polarsouls.revive true
+```
+
+#### - Disable Security Check (Not Recommended)
+
+In `config.yml`:
+```yaml
+limbo-op-security-check: false
+```
+
+**Warning:** This removes the security protection and allows any OP on Limbo to revive/modify player data.
+
+#### - Use Console
+
+Console commands always work on both servers:
+```
+/psadmin revive <player>
+/revive <player>
+```
 
 ---
 
