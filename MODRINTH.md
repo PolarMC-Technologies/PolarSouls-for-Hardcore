@@ -233,6 +233,20 @@ All messages are customizable with Minecraft color codes!
 | `polarsouls.status` | Can check player status | true |
 | `polarsouls.visit` | Can visit Limbo as living player | true |
 | `polarsouls.bypass` | Bypass all death mechanics | false |
+| `polarsouls.bypass-limbo-op-security` | Allow OPs to use admin commands on Limbo | false |
+
+### Limbo OP Security
+
+**Important:** OP users on the Limbo server are blocked from using `/revive` and `/psadmin` commands by default to prevent abuse.
+
+**To allow an OP on Limbo (choose one):**
+1. **Whitelist** (easiest - no permissions plugin needed):
+   ```yaml
+   limbo-trusted-admins:
+     - "your-uuid-here"  # or username
+   ```
+2. **Permission**: `/lp user <player> permission set polarsouls.bypass-limbo-op-security true`
+3. **Disable check**: `limbo-op-security-check: false` (not recommended)
 
 ---
 

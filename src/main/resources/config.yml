@@ -66,43 +66,37 @@ limbo-server-name: "limbo"
 # ───────────────────────────────────────────────────────────────────────────────
 # Security Settings
 # ───────────────────────────────────────────────────────────────────────────────
-# Restrict use of admin and revive commands by operators (OPs) on the Limbo server
+# Limbo OP Security Check - Prevents abuse of admin commands on Limbo server
 # 
 # SECURITY ISSUE: If someone has OP on the Limbo server, they could normally
 # execute /revive and /psadmin commands to revive players and modify lives.
 # 
 # When enabled, this security check will block admin/revive commands on the Limbo 
-# server for ANY OP unless they have the explicit bypass permission node.
-# This applies even if the OP also has polarsouls.revive or polarsouls.admin.
+# server for ANY OP unless they are whitelisted or have bypass permission.
 # 
-# To allow commands for staff, you must either:
-#   - De-op them on the Limbo server and grant normal permission nodes, OR
-#   - Keep them OP and ALSO grant the bypass permission below.
+# Three ways to allow an OP to use admin commands on Limbo:
+#   1. Add them to limbo-trusted-admins list below (easiest - no permissions plugin needed)
+#   2. Grant them the polarsouls.bypass-limbo-op-security permission (requires LuckPerms)
+#   3. De-op them and grant polarsouls.revive or polarsouls.admin permissions
 # 
-# Required permissions:
-#   - polarsouls.revive (required to use the /revive command)
-#   - polarsouls.admin (required to use /psadmin commands)
-#   - polarsouls.bypass-limbo-op-security (required for any OP on Limbo to run
-#       /revive or /psadmin; without this, their admin/revive commands are blocked)
-# 
-# [CONFIG] LIMBO SERVER: Set to true to enable the security check
+# [CONFIG] LIMBO SERVER: Set to true to enable the security check (recommended)
 # [CONFIG] MAIN SERVER: This setting is ignored on Main server
 # 
-# Recommended: true (for security)
 limbo-op-security-check: true
 
 # Whitelist of trusted admins allowed to use admin commands on Limbo server
-# This provides an alternative to the bypass permission for servers without LuckPerms
+# This is the EASIEST way to allow OPs - no permissions plugin required!
 # 
-# You can use UUIDs (recommended) or usernames:
-#   - UUIDs are more secure (won't break if player changes name)
-#   - Usernames are easier to manage but less secure
+# Supports both UUIDs (recommended) and usernames:
+#   - UUIDs: Won't break if player changes name, more secure
+#   - Usernames: Easier to remember and type
 # 
 # Example:
 #   limbo-trusted-admins:
 #     - "069a79f4-44e9-4726-a5be-fca90e38aaf5"  # UUID format (recommended)
 #     - "SSoggyTacoBlud"                          # Username format
 # 
+# To apply changes: edit this list, save, then run /psadmin reload
 # Leave empty [] to rely only on the permission-based system
 limbo-trusted-admins: []
 
