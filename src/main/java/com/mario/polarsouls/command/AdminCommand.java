@@ -96,6 +96,12 @@ public class AdminCommand implements CommandExecutor, TabCompleter {
             return true;
         }
 
+        // Security check: Prevent Limbo-only OP from using this command
+        if (com.mario.polarsouls.util.PermissionUtil.isBlockedByLimboOpSecurity(sender, plugin, "polarsouls.admin")) {
+            com.mario.polarsouls.util.PermissionUtil.sendSecurityBlockMessage(sender);
+            return true;
+        }
+
         if (args.length == 0) {
             sendHelp(sender);
         } else {
@@ -198,7 +204,8 @@ public class AdminCommand implements CommandExecutor, TabCompleter {
         }
 
         if ("remove".equals(action)) {
-            if (!playerData.isInGracePeriod()) {
+            long now = System.currentTimeMillis();
+            if (playerData.getGraceUntil() <= now) {
                 sender.sendMessage(MessageUtil.colorize(
                         "&e" + playerData.getUsername() + " &7does not have an active grace period."));
                 return;

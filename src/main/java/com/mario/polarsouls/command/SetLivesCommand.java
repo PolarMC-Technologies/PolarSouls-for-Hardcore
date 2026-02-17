@@ -35,6 +35,12 @@ public class SetLivesCommand implements CommandExecutor, TabCompleter {
             return true;
         }
 
+        // Security check: Prevent Limbo-only OP from using this command
+        if (com.mario.polarsouls.util.PermissionUtil.isBlockedByLimboOpSecurity(sender, plugin, "polarsouls.admin")) {
+            com.mario.polarsouls.util.PermissionUtil.sendSecurityBlockMessage(sender);
+            return true;
+        }
+
         if (args.length != 2) {
             sender.sendMessage(MessageUtil.colorize("&cUsage: /psetlives <player> <lives>"));
             return false;

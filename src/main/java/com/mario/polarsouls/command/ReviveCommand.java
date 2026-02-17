@@ -41,6 +41,12 @@ public class ReviveCommand implements CommandExecutor, TabCompleter {
             return true;
         }
 
+        // Security check: Prevent Limbo-only OP from using this command
+        if (com.mario.polarsouls.util.PermissionUtil.isBlockedByLimboOpSecurity(sender, plugin, "polarsouls.revive")) {
+            com.mario.polarsouls.util.PermissionUtil.sendSecurityBlockMessage(sender);
+            return true;
+        }
+
         if (args.length != 1) {
             sender.sendMessage(MessageUtil.colorize("&cUsage: /revive <player>"));
             return false;

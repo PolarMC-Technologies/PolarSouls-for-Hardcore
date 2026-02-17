@@ -76,3 +76,7 @@ permissions:
   polarsouls.bypass:
     description: Bypass all death and limbo mechanics
     default: false
+
+  polarsouls.bypass-limbo-op-security:
+    description: Bypass the Limbo OP security check for admin commands
+    default: false

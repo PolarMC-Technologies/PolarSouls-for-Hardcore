@@ -64,6 +64,28 @@ main-server-name: "main"
 limbo-server-name: "limbo"
 
 # ───────────────────────────────────────────────────────────────────────────────
+# Security Settings
+# ───────────────────────────────────────────────────────────────────────────────
+# Prevent users with OP status ONLY on Limbo server from executing admin commands
+# 
+# SECURITY ISSUE: If you give someone OP only on the Limbo server, they could
+# still execute /revive and /psadmin commands to revive players and modify lives.
+# 
+# When enabled, this security check will block admin/revive commands on the Limbo 
+# server if the user only has OP permissions (not explicit permission nodes).
+# 
+# To bypass this security check, grant users explicit permissions:
+#   - polarsouls.revive (for /revive command)
+#   - polarsouls.admin (for /psadmin commands)
+#   - polarsouls.bypass-limbo-op-security (bypass this security check entirely)
+# 
+# [CONFIG] LIMBO SERVER: Set to true to enable the security check
+# [CONFIG] MAIN SERVER: This setting is ignored on Main server
+# 
+# Recommended: true (for security)
+limbo-op-security-check: true
+
+# ───────────────────────────────────────────────────────────────────────────────
 # MySQL Database Configuration
 # ───────────────────────────────────────────────────────────────────────────────
 # [CONFIG] BOTH SERVERS: Database details MUST be identical on Main and Limbo!
