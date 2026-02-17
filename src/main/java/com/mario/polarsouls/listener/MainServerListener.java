@@ -225,8 +225,8 @@ public class MainServerListener implements Listener {
 
         UUID uuid = player.getUniqueId();
         long now = System.currentTimeMillis();
-        // Use synchronous save to ensure data integrity on server crash.
-        // This is called on the main thread, but the operation is fast and won't cause noticeable lag.
+        // Use a synchronous save on the main thread to favor data integrity on server crash.
+        // Note: this can still block on DB access under load; monitor if quit lag becomes an issue.
         db.setLastSeen(uuid, now);
     }
 
