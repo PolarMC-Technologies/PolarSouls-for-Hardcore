@@ -206,8 +206,10 @@ public class AdminCommand implements CommandExecutor, TabCompleter {
 
         if ("remove".equals(action)) {
             long now = System.currentTimeMillis();
-            // Direct timestamp check is more appropriate here than isInGracePeriod()
-            // because we specifically want to check if grace_until is set, not the legacy fallback
+            // IMPORTANT: We use direct timestamp check instead of isInGracePeriod() here.
+            // Reason: isInGracePeriod() has legacy fallback logic (firstJoin + global config).
+            // For the "grace remove" command, we only want to remove explicit grace periods
+            // (grace_until > 0), not affect legacy grace calculations.
             if (playerData.getGraceUntil() <= 0 || playerData.getGraceUntil() <= now) {
                 sender.sendMessage(MessageUtil.colorize(
                         "&e" + playerData.getUsername() + " &7does not have an active grace period."));
