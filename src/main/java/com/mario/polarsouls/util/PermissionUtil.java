@@ -62,7 +62,7 @@ public final class PermissionUtil {
      * @param sender The command sender to send the message to
      */
     public static void sendSecurityBlockMessage(CommandSender sender) {
-        sender.sendMessage(MessageUtil.colorize("&cSecurity Error: This command cannot be executed on the Limbo server with OP-only permissions."));
-        sender.sendMessage(MessageUtil.colorize("&7Contact an administrator to grant you explicit permissions."));
+        sender.sendMessage(MessageUtil.colorize("&cSecurity Error: On the Limbo server, OP status cannot be used to execute this command."));
+        sender.sendMessage(MessageUtil.colorize("&7Either /deop yourself on Limbo or ask an administrator for the 'polarsouls.bypass-limbo-op-security' permission."));
     }
 }
