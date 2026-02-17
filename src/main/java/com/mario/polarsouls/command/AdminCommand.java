@@ -323,11 +323,11 @@ public class AdminCommand implements CommandExecutor, TabCompleter {
                 String formattedTime = TimeUtil.formatTime(pending.requestedMillis());
                 plugin.getLogger().log(Level.INFO, "{0} overwrote grace period for {1} ({2})",
                         new Object[]{sender.getName(), pending.targetName(), formattedTime});
-                // Send message on main thread to avoid async catcher warnings
-                Bukkit.getScheduler().runTask(plugin, () ->
-                    sender.sendMessage(MessageUtil.colorize(
-                            "&aGrace period overwritten for &e" + pending.targetName()
-                            + "&a (" + formattedTime + " from now).")));
+                // Build message before scheduling to reduce work on main thread
+                String message = MessageUtil.colorize(
+                        "&aGrace period overwritten for &e" + pending.targetName()
+                        + "&a (" + formattedTime + " from now).");
+                Bukkit.getScheduler().runTask(plugin, () -> sender.sendMessage(message));
             }
             case "stack" -> {
                 // If existing grace expired, stack from now; otherwise add to existing end time
@@ -338,17 +338,17 @@ public class AdminCommand implements CommandExecutor, TabCompleter {
                 String totalRemaining = TimeUtil.formatTime(graceUntil - now);
                 plugin.getLogger().log(Level.INFO, "{0} stacked grace period for {1} (total: {2})",
                         new Object[]{sender.getName(), pending.targetName(), totalRemaining});
-                // Send message on main thread to avoid async catcher warnings
-                Bukkit.getScheduler().runTask(plugin, () ->
-                    sender.sendMessage(MessageUtil.colorize(
-                            "&aGrace period stacked for &e" + pending.targetName()
-                            + "&a (total remaining: " + totalRemaining + ").")));
+                // Build message before scheduling to reduce work on main thread
+                String message = MessageUtil.colorize(
+                        "&aGrace period stacked for &e" + pending.targetName()
+                        + "&a (total remaining: " + totalRemaining + ").");
+                Bukkit.getScheduler().runTask(plugin, () -> sender.sendMessage(message));
             }
-            case "cancel" -> 
-                // Send message on main thread to avoid async catcher warnings
-                Bukkit.getScheduler().runTask(plugin, () ->
-                    sender.sendMessage(MessageUtil.colorize(
-                            "&7Grace period operation cancelled.")));
+            case "cancel" -> {
+                // Build message before scheduling to reduce work on main thread
+                String message = MessageUtil.colorize("&7Grace period operation cancelled.");
+                Bukkit.getScheduler().runTask(plugin, () -> sender.sendMessage(message));
+            }
             default -> {
                 // Invalid choice, re-add the pending confirmation with updated timestamp
                 // to prevent premature cleanup
@@ -360,10 +360,10 @@ public class AdminCommand implements CommandExecutor, TabCompleter {
                     System.currentTimeMillis()
                 );
                 pendingGraceConfirmations.put(getConfirmationKey(sender), renewed);
-                // Send message on main thread to avoid async catcher warnings
-                Bukkit.getScheduler().runTask(plugin, () ->
-                    sender.sendMessage(MessageUtil.colorize(
-                            "&cInvalid option. Use: /psadmin confirm <overwrite|stack|cancel>")));
+                // Build message before scheduling to reduce work on main thread
+                String message = MessageUtil.colorize(
+                        "&cInvalid option. Use: /psadmin confirm <overwrite|stack|cancel>");
+                Bukkit.getScheduler().runTask(plugin, () -> sender.sendMessage(message));
             }
         }
     }
