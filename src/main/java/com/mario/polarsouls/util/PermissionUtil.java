@@ -42,28 +42,26 @@ public final class PermissionUtil {
             return false;
         }
 
-        // If player has explicit permission node (not just OP), allow them
-        // This checks if they have the permission WITHOUT being OP
-        if (player.hasPermission(permission)) {
-            // Check if they'd still have permission if they weren't OP
-            // If they're not OP, they definitely have explicit permission
-            if (!player.isOp()) {
-                return false;
-            }
-            
-            // They are OP - we need to check if they ALSO have explicit permission
-            // The best way to do this is to check for a special bypass permission
-            // or to assume that OP-only means they shouldn't have access
-            // Since we can't easily differentiate, we'll use a bypass permission
-            if (player.hasPermission("polarsouls.bypass-limbo-op-security")) {
-                return false;
-            }
-            
-            // They only have permission via OP, block them
+        // If player doesn't have the permission at all, don't block here
+        // (they'll be blocked by the normal permission check)
+        if (!player.hasPermission(permission)) {
+            return false;
+        }
+
+        // Player has the permission - now check if it's because of OP or explicit permission
+        
+        // If they have the bypass permission, allow them
+        if (player.hasPermission("polarsouls.bypass-limbo-op-security")) {
+            return false;
+        }
+        
+        // If player is OP, block them (they need explicit permission or bypass)
+        // This is the core security check: OP status alone is not enough on Limbo server
+        if (player.isOp()) {
             return true;
         }
 
-        // They don't have permission at all
+        // Player has permission and is not OP, so they have explicit permission
         return false;
     }
 

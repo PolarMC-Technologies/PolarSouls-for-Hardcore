@@ -85,25 +85,35 @@ If you give someone OP on the Limbo server (for example, to manage the Limbo wor
 #### How It Works
 
 When enabled (recommended), this security check will:
-1. **Block** commands on the Limbo server if the user only has OP permissions
-2. **Allow** commands if the user has explicit permission nodes (see below)
-3. **Allow** commands on the Main server regardless of how permissions are granted
-4. **Allow** console to always execute commands
+1. **Block** commands on the Limbo server if the user is OP (even with explicit permissions)
+2. **Allow** commands if the user has the bypass permission (see below)
+3. **Allow** commands if the user has explicit permissions and is NOT OP
+4. **Allow** commands on the Main server regardless of how permissions are granted
+5. **Allow** console to always execute commands
 
 #### Granting Proper Permissions
 
-To allow a user to execute admin commands on the Limbo server, grant them explicit permissions using a permissions plugin (like LuckPerms):
+To allow a user to execute admin commands on the Limbo server, you have two options:
 
+**Option 1: Grant bypass permission (recommended for admins)**
 ```
+# Allows OP users to execute commands on Limbo server
+/lp user <player> permission set polarsouls.bypass-limbo-op-security true
+```
+
+**Option 2: Grant explicit permissions without OP**
+```
+# Remove OP status first, then grant explicit permissions
+/deop <player>
+
 # For revival commands:
 /lp user <player> permission set polarsouls.revive true
 
 # For all admin commands:
 /lp user <player> permission set polarsouls.admin true
-
-# To bypass this security check entirely:
-/lp user <player> permission set polarsouls.bypass-limbo-op-security true
 ```
+
+> **Important:** If a user has OP status on the Limbo server, they MUST have the `polarsouls.bypass-limbo-op-security` permission to execute admin commands. This prevents the security vulnerability while still allowing proper administration.
 
 #### Disabling the Security Check
 
