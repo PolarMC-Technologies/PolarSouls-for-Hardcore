@@ -85,9 +85,9 @@ If you give someone OP on the Limbo server (for example, to manage the Limbo wor
 #### How It Works
 
 When enabled (recommended), this security check will:
-1. **Block** commands on the Limbo server if the user is OP (even with explicit permissions)
-2. **Allow** commands if the user has the bypass permission (see below)
-3. **Allow** commands if the user has explicit permissions and is NOT OP
+1. **Block** all OP users on the Limbo server from executing admin/revive commands
+2. **Allow** OP users with the bypass permission `polarsouls.bypass-limbo-op-security`
+3. **Allow** non-OP users with explicit permission nodes
 4. **Allow** commands on the Main server regardless of how permissions are granted
 5. **Allow** console to always execute commands
 
