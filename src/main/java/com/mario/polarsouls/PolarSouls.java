@@ -1,5 +1,6 @@
 package com.mario.polarsouls;
 
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Objects;
@@ -525,7 +526,7 @@ public final class PolarSouls extends JavaPlugin implements Listener {
     }
 
     public Set<String> getLimboTrustedAdmins() {
-        return limboTrustedAdmins;
+        return Collections.unmodifiableSet(limboTrustedAdmins);
     }
 
     // checks if main and limbo are running same version, warns if not
