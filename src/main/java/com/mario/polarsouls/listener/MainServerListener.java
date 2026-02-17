@@ -232,8 +232,8 @@ public class MainServerListener implements Listener {
         PlayerData data = db.getPlayer(uuid);
         if (data == null) {
             // Use grace period overload to ensure proper grace tracking for new players
-            data = PlayerData.createNew(uuid, player.getName(), plugin.getDefaultLives(), 
-                                       plugin.getGracePeriodMillis());
+            data = PlayerData.createNew(uuid, player.getName(), plugin.getDefaultLives(),
+                                        plugin.getGracePeriodMillis());
         }
 
         if (data.isInGracePeriod(plugin.getGracePeriodMillis())) {
