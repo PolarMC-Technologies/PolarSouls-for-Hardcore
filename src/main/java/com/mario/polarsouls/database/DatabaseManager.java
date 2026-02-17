@@ -225,10 +225,6 @@ public class DatabaseManager {
 
             ps.executeUpdate();
             
-            // Invalidate cache whenever death status might change
-            // This is critical to prevent stale cache when players die or are revived
-            deathStatusCache.remove(data.getUuid());
-            
             // Avoid string concatenation overhead unless debug is enabled
             if (plugin.isDebugMode()) {
                 plugin.debug("Saved player data: " + data);
@@ -236,6 +232,10 @@ public class DatabaseManager {
 
         } catch (SQLException e) {
             plugin.getLogger().log(Level.WARNING, () -> "Failed to save player " + data.getUuid());
+        } finally {
+            // Always invalidate cache after save attempt to ensure consistency
+            // This handles both success and failure cases
+            deathStatusCache.remove(data.getUuid());
         }
     }
 

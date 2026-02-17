@@ -77,9 +77,18 @@ public class AdminCommand implements CommandExecutor, TabCompleter {
 
     /**
      * Generate a consistent key for pending grace confirmations.
+     * Uses a stable identifier to avoid key changes from proxy/plugin wrappers.
      */
     private String getConfirmationKey(CommandSender sender) {
-        return sender.getClass().getName() + ":" + sender.getName();
+        if (sender instanceof Player player) {
+            // For players, use their UUID which is stable
+            return "player:" + player.getUniqueId();
+        } else {
+            // For console and other senders, use a simpler type:name format
+            // This is stable since console sender type doesn't change
+            String type = sender.getClass().getSimpleName();
+            return type + ":" + sender.getName();
+        }
     }
 
     /**
@@ -326,9 +335,11 @@ public class AdminCommand implements CommandExecutor, TabCompleter {
                 String formattedTime = TimeUtil.formatTime(pending.requestedMillis());
                 plugin.getLogger().log(Level.INFO, "{0} overwrote grace period for {1} ({2})",
                         new Object[]{sender.getName(), pending.targetName(), formattedTime});
-                sender.sendMessage(MessageUtil.colorize(
+                // Build message before scheduling to reduce work on main thread
+                String message = MessageUtil.colorize(
                         "&aGrace period overwritten for &e" + pending.targetName()
-                        + "&a (" + formattedTime + " from now)."));
+                        + "&a (" + formattedTime + " from now).");
+                Bukkit.getScheduler().runTask(plugin, () -> sender.sendMessage(message));
             }
             case "stack" -> {
                 // If existing grace expired, stack from now; otherwise add to existing end time
@@ -339,12 +350,17 @@ public class AdminCommand implements CommandExecutor, TabCompleter {
                 String totalRemaining = TimeUtil.formatTime(graceUntil - now);
                 plugin.getLogger().log(Level.INFO, "{0} stacked grace period for {1} (total: {2})",
                         new Object[]{sender.getName(), pending.targetName(), totalRemaining});
-                sender.sendMessage(MessageUtil.colorize(
+                // Build message before scheduling to reduce work on main thread
+                String message = MessageUtil.colorize(
                         "&aGrace period stacked for &e" + pending.targetName()
-                        + "&a (total remaining: " + totalRemaining + ")."));
+                        + "&a (total remaining: " + totalRemaining + ").");
+                Bukkit.getScheduler().runTask(plugin, () -> sender.sendMessage(message));
             }
-            case "cancel" -> sender.sendMessage(MessageUtil.colorize(
-                    "&7Grace period operation cancelled."));
+            case "cancel" -> {
+                // Build message before scheduling to reduce work on main thread
+                String message = MessageUtil.colorize("&7Grace period operation cancelled.");
+                Bukkit.getScheduler().runTask(plugin, () -> sender.sendMessage(message));
+            }
             default -> {
                 // Invalid choice, re-add the pending confirmation with updated timestamp
                 // to prevent premature cleanup
@@ -356,8 +372,10 @@ public class AdminCommand implements CommandExecutor, TabCompleter {
                     System.currentTimeMillis()
                 );
                 pendingGraceConfirmations.put(getConfirmationKey(sender), renewed);
-                sender.sendMessage(MessageUtil.colorize(
-                        "&cInvalid option. Use: /psadmin confirm <overwrite|stack|cancel>"));
+                // Build message before scheduling to reduce work on main thread
+                String message = MessageUtil.colorize(
+                        "&cInvalid option. Use: /psadmin confirm <overwrite|stack|cancel>");
+                Bukkit.getScheduler().runTask(plugin, () -> sender.sendMessage(message));
             }
         }
     }

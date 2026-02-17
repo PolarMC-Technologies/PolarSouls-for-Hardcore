@@ -113,6 +113,11 @@ public class HeadDropListener implements Listener {
     // Note: This is an expensive operation but necessary for game mechanics
     // It's only called when a player is revived, not on every death
     // Performance: O(entities + chunks + players) - runs infrequently
+    // 
+    // IMPORTANT: This method MUST run on the main thread due to Bukkit API requirements
+    // (accessing worlds, entities, chunks, and inventories). Callers use Bukkit.getScheduler().runTask()
+    // to ensure the method executes on the main thread without blocking command execution.
+    // The async database operations complete before this is called, so the UI remains responsive.
     public static void removeDroppedHeads(UUID ownerUuid) {
         for (World world : Bukkit.getWorlds()) {
             // Remove dropped item entities
