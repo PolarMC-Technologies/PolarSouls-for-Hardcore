@@ -5,7 +5,7 @@ title: Troubleshooting
 
 # Troubleshooting Guide
 
-This guide covers common issues and their solutions. If you don't find your issue here, check the [FAQ](faq) or [open an issue](https://github.com/SSoggyTacoBlud/PolarSouls-for-Hardcore/issues).
+This guide covers common issues and their solutions. If you don't find your issue here, check the [FAQ](faq) or [open an issue](https://github.com/polarmc-technologies/PolarSouls-for-Hardcore/issues).
 
 ## Table of Contents
 
@@ -686,10 +686,10 @@ If your issue isn't covered here:
    - Steps to reproduce
 
 3. **Search Existing Issues**
-   Check [GitHub Issues](https://github.com/SSoggyTacoBlud/PolarSouls-for-Hardcore/issues) for similar problems.
+   Check [GitHub Issues](https://github.com/polarmc-technologies/PolarSouls-for-Hardcore/issues) for similar problems.
 
 4. **Open a New Issue**
-   [Create an issue](https://github.com/SSoggyTacoBlud/PolarSouls-for-Hardcore/issues/new) with all collected information.
+   [Create an issue](https://github.com/polarmc-technologies/PolarSouls-for-Hardcore/issues/new) with all collected information.
 
 ## Related Resources
 

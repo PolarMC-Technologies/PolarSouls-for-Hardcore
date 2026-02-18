@@ -39,7 +39,7 @@ To preview the documentation locally:
 
 The documentation is automatically deployed to GitHub Pages when changes are pushed to the `main` branch. The deployment is handled by the `.github/workflows/deploy-docs.yml` workflow.
 
-**Live URL:** https://ssoggytacoblud.github.io/PolarSouls-for-Hardcore/
+**Live URL:** https://polarmc-technologies.github.io/PolarSouls-for-Hardcore/
 
 ## Theme
 

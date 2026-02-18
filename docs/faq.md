@@ -33,7 +33,7 @@ Quick answers to common questions about PolarSouls installation, configuration, 
 
 ### Q: Can I use BungeeCord instead of Velocity?
 
-**A:** Maybe. BungeeCord/Waterfall support is **untested**. If you test it, please [report your findings](https://github.com/SSoggyTacoBlud/PolarSouls-for-Hardcore/issues)!
+**A:** Maybe. BungeeCord/Waterfall support is **untested**. If you test it, please [report your findings](https://github.com/polarmc-technologies/PolarSouls-for-Hardcore/issues)!
 
 Currently supported: **Velocity (recommended)**
 
@@ -489,7 +489,7 @@ Try `/revive <player>` command instead to test if database works.
    - Proxy type
    - Relevant config sections
    - Console errors/logs
-5. [Open an issue](https://github.com/SSoggyTacoBlud/PolarSouls-for-Hardcore/issues) with details
+5. [Open an issue](https://github.com/polarmc-technologies/PolarSouls-for-Hardcore/issues) with details
 
 ---
 
@@ -569,7 +569,7 @@ Or set `enabled: false` to disable everything.
 - 📋 [Commands Reference](commands)
 - [Configuration Reference](configuration)
 - 🏗️ [Revival System Guide](revival-system)
-- [Report Issues](https://github.com/SSoggyTacoBlud/PolarSouls-for-Hardcore/issues)
+- [Report Issues](https://github.com/polarmc-technologies/PolarSouls-for-Hardcore/issues)
 
 ---
 

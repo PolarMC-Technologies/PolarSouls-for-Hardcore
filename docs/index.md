@@ -7,7 +7,7 @@ title: Home
 
 ![PolarSouls Banner](https://cdn.modrinth.com/data/Pb03qu6T/images/70ce5f45786d4716bb6d47d242ee3238a2b4ec4a.jpeg)
 
-**Version 1.3.6** | [Modrinth](https://modrinth.com/plugin/polarsouls) | [GitHub](https://github.com/SSoggyTacoBlud/PolarSouls-for-Hardcore)
+**Version 1.3.6** | [Modrinth](https://modrinth.com/plugin/polarsouls) | [GitHub](https://github.com/polarmc-technologies/PolarSouls-for-Hardcore)
 
 Welcome to the comprehensive documentation for PolarSouls, a sophisticated hardcore lives system plugin for Minecraft 1.21.X (Spigot/Paper/Purpur) designed for Velocity proxy networks.
 
@@ -71,9 +71,9 @@ Frequently asked questions about PolarSouls features and functionality.
 ## Quick Links
 
 - [Download from Modrinth](https://modrinth.com/plugin/polarsouls)
-- [Download from GitHub Releases](https://github.com/SSoggyTacoBlud/PolarSouls-for-Hardcore/releases)
-- [Report Issues](https://github.com/SSoggyTacoBlud/PolarSouls-for-Hardcore/issues)
-- [GitHub Discussions](https://github.com/SSoggyTacoBlud/PolarSouls-for-Hardcore/discussions)
+- [Download from GitHub Releases](https://github.com/polarmc-technologies/PolarSouls-for-Hardcore/releases)
+- [Report Issues](https://github.com/polarmc-technologies/PolarSouls-for-Hardcore/issues)
+- [GitHub Discussions](https://github.com/polarmc-technologies/PolarSouls-for-Hardcore/discussions)
 
 ## Getting Started
 
@@ -87,17 +87,17 @@ Need help? Here's how to get support:
 
 1. Check the [Troubleshooting](troubleshooting) page for common issues
 2. Review the [FAQ](faq) for frequently asked questions
-3. Search [existing issues](https://github.com/SSoggyTacoBlud/PolarSouls-for-Hardcore/issues) on GitHub
-4. [Open a new issue](https://github.com/SSoggyTacoBlud/PolarSouls-for-Hardcore/issues/new) with detailed information
+3. Search [existing issues](https://github.com/polarmc-technologies/PolarSouls-for-Hardcore/issues) on GitHub
+4. [Open a new issue](https://github.com/polarmc-technologies/PolarSouls-for-Hardcore/issues/new) with detailed information
 
 ## Contributing
 
-Issues, suggestions, and pull requests are welcome! Visit our [GitHub repository](https://github.com/SSoggyTacoBlud/PolarSouls-for-Hardcore) to contribute.
+Issues, suggestions, and pull requests are welcome! Visit our [GitHub repository](https://github.com/polarmc-technologies/PolarSouls-for-Hardcore) to contribute.
 
 ## License
 
-PolarSouls is licensed under the GNU General Public License v3.0 (GPL-3.0). See the [LICENSE](https://github.com/SSoggyTacoBlud/PolarSouls-for-Hardcore/blob/main/LICENSE) file for details.
+PolarSouls is licensed under the GNU General Public License v3.0 (GPL-3.0). See the [LICENSE](https://github.com/polarmc-technologies/PolarSouls-for-Hardcore/blob/main/LICENSE) file for details.
 
 ---
 
-**Enjoying PolarSouls?** Heart it on [Modrinth](https://modrinth.com/plugin/polarsouls) and star the [GitHub repo](https://github.com/SSoggyTacoBlud/PolarSouls-for-Hardcore)!
+**Enjoying PolarSouls?** Heart it on [Modrinth](https://modrinth.com/plugin/polarsouls) and star the [GitHub repo](https://github.com/polarmc-technologies/PolarSouls-for-Hardcore)!
