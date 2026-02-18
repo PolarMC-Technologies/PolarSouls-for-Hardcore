@@ -84,13 +84,11 @@ public class AdminCommand implements CommandExecutor, TabCompleter {
             // For players, use their UUID which is stable
             return "player:" + player.getUniqueId();
         } else {
-            // For console and other senders, use a simpler type:name format
-            // This is stable since console sender type doesn't change
-            String type = sender.getClass().getSimpleName();
-            return type + ":" + sender.getName();
+            // For console and other non-player senders, use a stable name-based key
+            // This avoids instability from proxy/plugin wrapper classes
+            return "sender:" + sender.getName();
         }
     }
-
     /**
      * Remove pending confirmations older than 5 minutes to prevent memory leaks.
      */
