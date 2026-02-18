@@ -55,6 +55,8 @@
         if (currentTheme === 'dark') {
           body.classList.add('dark-mode');
           updateIcon('dark');
+        } else {
+          updateIcon('light');
         }
 
         // Theme toggle handler
