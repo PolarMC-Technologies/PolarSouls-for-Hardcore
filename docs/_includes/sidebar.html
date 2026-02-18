@@ -1,7 +1,16 @@
 <nav class="sidebar">
+  <button class="sidebar-collapse-btn" id="sidebarCollapseBtn" aria-label="Collapse sidebar" title="Collapse sidebar">
+    ◀
+  </button>
+  
   <div class="sidebar-header">
     <h3>📚 Documentation</h3>
   </div>
+  
+  <button class="theme-toggle" id="themeToggle" aria-label="Toggle dark mode">
+    <span class="theme-toggle-icon" id="themeIcon">☀️</span>
+    <span id="themeText">Light Mode</span>
+  </button>
   
   <ul class="sidebar-nav">
     <li class="nav-item {% if page.url == '/index.html' or page.url == '/' %}active{% endif %}">

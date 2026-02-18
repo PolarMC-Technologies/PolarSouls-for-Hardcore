@@ -42,12 +42,49 @@
     </div>
     
     <script>
+      // Dark mode functionality
+      document.addEventListener('DOMContentLoaded', function() {
+        const themeToggle = document.getElementById('themeToggle');
+        const themeIcon = document.getElementById('themeIcon');
+        const themeText = document.getElementById('themeText');
+        const body = document.body;
+        
+        // Check for saved theme preference or default to dark mode
+        const currentTheme = localStorage.getItem('theme') || 'dark';
+        
+        // Apply the theme
+        if (currentTheme === 'dark') {
+          body.classList.add('dark-mode');
+          themeIcon.textContent = '☀️';
+          themeText.textContent = 'Light Mode';
+        }
+        
+        // Theme toggle handler
+        if (themeToggle) {
+          themeToggle.addEventListener('click', function() {
+            body.classList.toggle('dark-mode');
+            
+            if (body.classList.contains('dark-mode')) {
+              themeIcon.textContent = '☀️';
+              themeText.textContent = 'Light Mode';
+              localStorage.setItem('theme', 'dark');
+            } else {
+              themeIcon.textContent = '🌙';
+              themeText.textContent = 'Dark Mode';
+              localStorage.setItem('theme', 'light');
+            }
+          });
+        }
+      });
+      
       // Sidebar toggle functionality
       document.addEventListener('DOMContentLoaded', function() {
         const toggle = document.getElementById('sidebarToggle');
+        const collapseBtn = document.getElementById('sidebarCollapseBtn');
         const sidebar = document.querySelector('.sidebar');
         const body = document.body;
         
+        // Mobile sidebar toggle
         if (toggle && sidebar) {
           toggle.addEventListener('click', function() {
             sidebar.classList.toggle('open');
@@ -56,11 +93,26 @@
           
           // Close sidebar when clicking outside on mobile
           document.addEventListener('click', function(event) {
-            if (window.innerWidth <= 768) {
+            if (window.innerWidth <= 1024) {
               if (!sidebar.contains(event.target) && !toggle.contains(event.target)) {
                 sidebar.classList.remove('open');
                 body.classList.remove('sidebar-open');
               }
+            }
+          });
+        }
+        
+        // Desktop sidebar collapse
+        if (collapseBtn && sidebar) {
+          collapseBtn.addEventListener('click', function(event) {
+            event.stopPropagation();
+            sidebar.classList.toggle('collapsed');
+            
+            // Update button icon
+            if (sidebar.classList.contains('collapsed')) {
+              collapseBtn.textContent = '▶';
+            } else {
+              collapseBtn.textContent = '◀';
             }
           });
         }
