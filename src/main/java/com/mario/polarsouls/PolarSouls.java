@@ -95,6 +95,7 @@ public final class PolarSouls extends JavaPlugin implements Listener {
     private final Map<String, Boolean> originalWorldHardcore = new HashMap<>();
     private ReviveSkullManager reviveSkullManager;
     private ExtraLifeManager extraLifeManager;
+    private HeadDropListener headDropListener;
 
     private Location limboSpawn;
     private final Set<UUID> limboDeadPlayers = ConcurrentHashMap.newKeySet();
@@ -206,8 +207,8 @@ public final class PolarSouls extends JavaPlugin implements Listener {
         getLogger().log(Level.INFO, "Main revive check task started (every {0}s).", intervalSeconds);
 
         if (hrmEnabled) {
-            getServer().getPluginManager().registerEvents(
-                    new HeadDropListener(this), this);
+            headDropListener = new HeadDropListener(this);
+            getServer().getPluginManager().registerEvents(headDropListener, this);
             getServer().getPluginManager().registerEvents(
                     new RevivalStructureListener(this), this);
 
@@ -542,6 +543,12 @@ public final class PolarSouls extends JavaPlugin implements Listener {
         return Collections.unmodifiableSet(limboTrustedAdmins);
     }
 
+    public void removeDroppedHeads(UUID ownerUuid) {
+        if (headDropListener != null) {
+            headDropListener.removeDroppedHeads(ownerUuid);
+        }
+    }
+
     // checks if main and limbo are running same version, warns if not
     private void checkVersionCompatibility() {
         String currentVersion = getDescription().getVersion();
@@ -586,4 +593,3 @@ public final class PolarSouls extends JavaPlugin implements Listener {
         }
     }
 }
-

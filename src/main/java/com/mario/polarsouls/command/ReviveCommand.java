@@ -15,7 +15,6 @@ import org.bukkit.entity.Player;
 
 import com.mario.polarsouls.PolarSouls;
 import com.mario.polarsouls.database.DatabaseManager;
-import com.mario.polarsouls.hrm.HeadDropListener;
 import com.mario.polarsouls.model.PlayerData;
 import com.mario.polarsouls.util.CommandUtil;
 import com.mario.polarsouls.util.MessageUtil;
@@ -82,7 +81,7 @@ public class ReviveCommand implements CommandExecutor, TabCompleter {
                 restoreOnlineSpectator(data);
 
                 // Remove any dropped player head items from all worlds
-                HeadDropListener.removeDroppedHeads(plugin, data.getUuid());
+                plugin.removeDroppedHeads(data.getUuid());
             } else {
                 sender.sendMessage(MessageUtil.colorize(
                         "&cFailed to revive " + data.getUsername() + ". Check console for errors."));

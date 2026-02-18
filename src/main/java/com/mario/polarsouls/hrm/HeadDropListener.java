@@ -27,7 +27,6 @@ import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.PlayerInventory;
 import org.bukkit.inventory.meta.BlockStateMeta;
 import org.bukkit.inventory.meta.SkullMeta;
-import org.bukkit.plugin.Plugin;
 import org.bukkit.scheduler.BukkitRunnable;
 
 import com.mario.polarsouls.PolarSouls;
@@ -129,7 +128,7 @@ public class HeadDropListener implements Listener {
     //   2. Limit cleanup to specific radius (heads could remain far from spawn)
     //   3. Single-tick scan (causes lag spikes, rejected based on PR feedback)
     // - Current approach prioritizes server performance and responsiveness
-    public static void removeDroppedHeads(Plugin plugin, UUID ownerUuid) {
+    public void removeDroppedHeads(UUID ownerUuid) {
         new BukkitRunnable() {
             private final List<World> worlds = new ArrayList<>(Bukkit.getWorlds());
             private final List<Player> players = new ArrayList<>(Bukkit.getOnlinePlayers());

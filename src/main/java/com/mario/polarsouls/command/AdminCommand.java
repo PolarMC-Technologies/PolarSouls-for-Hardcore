@@ -27,7 +27,6 @@ import net.md_5.bungee.api.chat.hover.content.Text;
 
 import com.mario.polarsouls.PolarSouls;
 import com.mario.polarsouls.database.DatabaseManager;
-import com.mario.polarsouls.hrm.HeadDropListener;
 import com.mario.polarsouls.model.PlayerData;
 import com.mario.polarsouls.util.CommandUtil;
 import com.mario.polarsouls.util.MessageUtil;
@@ -522,7 +521,7 @@ public class AdminCommand implements CommandExecutor, TabCompleter {
             restoreOnlineSpectator(playerData);
 
             // Remove any dropped player head items from all worlds
-            HeadDropListener.removeDroppedHeads(plugin, playerData.getUuid());
+            plugin.removeDroppedHeads(playerData.getUuid());
         } else {
             sender.sendMessage(MessageUtil.colorize(
                     "&cFailed to revive " + playerData.getUsername()));
