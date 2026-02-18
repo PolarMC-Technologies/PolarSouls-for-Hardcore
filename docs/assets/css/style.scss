@@ -9,16 +9,16 @@
 
 /* Color Variables */
 :root {
-  --primary-color: #159957;
-  --primary-dark: #0e7042;
-  --secondary-color: #155799;
-  --accent-color: #00d4ff;
-  --text-dark: #333;
-  --text-light: #606c71;
-  --bg-code: #f3f6fa;
-  --border-color: #dce6f0;
-  --success-color: #28a745;
-  --warning-color: #ffc107;
+  --primary-color: #2c3e50;
+  --primary-dark: #1a252f;
+  --secondary-color: #3498db;
+  --accent-color: #e74c3c;
+  --text-dark: #2c3e50;
+  --text-light: #7f8c8d;
+  --bg-code: #f4f4f4;
+  --border-color: #bdc3c7;
+  --success-color: #27ae60;
+  --warning-color: #f39c12;
   --danger-color: #dc3545;
   --info-color: #17a2b8;
   --sidebar-bg: #2c3e50;
@@ -26,21 +26,24 @@
   --sidebar-active: #1abc9c;
   --sidebar-width: 280px;
   --bg-main: #ffffff;
-  --bg-secondary: #f8f9fa;
-  --header-gradient-start: #159957;
-  --header-gradient-end: #155799;
+  --bg-secondary: #ecf0f1;
+  --header-gradient-start: #2c3e50;
+  --header-gradient-end: #34495e;
+  --card-bg: #ffffff;
+  --body-bg: #ffffff;
+  --shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
 }
 
 /* Dark Mode Variables */
 body.dark-mode {
-  --primary-color: #1abc9c;
-  --primary-dark: #16a085;
-  --secondary-color: #3498db;
-  --accent-color: #00d4ff;
-  --text-dark: #e8e8e8;
-  --text-light: #b0b0b0;
-  --bg-code: #1e2936;
-  --border-color: #3a4a5c;
+  --primary-color: #3498db;
+  --primary-dark: #2980b9;
+  --secondary-color: #2980b9;
+  --accent-color: #e74c3c;
+  --text-dark: #ecf0f1;
+  --text-light: #95a5a6;
+  --bg-code: #1a252f;
+  --border-color: #34495e;
   --success-color: #27ae60;
   --warning-color: #f39c12;
   --danger-color: #e74c3c;
@@ -48,10 +51,13 @@ body.dark-mode {
   --sidebar-bg: #1a1f2e;
   --sidebar-hover: #252b3d;
   --sidebar-active: #1abc9c;
-  --bg-main: #0f1419;
-  --bg-secondary: #1a1f2e;
+  --bg-main: #2c3e50;
+  --bg-secondary: #1a252f;
   --header-gradient-start: #1a252f;
   --header-gradient-end: #2c3e50;
+  --card-bg: #34495e;
+  --body-bg: #2c3e50;
+  --shadow: 0 2px 12px rgba(0, 0, 0, 0.3);
 }
 
 /* ========================================
@@ -506,28 +512,39 @@ body {
 /* Dark Mode Toggle Button */
 .theme-toggle {
   background: rgba(255, 255, 255, 0.1);
-  border: 2px solid rgba(255, 255, 255, 0.2);
-  border-radius: 8px;
-  padding: 0.75rem;
+  border: 2px solid rgba(255, 255, 255, 0.3);
+  border-radius: 50%;
+  width: 50px;
+  height: 50px;
   margin: 1rem 1.5rem;
   cursor: pointer;
   display: flex;
   align-items: center;
   justify-content: center;
-  gap: 0.5rem;
-  color: rgba(255, 255, 255, 0.9);
-  font-weight: 500;
   transition: all 0.3s ease;
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
 }
 
 .theme-toggle:hover {
-  background: rgba(255, 255, 255, 0.15);
-  border-color: rgba(255, 255, 255, 0.3);
-  transform: translateY(-2px);
+  background: rgba(255, 255, 255, 0.2);
+  border-color: rgba(255, 255, 255, 0.5);
+  transform: scale(1.1) rotate(15deg);
 }
 
-.theme-toggle-icon {
-  font-size: 1.2rem;
+.theme-toggle:active {
+  transform: scale(0.95) rotate(0deg);
+}
+
+.theme-icon {
+  width: 24px;
+  height: 24px;
+  filter: invert(1);
+  transition: transform 0.3s ease;
+}
+
+body.dark-mode .theme-icon {
+  filter: invert(1);
 }
 
 /* Sidebar Collapse Button */

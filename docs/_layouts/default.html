@@ -46,34 +46,43 @@
       document.addEventListener('DOMContentLoaded', function() {
         const themeToggle = document.getElementById('themeToggle');
         const themeIcon = document.getElementById('themeIcon');
-        const themeText = document.getElementById('themeText');
         const body = document.body;
-        
+
         // Check for saved theme preference or default to dark mode
         const currentTheme = localStorage.getItem('theme') || 'dark';
-        
+
         // Apply the theme
         if (currentTheme === 'dark') {
           body.classList.add('dark-mode');
-          themeIcon.textContent = '☀️';
-          themeText.textContent = 'Light Mode';
+          updateIcon('dark');
+        } else {
+          updateIcon('light');
         }
-        
+
         // Theme toggle handler
         if (themeToggle) {
           themeToggle.addEventListener('click', function() {
             body.classList.toggle('dark-mode');
-            
+
             if (body.classList.contains('dark-mode')) {
-              themeIcon.textContent = '☀️';
-              themeText.textContent = 'Light Mode';
+              updateIcon('dark');
               localStorage.setItem('theme', 'dark');
             } else {
-              themeIcon.textContent = '🌙';
-              themeText.textContent = 'Dark Mode';
+              updateIcon('light');
               localStorage.setItem('theme', 'light');
             }
           });
+        }
+
+        function updateIcon(theme) {
+          const baseUrl = '{{ site.baseurl }}';
+          if (theme === 'dark') {
+            themeIcon.src = baseUrl + '/assets/light-mode.svg';
+            themeIcon.alt = 'Switch to light mode';
+          } else {
+            themeIcon.src = baseUrl + '/assets/dark-mode.svg';
+            themeIcon.alt = 'Switch to dark mode';
+          }
         }
       });
       
