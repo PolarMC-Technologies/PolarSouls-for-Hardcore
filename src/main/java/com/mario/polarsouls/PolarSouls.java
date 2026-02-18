@@ -302,7 +302,16 @@ public final class PolarSouls extends JavaPlugin implements Listener {
         hardcoreHearts      = cfg.getBoolean("hardcore-hearts", true);
         limboOpSecurityEnabled = cfg.getBoolean("limbo-op-security-check", true);
         limboTrustedAdmins  = ConcurrentHashMap.newKeySet();
-        limboTrustedAdmins.addAll(cfg.getStringList("limbo-trusted-admins"));
+        // Normalize whitelist entries: trim whitespace and lowercase non-UUID entries (usernames)
+        for (String entry : cfg.getStringList("limbo-trusted-admins")) {
+            String trimmed = entry.trim();
+            // Keep UUIDs in original case (they contain dashes), lowercase usernames for case-insensitive matching
+            if (trimmed.contains("-")) {
+                limboTrustedAdmins.add(trimmed); // UUID format, keep as-is
+            } else {
+                limboTrustedAdmins.add(trimmed.toLowerCase()); // Username, normalize to lowercase
+            }
+        }
 
         for (World world : getServer().getWorlds()) {
             boolean original = originalWorldHardcore.getOrDefault(world.getName(), false);

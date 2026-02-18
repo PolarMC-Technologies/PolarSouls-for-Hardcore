@@ -53,10 +53,10 @@ public final class PermissionUtil {
         Set<String> trustedAdmins = plugin.getLimboTrustedAdmins();
         if (!trustedAdmins.isEmpty()) {
             String playerUuid = player.getUniqueId().toString();
-            String playerName = player.getName();
+            String playerNameLowercase = player.getName().toLowerCase();
             
-            // Check both UUID and username
-            if (trustedAdmins.contains(playerUuid) || trustedAdmins.contains(playerName)) {
+            // Check both UUID (exact match) and username (case-insensitive via lowercase)
+            if (trustedAdmins.contains(playerUuid) || trustedAdmins.contains(playerNameLowercase)) {
                 return false;
             }
         }
