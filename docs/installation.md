@@ -78,8 +78,8 @@ PolarSouls will automatically create the necessary table, but you need to create
 
 ```sql
 CREATE DATABASE polarsouls CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
-CREATE USER 'polarsouls_user'@'%' IDENTIFIED BY 'your_secure_password';
-GRANT ALL PRIVILEGES ON polarsouls.* TO 'polarsouls_user'@'%';
+CREATE USER 'polarsouls_user'@'localhost' IDENTIFIED BY 'your_secure_password';
+GRANT SELECT, INSERT, UPDATE, DELETE, CREATE, ALTER ON polarsouls.* TO 'polarsouls_user'@'localhost';
 FLUSH PRIVILEGES;
 ```
 
