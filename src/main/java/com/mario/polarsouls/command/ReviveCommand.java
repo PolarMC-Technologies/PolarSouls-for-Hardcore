@@ -82,8 +82,7 @@ public class ReviveCommand implements CommandExecutor, TabCompleter {
                 restoreOnlineSpectator(data);
 
                 // Remove any dropped player head items from all worlds
-                Bukkit.getScheduler().runTask(plugin, () ->
-                        HeadDropListener.removeDroppedHeads(data.getUuid()));
+                HeadDropListener.removeDroppedHeads(plugin, data.getUuid());
             } else {
                 sender.sendMessage(MessageUtil.colorize(
                         "&cFailed to revive " + data.getUsername() + ". Check console for errors."));
