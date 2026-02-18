@@ -113,17 +113,29 @@ public class HeadDropListener implements Listener {
     // Note: This is an expensive operation but necessary for game mechanics
     // It's only called when a player is revived, not on every death
     // Performance: O(entities + chunks + players) - runs infrequently
-    // 
+    //
     // IMPORTANT: This method MUST run on the main thread due to Bukkit API requirements
     // (accessing worlds, entities, chunks, and inventories). Callers use Bukkit.getScheduler().runTask()
     // to ensure the method executes on the main thread without blocking command execution.
     // The async database operations complete before this is called, so the UI remains responsive.
+    //
+    // Performance considerations:
+    // - This full-world scan can cause lag on large servers with many chunks/entities/players
+    // - Alternative approaches considered:
+    //   1. Track head locations on drop (memory overhead, complex state management)
+    //   2. Limit cleanup to specific radius (heads could remain far from spawn)
+    //   3. Spread scan across multiple ticks (complexity, heads visible during scan)
+    // - Current approach prioritizes correctness and simplicity over performance
+    // - Most servers revive players infrequently enough that lag is acceptable
+    // - Admins can disable hrm.drop-heads if performance is critical
     public static void removeDroppedHeads(UUID ownerUuid) {
+        int removedCount = 0;
         for (World world : Bukkit.getWorlds()) {
             // Remove dropped item entities
             for (Item itemEntity : world.getEntitiesByClass(Item.class)) {
                 if (isOwnedHead(itemEntity.getItemStack(), ownerUuid)) {
                     itemEntity.remove();
+                    removedCount++;
                 }
             }
 
@@ -131,6 +143,7 @@ public class HeadDropListener implements Listener {
             for (ItemFrame frame : world.getEntitiesByClass(ItemFrame.class)) {
                 if (isOwnedHead(frame.getItem(), ownerUuid)) {
                     frame.setItem(null);
+                    removedCount++;
                 }
             }
 
@@ -139,7 +152,7 @@ public class HeadDropListener implements Listener {
             for (Chunk chunk : world.getLoadedChunks()) {
                 for (BlockState state : chunk.getTileEntities()) {
                     if (state instanceof InventoryHolder holder) {
-                        removeFromInventory(holder.getInventory(), ownerUuid);
+                        removedCount += removeFromInventory(holder.getInventory(), ownerUuid);
                     }
                 }
             }
@@ -151,37 +164,47 @@ public class HeadDropListener implements Listener {
             for (int i = 0; i < inv.getSize(); i++) {
                 if (isOwnedHead(inv.getItem(i), ownerUuid)) {
                     inv.setItem(i, null);
+                    removedCount++;
                 }
             }
-            removeFromInventory(player.getEnderChest(), ownerUuid);
+            removedCount += removeFromInventory(player.getEnderChest(), ownerUuid);
+        }
+
+        if (removedCount > 0) {
+            Bukkit.getLogger().info("Removed " + removedCount + " player head(s) for UUID " + ownerUuid);
         }
     }
 
-    private static void removeFromInventory(Inventory inv, UUID ownerUuid) {
+    private static int removeFromInventory(Inventory inv, UUID ownerUuid) {
+        int removedCount = 0;
         for (int i = 0; i < inv.getSize(); i++) {
             ItemStack item = inv.getItem(i);
             if (item == null) continue;
 
             if (isOwnedHead(item, ownerUuid)) {
                 inv.setItem(i, null);
+                removedCount++;
             } else if (isShulkerBox(item.getType())) {
-                removeFromShulkerItem(inv, i, item, ownerUuid);
+                removedCount += removeFromShulkerItem(inv, i, item, ownerUuid);
             }
         }
+        return removedCount;
     }
 
-    private static void removeFromShulkerItem(Inventory inv, int slot, ItemStack item, UUID ownerUuid) {
-        if (!item.hasItemMeta()) return;
-        if (!(item.getItemMeta() instanceof BlockStateMeta bsm)) return;
+    private static int removeFromShulkerItem(Inventory inv, int slot, ItemStack item, UUID ownerUuid) {
+        if (!item.hasItemMeta()) return 0;
+        if (!(item.getItemMeta() instanceof BlockStateMeta bsm)) return 0;
         BlockState blockState = bsm.getBlockState();
-        if (!(blockState instanceof InventoryHolder shulkerHolder)) return;
+        if (!(blockState instanceof InventoryHolder shulkerHolder)) return 0;
 
         Inventory shulkerInv = shulkerHolder.getInventory();
+        int removedCount = 0;
         boolean changed = false;
         for (int j = 0; j < shulkerInv.getSize(); j++) {
             if (isOwnedHead(shulkerInv.getItem(j), ownerUuid)) {
                 shulkerInv.setItem(j, null);
                 changed = true;
+                removedCount++;
             }
         }
         if (changed) {
@@ -189,6 +212,7 @@ public class HeadDropListener implements Listener {
             item.setItemMeta(bsm);
             inv.setItem(slot, item);
         }
+        return removedCount;
     }
 
     private static boolean isShulkerBox(Material type) {

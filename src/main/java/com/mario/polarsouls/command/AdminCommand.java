@@ -222,7 +222,10 @@ public class AdminCommand implements CommandExecutor, TabCompleter {
                         "&e" + playerData.getUsername() + " &7does not have an active grace period."));
                 return;
             }
-            databaseManager.setGraceUntil(playerData.getUuid(), -1L);
+            // Set to 0L (not -1L) to explicitly mark grace as removed while preserving
+            // the legacy grace fallback behavior if needed. This prevents the legacy
+            // grace calculation from being re-triggered after explicit removal.
+            databaseManager.setGraceUntil(playerData.getUuid(), 0L);
             plugin.getLogger().log(Level.INFO, "{0} removed grace period for {1}",
                     new Object[]{sender.getName(), playerData.getUsername()});
             sender.sendMessage(MessageUtil.get("admin-grace-removed",
@@ -314,6 +317,15 @@ public class AdminCommand implements CommandExecutor, TabCompleter {
         if (pending == null) {
             sender.sendMessage(MessageUtil.colorize(
                     "&cNo pending grace confirmation found. Use /psadmin grace set first."));
+            return;
+        }
+
+        // Check if confirmation has expired (older than 2 minutes)
+        long confirmationAge = System.currentTimeMillis() - pending.createdAt();
+        long twoMinutesMillis = 2 * 60 * 1000L;
+        if (confirmationAge > twoMinutesMillis) {
+            sender.sendMessage(MessageUtil.colorize(
+                    "&cGrace confirmation expired. Please run /psadmin grace set again."));
             return;
         }
 
@@ -427,7 +439,11 @@ public class AdminCommand implements CommandExecutor, TabCompleter {
             }
             case PolarSouls.MODE_HYBRID -> {
                 target.setGameMode(GameMode.SPECTATOR);
-                target.sendMessage(MessageUtil.get("death-now-spectator"));
+                // Use hybrid-specific warning message with timeout info (consistent with normal death flow)
+                int timeout = plugin.getHybridTimeoutSeconds();
+                String timeoutStr = formatTime(timeout);
+                target.sendMessage(MessageUtil.get("death-hybrid-warning",
+                        "timeout", timeoutStr));
                 Bukkit.getScheduler().runTaskLater(plugin, () -> {
                     if (target.isOnline()) {
                         target.sendMessage(MessageUtil.get("death-sent-to-limbo"));
@@ -444,6 +460,16 @@ public class AdminCommand implements CommandExecutor, TabCompleter {
                 }, plugin.getSendToLimboDelayTicks());
             }
         }
+    }
+
+    private static String formatTime(int seconds) {
+        if (seconds >= 3600) {
+            return (seconds / 3600) + "h " + ((seconds % 3600) / 60) + "m";
+        }
+        if (seconds >= 60) {
+            return (seconds / 60) + "m " + (seconds % 60) + "s";
+        }
+        return seconds + "s";
     }
 
     private void handleRevive(CommandSender sender, String[] args) {

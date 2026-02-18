@@ -224,7 +224,10 @@ public class DatabaseManager {
             ps.setLong(8, data.getGraceUntil());
 
             ps.executeUpdate();
-            
+
+            // Always invalidate cache after save to ensure consistency
+            deathStatusCache.remove(data.getUuid());
+
             // Avoid string concatenation overhead unless debug is enabled
             if (plugin.isDebugMode()) {
                 plugin.debug("Saved player data: " + data);
@@ -232,9 +235,7 @@ public class DatabaseManager {
 
         } catch (SQLException e) {
             plugin.getLogger().log(Level.WARNING, () -> "Failed to save player " + data.getUuid());
-        } finally {
-            // Always invalidate cache after save attempt to ensure consistency
-            // This handles both success and failure cases
+            // Invalidate cache on failure too to force fresh read on next check
             deathStatusCache.remove(data.getUuid());
         }
     }
@@ -385,26 +386,29 @@ public class DatabaseManager {
     }
 
     // gets plugin version from db, returns null if first time running
-    public String getPluginVersion() {
+    // The key parameter allows tracking different versions per server role (main/limbo)
+    public String getPluginVersion(String key) {
         String metaTable = "polarsouls_meta";
         try (Connection conn = dataSource.getConnection()) {
             // Check if metadata table exists (and create if needed)
             createMetadataTableIfNeeded(conn, metaTable);
 
-            String sql = "SELECT version FROM " + metaTable + " WHERE key_ = 'plugin_version'";
-            try (PreparedStatement ps = conn.prepareStatement(sql);
-                 ResultSet rs = ps.executeQuery()) {
-                if (rs.next()) {
-                    return rs.getString("version");
+            String sql = "SELECT version FROM " + metaTable + " WHERE key_ = ?";
+            try (PreparedStatement ps = conn.prepareStatement(sql)) {
+                ps.setString(1, key);
+                try (ResultSet rs = ps.executeQuery()) {
+                    if (rs.next()) {
+                        return rs.getString("version");
+                    }
                 }
             }
         } catch (SQLException e) {
-            plugin.getLogger().log(Level.WARNING, () -> "Failed to get plugin version from database");
+            plugin.getLogger().log(Level.WARNING, () -> "Failed to get plugin version from database for key: " + key);
         }
         return null;
     }
 
-    public void savePluginVersion(String version) {
+    public void savePluginVersion(String key, String version) {
         String metaTable = "polarsouls_meta";
         try (Connection conn = dataSource.getConnection()) {
             createMetadataTableIfNeeded(conn, metaTable);
@@ -412,12 +416,12 @@ public class DatabaseManager {
             String sql = "INSERT INTO " + metaTable + " (key_, version) VALUES (?, ?) "
                     + "ON DUPLICATE KEY UPDATE version = VALUES(version)";
             try (PreparedStatement ps = conn.prepareStatement(sql)) {
-                ps.setString(1, "plugin_version");
+                ps.setString(1, key);
                 ps.setString(2, version);
                 ps.executeUpdate();
             }
         } catch (SQLException e) {
-            plugin.getLogger().log(Level.WARNING, () -> "Failed to save plugin version to database");
+            plugin.getLogger().log(Level.WARNING, () -> "Failed to save plugin version to database for key: " + key);
         }
     }
 

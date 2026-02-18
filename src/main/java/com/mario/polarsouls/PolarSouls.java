@@ -541,21 +541,35 @@ public final class PolarSouls extends JavaPlugin implements Listener {
     // checks if main and limbo are running same version, warns if not
     private void checkVersionCompatibility() {
         String currentVersion = getDescription().getVersion();
-        String storedVersion = databaseManager.getPluginVersion();
+        // Use different keys for main and limbo servers to properly track each
+        String versionKey = isLimboServer ? "limbo_version" : "main_version";
+        String otherVersionKey = isLimboServer ? "main_version" : "limbo_version";
 
-        if (storedVersion == null) {
-            // First time setup - store this version
-            databaseManager.savePluginVersion(currentVersion);
-            getLogger().log(Level.INFO, "Plugin version {0} registered in database.", currentVersion);
-            return;
+        String storedVersion = databaseManager.getPluginVersion(versionKey);
+        String otherServerVersion = databaseManager.getPluginVersion(otherVersionKey);
+
+        // Always update our version in database (allows version changes to be detected immediately)
+        databaseManager.savePluginVersion(versionKey, currentVersion);
+
+        if (storedVersion != null && !currentVersion.equals(storedVersion)) {
+            getLogger().log(Level.INFO, "Plugin version updated from {0} to {1}",
+                    new Object[]{storedVersion, currentVersion});
+        } else if (storedVersion == null) {
+            getLogger().log(Level.INFO, "Plugin version {0} registered in database for {1} server.",
+                    new Object[]{currentVersion, isLimboServer ? "Limbo" : "Main"});
         }
 
-        if (!currentVersion.equals(storedVersion)) {
+        // Check if the other server (Main vs Limbo) has a different version
+        if (otherServerVersion != null && !currentVersion.equals(otherServerVersion)) {
+            String ourRole = isLimboServer ? "Limbo" : "Main";
+            String otherRole = isLimboServer ? "Main" : "Limbo";
             getLogger().warning("╔════════════════════════════════════════╗");
             getLogger().warning("║  ⚠️  VERSION MISMATCH DETECTED!       ║");
             getLogger().warning("╠════════════════════════════════════════╣");
-            getLogger().log(Level.WARNING, "║ Current: {0}", currentVersion);
-            getLogger().log(Level.WARNING, "║ Database: {0}", storedVersion);
+            getLogger().log(Level.WARNING, "║ {0} Server: {1}", new Object[]{
+                    String.format("%-6s", ourRole), String.format("%-27s", currentVersion)});
+            getLogger().log(Level.WARNING, "║ {0} Server: {1}", new Object[]{
+                    String.format("%-6s", otherRole), String.format("%-27s", otherServerVersion)});
             getLogger().warning("║                                        ║");
             getLogger().warning("║ ENSURE both Main and Limbo servers    ║");
             getLogger().warning("║ run the SAME plugin version!          ║");

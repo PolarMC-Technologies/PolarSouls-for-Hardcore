@@ -225,9 +225,11 @@ public class MainServerListener implements Listener {
 
         UUID uuid = player.getUniqueId();
         long now = System.currentTimeMillis();
-        // Use a synchronous save on the main thread to favor data integrity on server crash.
-        // Note: this can still block on DB access under load; monitor if quit lag becomes an issue.
-        db.setLastSeen(uuid, now);
+        // Run async to avoid blocking the main thread with DB writes
+        // Trade-off: may lose very recent quit timestamps on crash, but prevents lag
+        Bukkit.getScheduler().runTaskAsynchronously(plugin, () -> {
+            db.setLastSeen(uuid, now);
+        });
     }
 
     private void handleDeathAsync(Player player, UUID uuid) {
@@ -236,6 +238,8 @@ public class MainServerListener implements Listener {
             // Use grace period overload to ensure proper grace tracking for new players
             data = PlayerData.createNew(uuid, player.getName(), plugin.getDefaultLives(),
                                         plugin.getGracePeriodMillis());
+            // Save the new player data with grace period set
+            db.savePlayer(data);
         }
 
         if (data.isInGracePeriod(plugin.getGracePeriodMillis())) {
