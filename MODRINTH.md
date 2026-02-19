@@ -6,7 +6,7 @@
 
 A hardcore lives system plugin for Velocity proxy networks. When you die enough times, you get exiled to a Limbo server until your teammates revive you.
 
-> **[Read the Full Documentation →](https://ssoggytacoblud.github.io/PolarSouls-for-Hardcore/)** - Complete installation guides, configuration reference, troubleshooting, and more!
+> **[Read the Full Documentation →](https://polarmc-technologies.github.io/PolarSouls-for-Hardcore/)** - Complete installation guides, configuration reference, troubleshooting, and more!
 
 ---
 
@@ -107,7 +107,7 @@ Wear a dead player's head = Speed II and Night Vision.
 
 ### Quick Start (8 Steps)
 
-1. **Download** `PolarSouls-1.3.6.jar` from [Releases](https://github.com/SSoggyTacoBlud/PolarSouls-for-Hardcore/releases)
+1. **Download** `PolarSouls-1.3.6.jar` from [Releases](https://github.com/polarmc-technologies/PolarSouls-for-Hardcore/releases)
 
 2. **Install** the JAR in `plugins/` folder of **both** servers (Main and Limbo)
 
@@ -136,7 +136,7 @@ Wear a dead player's head = Speed II and Night Vision.
    - HRM features (revival structures, heads, recipes)
    - Messages and colors
    
-   See the **Configuration** section below for key settings. If you need help, reach out via [GitHub Issues](https://github.com/SSoggyTacoBlud/PolarSouls-for-Hardcore/issues).
+   See the **Configuration** section below for key settings. If you need help, reach out via [GitHub Issues](https://github.com/polarmc-technologies/PolarSouls-for-Hardcore/issues).
 
 8. **Restart & test** - Start both servers and test the full death → Limbo → revival flow!
 
@@ -267,10 +267,10 @@ All messages are customizable with Minecraft color codes!
 - Update both simultaneously
 
 **Need more help?**
-- [Full Documentation Wiki](https://ssoggytacoblud.github.io/PolarSouls-for-Hardcore/)
-- [Troubleshooting Guide](https://ssoggytacoblud.github.io/PolarSouls-for-Hardcore/troubleshooting.html)
-- [FAQ](https://ssoggytacoblud.github.io/PolarSouls-for-Hardcore/faq.html)
-- [Open an issue](https://github.com/SSoggyTacoBlud/PolarSouls-for-Hardcore/issues) with your version, Minecraft version, proxy type, and console errors
+- [Full Documentation Wiki](https://polarmc-technologies.github.io/PolarSouls-for-Hardcore/)
+- [Troubleshooting Guide](https://polarmc-technologies.github.io/PolarSouls-for-Hardcore/troubleshooting.html)
+- [FAQ](https://polarmc-technologies.github.io/PolarSouls-for-Hardcore/faq.html)
+- [Open an issue](https://github.com/polarmc-technologies/PolarSouls-for-Hardcore/issues) with your version, Minecraft version, proxy type, and console errors
 
 ---
 
@@ -286,7 +286,7 @@ PolarSouls includes automatic update checking via Modrinth:
 
 ## License
 
-**GPL-3.0** - See [LICENSE](https://github.com/SSoggyTacoBlud/PolarSouls-for-Hardcore/blob/main/LICENSE)
+**GPL-3.0** - See [LICENSE](https://github.com/polarmc-technologies/PolarSouls-for-Hardcore/blob/main/LICENSE)
 
 ---
 
@@ -294,8 +294,8 @@ PolarSouls includes automatic update checking via Modrinth:
 
 - Revival mechanics inspired by [Hardcore Revive Mod](https://modrinth.com/plugin/hardcore-revive-mod)
 - Author: SSoggyTacoMan
-- GitHub: [SSoggyTacoBlud/PolarSouls-for-Hardcore](https://github.com/SSoggyTacoBlud/PolarSouls-for-Hardcore)
+- GitHub: [polarmc-technologies/PolarSouls-for-Hardcore](https://github.com/polarmc-technologies/PolarSouls-for-Hardcore)
 
 ---
 
-**Enjoying PolarSouls?** Heart it on Modrinth and star the [GitHub repo](https://github.com/SSoggyTacoBlud/PolarSouls-for-Hardcore)!
+**Enjoying PolarSouls?** Heart it on Modrinth and star the [GitHub repo](https://github.com/polarmc-technologies/PolarSouls-for-Hardcore)!

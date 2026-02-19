@@ -31,12 +31,12 @@ Check your or another player's lives, death status, and grace period remaining.
 /pstatus
 
 # Check another player's status
-/pstatus SSoggyTacoBlud
+/pstatus YourUsername
 ```
 
 **Output Example:**
 ```
-SSoggyTacoBlud - Lives: 2 - Status: Alive
+YourUsername - Lives: 2 - Status: Alive
 ```
 
 ---
@@ -50,7 +50,7 @@ Revive a dead player and return them from Limbo to the Main server. Can be used 
 
 **Usage:**
 ```bash
-/revive SSoggyTacoBlud
+/revive YourUsername
 ```
 
 **Output:**
@@ -109,7 +109,7 @@ Set a player's life count to a specific value.
 **Usage:**
 ```bash
 # Give a player 5 lives
-/psadmin lives SSoggyTacoBlud 5
+/psadmin lives YourUsername 5
 
 # Set player to 1 life
 /psadmin lives NewPlayer 1
@@ -129,7 +129,7 @@ Revive a dead player and return them to the Main server with restored lives.
 
 **Usage:**
 ```bash
-/psadmin revive SSoggyTacoBlud
+/psadmin revive YourUsername
 ```
 
 **Result:**
@@ -194,7 +194,7 @@ Reset a player to defaults: restore default lives count and clear any custom gra
 
 **Usage:**
 ```bash
-/psadmin reset SSoggyTacoBlud
+/psadmin reset YourUsername
 ```
 
 **Result:**
@@ -214,13 +214,13 @@ View detailed player information including UUID, lives, death state, timestamps,
 
 **Usage:**
 ```bash
-/psadmin info SSoggyTacoBlud
+/psadmin info YourUsername
 ```
 
 **Output Example:**
 ```
 === Player Information ===
-Username: SSoggyTacoBlud
+Username: YourUsername
 UUID: a1b2c3d4-e5f6-7890-abcd-ef1234567890
 Lives: 2
 Status: Alive
@@ -260,7 +260,7 @@ This command still works but is deprecated in favor of the newer admin command s
 
 **Usage:**
 ```bash
-/psetlives SSoggyTacoBlud 5
+/psetlives YourUsername 5
 ```
 
 ---
@@ -354,7 +354,7 @@ Output: NewPlayer - Lives: 2 - Status: Alive (Grace: 23h 45m remaining)
 
 ```bash
 # Get detailed player info
-/psadmin info SSoggyTacoBlud
+/psadmin info YourUsername
 
 # Output includes:
 # - UUID
@@ -408,7 +408,7 @@ Output: NewPlayer - Lives: 2 - Status: Alive (Grace: 23h 45m remaining)
 **Using LuckPerms:**
 ```bash
 # Give admin permission
-/lp user SSoggyTacoBlud permission set polarsouls.admin true
+/lp user YourUsername permission set polarsouls.admin true
 
 # Give revive permission only
 /lp user ModName permission set polarsouls.revive true
@@ -419,7 +419,7 @@ Output: NewPlayer - Lives: 2 - Status: Alive (Grace: 23h 45m remaining)
 
 **Using PermissionsEx:**
 ```bash
-/pex user SSoggyTacoBlud add polarsouls.admin
+/pex user YourUsername add polarsouls.admin
 /pex user ModName add polarsouls.revive
 ```
 
