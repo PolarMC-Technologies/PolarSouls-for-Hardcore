@@ -1,0 +1,761 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="PolarSouls - A hardcore lives system plugin for Minecraft 1.21.X with exile mechanics, revival rituals, and cross-server MySQL persistence.">
+    <title>PolarSouls Documentation</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <header>
+        <div class="container header-content">
+            <div class="header-text">
+                <h1>PolarSouls</h1>
+                <p class="subtitle">Hardcore Lives System for Minecraft 1.21.X</p>
+                <div class="header-badges">
+                    <a class="badge" href="https://modrinth.com/plugin/polarsouls" target="_blank" rel="noopener noreferrer">Modrinth</a>
+                    <a class="badge" href="https://github.com/polarmc-technologies/PolarSouls-for-Hardcore/releases" target="_blank" rel="noopener noreferrer">v1.3.6</a>
+                    <a class="badge" href="https://github.com/polarmc-technologies/PolarSouls-for-Hardcore" target="_blank" rel="noopener noreferrer">GitHub</a>
+                </div>
+            </div>
+            <button id="theme-toggle" class="theme-toggle" aria-label="Toggle theme">
+                <img src="assets/light-mode.svg" alt="Toggle theme" class="theme-icon" id="theme-icon">
+            </button>
+        </div>
+    </header>
+
+    <nav>
+        <div class="container">
+            <ul>
+                <li><a href="#overview">Overview</a></li>
+                <li><a href="#quick-start">Quick Start</a></li>
+                <li><a href="#installation">Installation</a></li>
+                <li><a href="#configuration">Configuration</a></li>
+                <li><a href="#commands">Commands</a></li>
+                <li><a href="#revival-system">Revival System</a></li>
+                <li><a href="#troubleshooting">Troubleshooting</a></li>
+                <li><a href="#faq">FAQ</a></li>
+                <li><a href="#support">Support</a></li>
+            </ul>
+        </div>
+    </nav>
+
+    <main class="container">
+
+        <!-- OVERVIEW -->
+        <section id="overview">
+            <h2>Overview</h2>
+            <p>PolarSouls is a sophisticated hardcore lives system plugin for Minecraft 1.21.X running on Spigot, Paper, or Purpur, designed for Velocity proxy networks. Players are exiled to a Limbo server upon losing all lives, with multiple revival methods to bring them back — creating high-stakes teamwork and memorable moments.</p>
+
+            <div class="feature-grid">
+                <div class="feature-card">
+                    <h3>Lives System</h3>
+                    <p>Configurable starting lives (default: 2) with a maximum cap (default: 5). Extra Life items let players earn additional lives through crafting.</p>
+                </div>
+                <div class="feature-card">
+                    <h3>Three Death Modes</h3>
+                    <p>Choose between immediate Limbo exile, permanent spectator on Main, or a hybrid countdown — giving your community the experience they want.</p>
+                </div>
+                <div class="feature-card">
+                    <h3>Revival Rituals</h3>
+                    <p>Build a 3×3×3 ritual structure, craft a Revive Skull item, or use admin commands to bring dead teammates back from Limbo.</p>
+                </div>
+                <div class="feature-card">
+                    <h3>Grace Period</h3>
+                    <p>New players get configurable protected time (counts only online hours) to learn the server before they risk losing lives.</p>
+                </div>
+                <div class="feature-card">
+                    <h3>Cross-Server Architecture</h3>
+                    <p>MySQL-backed persistence across Main and Limbo servers. Dead players transfer automatically; revivals teleport them back instantly.</p>
+                </div>
+                <div class="feature-card">
+                    <h3>Limbo Visiting</h3>
+                    <p>Alive players can visit Limbo anytime to interact with dead teammates, then leave freely with <code>/leavelimbo</code>.</p>
+                </div>
+            </div>
+
+            <div class="info-box">
+                <h3>Requirements</h3>
+                <ul>
+                    <li><strong>Minecraft:</strong> 1.21.X (Spigot, Paper, or Purpur)</li>
+                    <li><strong>Proxy:</strong> Velocity (BungeeCord/Waterfall may work but is untested)</li>
+                    <li><strong>Database:</strong> MySQL 5.7+ or MariaDB 10.2+</li>
+                    <li><strong>Java:</strong> 21 or higher</li>
+                    <li><strong>Servers:</strong> Two backend servers (Main + Limbo)</li>
+                </ul>
+            </div>
+
+            <div class="warning-box">
+                <strong>Important:</strong> Do <strong>NOT</strong> enable <code>hardcore=true</code> in <code>server.properties</code>. Leave it as <code>false</code> — the plugin manages hardcore mechanics internally.
+            </div>
+        </section>
+
+        <!-- QUICK START -->
+        <section id="quick-start">
+            <h2>Quick Start</h2>
+            <p>Get PolarSouls running in 8 steps. For full details, see the <a href="#installation">Installation</a> section.</p>
+
+            <ol class="numbered-list">
+                <li><strong>Download</strong> the latest <code>PolarSouls-1.3.6.jar</code> from <a href="https://github.com/polarmc-technologies/PolarSouls-for-Hardcore/releases" target="_blank" rel="noopener noreferrer">GitHub Releases</a> or <a href="https://modrinth.com/plugin/polarsouls" target="_blank" rel="noopener noreferrer">Modrinth</a>.</li>
+                <li><strong>Install</strong> the JAR in the <code>plugins/</code> folder of <em>both</em> backend servers (Main and Limbo). Do <strong>NOT</strong> install on the Velocity proxy.</li>
+                <li><strong>Start both servers</strong> to generate default <code>plugins/PolarSouls/config.yml</code> files, then stop both servers.</li>
+                <li><strong>Configure database</strong> — edit <code>config.yml</code> on <em>both servers</em> with identical MySQL credentials.</li>
+                <li><strong>Set server roles</strong> — set <code>is-limbo-server: false</code> on Main and <code>is-limbo-server: true</code> on Limbo. Make sure <code>main-server-name</code> and <code>limbo-server-name</code> match your <code>velocity.toml</code>.</li>
+                <li><strong>Set Limbo spawn</strong> — start the Limbo server, join it, stand at the desired spawn point, and run <code>/setlimbospawn</code>.</li>
+                <li><strong>Configure Velocity</strong> — set <code>player-info-forwarding-mode = "modern"</code> in <code>velocity.toml</code>.</li>
+                <li><strong>Restart both servers</strong> and test: check <code>/pstatus</code>, lose all lives, verify Limbo transfer, then revive with <code>/psadmin revive &lt;player&gt;</code>.</li>
+            </ol>
+
+            <div class="tip-box">
+                <strong>Tip:</strong> The server names in <code>config.yml</code> must <em>exactly</em> match the names in your <code>velocity.toml</code> (case-sensitive).
+            </div>
+
+            <h3>Death Mode Quick Reference</h3>
+            <table>
+                <thead>
+                    <tr>
+                        <th>Mode</th>
+                        <th>Behavior</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td><code>hybrid</code> (default)</td>
+                        <td>Dead players enter spectator on Main for 5 minutes; transfer to Limbo if not revived in time.</td>
+                    </tr>
+                    <tr>
+                        <td><code>spectator</code></td>
+                        <td>Dead players stay on Main in spectator mode indefinitely until revived.</td>
+                    </tr>
+                    <tr>
+                        <td><code>limbo</code></td>
+                        <td>Dead players are immediately transferred to the Limbo server.</td>
+                    </tr>
+                </tbody>
+            </table>
+        </section>
+
+        <!-- INSTALLATION -->
+        <section id="installation">
+            <h2>Installation</h2>
+
+            <h3>Network Architecture</h3>
+            <p>PolarSouls requires two backend servers connected through a Velocity proxy, sharing a single MySQL database:</p>
+            <pre><code>                ┌─────────────────┐
+                │  Velocity Proxy │
+                └────────┬────────┘
+                         │
+          ┌──────────────┴──────────────┐
+          │                             │
+    ┌─────▼─────┐                 ┌─────▼─────┐
+    │   Main    │◄───────────────►│   Limbo   │
+    │  Server   │    MySQL/MariaDB │  Server   │
+    └───────────┘                 └───────────┘</code></pre>
+
+            <h3>Database Setup</h3>
+            <p>PolarSouls creates the necessary table automatically, but you must create the database first.</p>
+            <pre><code>CREATE DATABASE polarsouls CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
+CREATE USER 'polarsouls_user'@'localhost' IDENTIFIED BY 'your_secure_password';
+GRANT SELECT, INSERT, UPDATE, DELETE, CREATE, ALTER ON polarsouls.* TO 'polarsouls_user'@'localhost';
+FLUSH PRIVILEGES;</code></pre>
+            <p>For Pterodactyl or shared hosting, create the database from your hosting panel and note the provided credentials.</p>
+
+            <h3>Plugin Installation</h3>
+            <ol class="numbered-list">
+                <li>Stop both servers if running.</li>
+                <li>Place <code>PolarSouls-1.3.6.jar</code> in the <code>plugins/</code> folder on both servers.</li>
+                <li>Start both servers to generate config files, then stop them again.</li>
+                <li>Edit <code>config.yml</code> on both servers (see Configuration section).</li>
+                <li>Start both servers and verify database connection messages in the console.</li>
+            </ol>
+
+            <div class="warning-box">
+                <strong>Critical:</strong> Both servers must use the <em>same plugin version</em> and <em>identical database credentials</em>. A mismatch will cause data synchronization failures.
+            </div>
+
+            <h3>Velocity Configuration</h3>
+            <pre><code>player-info-forwarding-mode = "modern"
+
+[servers]
+  main = "localhost:25566"
+  limbo = "localhost:25567"
+
+try = ["main"]</code></pre>
+
+            <h3>Main Server Config</h3>
+            <pre><code>is-limbo-server: false
+main-server-name: "main"
+limbo-server-name: "limbo"
+
+database:
+  host: "localhost"
+  port: 3306
+  name: "polarsouls"
+  username: "polarsouls_user"
+  password: "your_secure_password"
+  pool-size: 5
+  table-name: "hardcore_players"
+
+lives:
+  default: 2
+  max-lives: 5
+  on-revive: 1
+  grace-period: "24h"
+  revive-cooldown-seconds: 30
+
+main:
+  death-mode: "hybrid"
+  hybrid-timeout-seconds: 300
+  detect-hrm-revive: true
+  send-to-limbo-delay-ticks: 20</code></pre>
+
+            <h3>Limbo Server Config</h3>
+            <pre><code>is-limbo-server: true
+main-server-name: "main"
+limbo-server-name: "limbo"
+
+database:
+  host: "localhost"
+  port: 3306
+  name: "polarsouls"
+  username: "polarsouls_user"
+  password: "your_secure_password"
+  pool-size: 5
+  table-name: "hardcore_players"
+
+limbo:
+  check-interval-seconds: 3
+  spawn:
+    world: "world"
+    x: 0.5
+    y: 65.0
+    z: 0.5</code></pre>
+
+            <h3>Common Mistakes to Avoid</h3>
+            <div class="faq-item">
+                <h4>Installing on the proxy</h4>
+                <p>PolarSouls is a backend plugin. Do NOT place it in the Velocity or BungeeCord plugins folder.</p>
+            </div>
+            <div class="faq-item">
+                <h4>Server names don't match proxy config</h4>
+                <p>Config says <code>main</code> but <code>velocity.toml</code> says <code>survival</code>? Player transfers will silently fail. Names are case-sensitive.</p>
+            </div>
+            <div class="faq-item">
+                <h4>Enabling Minecraft hardcore mode</h4>
+                <p>Keep <code>hardcore=false</code> in <code>server.properties</code>. The plugin manages hardcore mechanics itself.</p>
+            </div>
+            <div class="faq-item">
+                <h4>Forgetting to set Limbo spawn</h4>
+                <p>Dead players will spawn at the world default spawn instead of your intended location. Always run <code>/setlimbospawn</code> after setup.</p>
+            </div>
+        </section>
+
+        <!-- CONFIGURATION -->
+        <section id="configuration">
+            <h2>Configuration</h2>
+            <p>All settings live in <code>plugins/PolarSouls/config.yml</code> on each server. After editing, run <code>/psadmin reload</code> (from console or an already-authorized account) or restart the server.</p>
+
+            <h3>Lives System</h3>
+            <table>
+                <thead>
+                    <tr>
+                        <th>Key</th>
+                        <th>Default</th>
+                        <th>Description</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td><code>lives.default</code></td>
+                        <td><code>2</code></td>
+                        <td>Starting lives for new players (1 = classic hardcore, 2 = standard)</td>
+                    </tr>
+                    <tr>
+                        <td><code>lives.max-lives</code></td>
+                        <td><code>5</code></td>
+                        <td>Maximum lives cap; players cannot exceed this via items or commands</td>
+                    </tr>
+                    <tr>
+                        <td><code>lives.on-revive</code></td>
+                        <td><code>1</code></td>
+                        <td>Lives restored when a dead player is revived</td>
+                    </tr>
+                    <tr>
+                        <td><code>lives.grace-period</code></td>
+                        <td><code>"24h"</code></td>
+                        <td>New player protection (counts only online time). Format: <code>"24h"</code>, <code>"2h30m"</code>, <code>"0"</code> to disable</td>
+                    </tr>
+                    <tr>
+                        <td><code>lives.revive-cooldown-seconds</code></td>
+                        <td><code>30</code></td>
+                        <td>Post-revival protection seconds where the player cannot lose lives</td>
+                    </tr>
+                </tbody>
+            </table>
+
+            <h3>Death Modes</h3>
+            <pre><code>main:
+  death-mode: "hybrid"          # hybrid | spectator | limbo
+  hybrid-timeout-seconds: 300   # 5 minutes for hybrid mode</code></pre>
+
+            <h3>HRM (Hardcore Revive Mode)</h3>
+            <pre><code>hrm:
+  enabled: true               # Master on/off for all HRM features
+  drop-heads: true            # Drop player heads on death
+  structure-revive: true      # Enable ritual structure detection
+  revive-skull-recipe: true   # Enable Revive Skull crafting
+  head-wearing-effects: true  # Speed II + Night Vision when wearing dead player's head
+  detect-hrm-revive: true     # Auto-detect completed ritual structures
+  leave-structure-base: true  # Keep base structure after revival</code></pre>
+
+            <h3>Limbo OP Security</h3>
+            <p>This prevents players who are OP only on the Limbo server from executing admin/revive commands.</p>
+            <pre><code>limbo-op-security-check: true   # Recommended: keep enabled
+
+limbo-trusted-admins:
+  - "069a79f4-44e9-4726-a5be-fca90e38aaf5"  # UUID (recommended)
+  - "YourUsername"                            # Username also works</code></pre>
+            <div class="tip-box">
+                <strong>Tip:</strong> Run <code>/psadmin reload</code> from the server console (or an already-whitelisted admin account) after adding new trusted admins — a newly-added user cannot reload their own access.
+            </div>
+
+            <h3>Extra Life Item</h3>
+            <pre><code>extra-life:
+  enabled: true
+  item-material: "NETHER_STAR"
+  recipe:
+    row1: "DED"   # D=Diamond Block, E=Emerald Block
+    row2: "INI"   # I=Netherite Ingot, N=Nether Star
+    row3: "GEG"   # G=Gold Block
+    ingredients:
+      G: "GOLD_BLOCK"
+      E: "EMERALD_BLOCK"
+      N: "NETHER_STAR"
+      D: "DIAMOND_BLOCK"
+      I: "NETHERITE_INGOT"</code></pre>
+        </section>
+
+        <!-- COMMANDS -->
+        <section id="commands">
+            <h2>Commands</h2>
+
+            <h3>Player Commands</h3>
+            <table>
+                <thead>
+                    <tr>
+                        <th>Command</th>
+                        <th>Permission</th>
+                        <th>Description</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td><code>/pstatus [player]</code></td>
+                        <td><code>polarsouls.status</code> (all)</td>
+                        <td>Check your lives, death status, and grace period remaining</td>
+                    </tr>
+                    <tr>
+                        <td><code>/revive &lt;player&gt;</code></td>
+                        <td><code>polarsouls.revive</code> (op)</td>
+                        <td>Revive a dead player and return them to Main</td>
+                    </tr>
+                    <tr>
+                        <td><code>/limbo</code></td>
+                        <td><code>polarsouls.visit</code> (all)</td>
+                        <td>Visit the Limbo server as a living player. Alias: <code>/visitlimbo</code></td>
+                    </tr>
+                    <tr>
+                        <td><code>/leavelimbo</code></td>
+                        <td><code>polarsouls.visit</code> (all)</td>
+                        <td>Return from Limbo to Main (living visitors only). Alias: <code>/hub</code></td>
+                    </tr>
+                </tbody>
+            </table>
+
+            <h3>Admin Commands</h3>
+            <p>All <code>/psadmin</code> commands require <code>polarsouls.admin</code> (op by default). Alias: <code>/psa</code></p>
+            <table>
+                <thead>
+                    <tr>
+                        <th>Command</th>
+                        <th>Description</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td><code>/psadmin revive &lt;player&gt;</code></td>
+                        <td>Revive a dead player; works offline — they revive on next login</td>
+                    </tr>
+                    <tr>
+                        <td><code>/psadmin kill &lt;player&gt;</code></td>
+                        <td>Force-kill a player (sets lives to 0 and sends to Limbo)</td>
+                    </tr>
+                    <tr>
+                        <td><code>/psadmin lives &lt;player&gt; &lt;amount&gt;</code></td>
+                        <td>Set a player's life count to a specific value</td>
+                    </tr>
+                    <tr>
+                        <td><code>/psadmin grace &lt;player&gt; &lt;hours&gt;</code></td>
+                        <td>Set or remove a player's grace period (0 = disable)</td>
+                    </tr>
+                    <tr>
+                        <td><code>/psadmin reset &lt;player&gt;</code></td>
+                        <td>Reset player to defaults: default lives, no grace, alive status</td>
+                    </tr>
+                    <tr>
+                        <td><code>/psadmin info &lt;player&gt;</code></td>
+                        <td>View detailed player info: UUID, lives, death state, timestamps, grace period</td>
+                    </tr>
+                    <tr>
+                        <td><code>/psadmin reload</code></td>
+                        <td>Reload configuration without server restart</td>
+                    </tr>
+                    <tr>
+                        <td><code>/setlimbospawn</code></td>
+                        <td>Set the Limbo spawn to your current position (run on Limbo server)</td>
+                    </tr>
+                </tbody>
+            </table>
+
+            <h3>Permissions</h3>
+            <table>
+                <thead>
+                    <tr>
+                        <th>Permission</th>
+                        <th>Default</th>
+                        <th>Description</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td><code>polarsouls.admin</code></td>
+                        <td>op</td>
+                        <td>Full admin access; all <code>/psadmin</code> commands and <code>/setlimbospawn</code></td>
+                    </tr>
+                    <tr>
+                        <td><code>polarsouls.revive</code></td>
+                        <td>op</td>
+                        <td>Allows using <code>/revive</code> and <code>/psadmin revive</code></td>
+                    </tr>
+                    <tr>
+                        <td><code>polarsouls.status</code></td>
+                        <td>true</td>
+                        <td>Allows using <code>/pstatus</code></td>
+                    </tr>
+                    <tr>
+                        <td><code>polarsouls.visit</code></td>
+                        <td>true</td>
+                        <td>Allows using <code>/limbo</code>, <code>/leavelimbo</code>, <code>/hub</code></td>
+                    </tr>
+                    <tr>
+                        <td><code>polarsouls.bypass</code></td>
+                        <td>false</td>
+                        <td>Bypass all death mechanics (passive, no commands)</td>
+                    </tr>
+                    <tr>
+                        <td><code>polarsouls.bypass-limbo-op-security</code></td>
+                        <td>false</td>
+                        <td>Allow OP users on Limbo to execute privileged commands</td>
+                    </tr>
+                </tbody>
+            </table>
+        </section>
+
+        <!-- REVIVAL SYSTEM -->
+        <section id="revival-system">
+            <h2>Revival System</h2>
+            <p>PolarSouls supports four revival methods that can be used in combination:</p>
+
+            <table>
+                <thead>
+                    <tr>
+                        <th>Method</th>
+                        <th>Who</th>
+                        <th>Requirement</th>
+                        <th>Speed</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td><strong>Ritual Structure</strong></td>
+                        <td>Any player</td>
+                        <td>Build 3×3×3 structure + place dead player's head</td>
+                        <td>Slow (building)</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Revive Skull</strong></td>
+                        <td>Any player</td>
+                        <td>Craft item, use GUI to get dead player's head, then build structure</td>
+                        <td>Medium</td>
+                    </tr>
+                    <tr>
+                        <td><strong>/revive</strong></td>
+                        <td>Mod/Admin</td>
+                        <td><code>polarsouls.revive</code> permission</td>
+                        <td>Instant</td>
+                    </tr>
+                    <tr>
+                        <td><strong>/psadmin revive</strong></td>
+                        <td>Admin</td>
+                        <td><code>polarsouls.admin</code> permission</td>
+                        <td>Instant</td>
+                    </tr>
+                </tbody>
+            </table>
+
+            <h3>Ritual Structure</h3>
+            <p>Build a 3×3×3 structure and place the dead player's head on top to automatically revive them.</p>
+
+            <div class="step-box">
+                <h4>Layer 1 — Base (3×3)</h4>
+                <pre><code>Soul Sand  |  Stair     |  Soul Sand
+Stair      |  Ore Block |  Stair
+Soul Sand  |  Stair     |  Soul Sand</code></pre>
+                <p>Use <strong>4 Soul Sand</strong> at corners, <strong>4 Stair blocks</strong> (any type) at edges, and <strong>1 Ore block</strong> (any ore) in the center.</p>
+            </div>
+
+            <div class="step-box">
+                <h4>Layer 2 — Middle</h4>
+                <pre><code>Wither Rose  |  (empty)  |  Wither Rose
+(empty)      |  Fence    |  (empty)
+Wither Rose  |  (empty)  |  Wither Rose</code></pre>
+                <p>Place <strong>4 Wither Roses</strong> on top of the Soul Sand corners. Place a <strong>Fence</strong> on top of the center ore block.</p>
+            </div>
+
+            <div class="step-box">
+                <h4>Layer 3 — Top</h4>
+                <pre><code>(empty)  |  (empty)  |  (empty)
+(empty)  |  Head     |  (empty)
+(empty)  |  (empty)  |  (empty)</code></pre>
+                <p>Place the <strong>dead player's head</strong> on top of the fence. The plugin automatically detects the completed structure and revives the player.</p>
+            </div>
+
+            <h3>Revive Skull Item</h3>
+            <p>A craftable item that opens a GUI showing all dead players. Click a player's name to receive their head without needing the original dropped head.</p>
+
+            <h4>Default Recipe (Shapeless)</h4>
+            <table>
+                <thead>
+                    <tr>
+                        <th>Material</th>
+                        <th>Amount</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr><td>Obsidian</td><td>4×</td></tr>
+                    <tr><td>Ghast Tear</td><td>2×</td></tr>
+                    <tr><td>Totem of Undying</td><td>2×</td></tr>
+                    <tr><td>Any Skull/Head</td><td>1×</td></tr>
+                </tbody>
+            </table>
+
+            <h3>Extra Life Item</h3>
+            <p>Craft this item and right-click it to gain +1 life (up to your max). Cannot be used while dead.</p>
+
+            <h4>Default Recipe</h4>
+            <pre><code>Diamond Block  | Emerald Block | Diamond Block
+Netherite Ingot|  Nether Star  | Netherite Ingot
+Gold Block     | Emerald Block | Gold Block</code></pre>
+            <p>The recipe is fully customizable in <code>config.yml</code> — see the Configuration section.</p>
+
+            <h3>Head Mechanics</h3>
+            <div class="info-box">
+                <ul>
+                    <li>When a player loses all lives, their <strong>player head drops at the death location</strong> and they receive a message with coordinates.</li>
+                    <li>Living players who <strong>wear a dead player's head</strong> receive Speed II and Night Vision effects.</li>
+                    <li>The Revive Skull can generate a fresh copy of any dead player's head at any time — even if the original was lost.</li>
+                </ul>
+            </div>
+        </section>
+
+        <!-- TROUBLESHOOTING -->
+        <section id="troubleshooting">
+            <h2>Troubleshooting</h2>
+
+            <div class="faq-item">
+                <h4>Players not transferring to Limbo</h4>
+                <ul>
+                    <li>Verify <code>is-limbo-server</code> is <code>false</code> on Main and <code>true</code> on Limbo.</li>
+                    <li>Confirm server names in <code>config.yml</code> exactly match your <code>velocity.toml</code> (case-sensitive).</li>
+                    <li>Check that <code>player-info-forwarding-mode = "modern"</code> is set in Velocity.</li>
+                    <li>Death mode must be <code>hybrid</code> or <code>limbo</code> — <code>spectator</code> keeps players on Main indefinitely.</li>
+                </ul>
+            </div>
+
+            <div class="faq-item">
+                <h4>Revivals not working</h4>
+                <ul>
+                    <li>Ensure <code>hrm.enabled: true</code> and <code>hrm.structure-revive: true</code> in config.</li>
+                    <li>Confirm <code>main.detect-hrm-revive: true</code> on the Main server.</li>
+                    <li>Test with <code>/psadmin revive &lt;player&gt;</code> — if this works, the issue is structure detection only.</li>
+                    <li>Verify the Limbo server is running; it polls the database to process pending revivals.</li>
+                </ul>
+            </div>
+
+            <div class="faq-item">
+                <h4>Ritual structure not triggering</h4>
+                <ul>
+                    <li>Double-check block types: Soul Sand (not Soul Soil), any ore block (gold/diamond/emerald), Wither Roses, any Fence, dead player's head on top.</li>
+                    <li>The head must be the correct dead player's head — not a decorative block.</li>
+                    <li>Enable <code>debug: true</code> temporarily to see detection logs in console.</li>
+                </ul>
+            </div>
+
+            <div class="faq-item">
+                <h4>Admin commands not working on Limbo server</h4>
+                <ul>
+                    <li>This is expected when <code>limbo-op-security-check: true</code> is set — OP-only users on Limbo are blocked by default.</li>
+                    <li>Add the user to <code>limbo-trusted-admins</code> by UUID or username, then reload from console.</li>
+                    <li>Or grant <code>polarsouls.bypass-limbo-op-security</code> via LuckPerms.</li>
+                </ul>
+            </div>
+
+            <div class="faq-item">
+                <h4>Database connection errors</h4>
+                <ul>
+                    <li>Verify credentials match on both servers.</li>
+                    <li>Confirm the database exists and the user has the required grants.</li>
+                    <li>For Pterodactyl/shared hosting, use the panel-provided host, not <code>localhost</code>.</li>
+                    <li>Check firewall rules — both backend servers must be able to reach the database host.</li>
+                </ul>
+            </div>
+
+            <div class="faq-item">
+                <h4>Grace period not working</h4>
+                <ul>
+                    <li>Confirm <code>lives.grace-period</code> is not <code>"0"</code>.</li>
+                    <li>Use <code>/pstatus &lt;player&gt;</code> to check remaining grace time.</li>
+                    <li>Grace counts only <em>online</em> hours — it pauses when the player is offline.</li>
+                </ul>
+            </div>
+
+            <div class="faq-item">
+                <h4>Hardcore hearts not showing</h4>
+                <ul>
+                    <li>Do <strong>NOT</strong> set <code>hardcore=true</code> in <code>server.properties</code> — this can break the plugin.</li>
+                    <li>The plugin applies the visual through packet manipulation; confirm PolarSouls loaded successfully (check console).</li>
+                </ul>
+            </div>
+
+            <h3>Enable Debug Logging</h3>
+            <ol class="numbered-list">
+                <li>Open <code>config.yml</code> and set <code>debug: true</code>.</li>
+                <li>Run <code>/psadmin reload</code> from console.</li>
+                <li>Reproduce the issue and review console output for detailed information.</li>
+                <li>Disable debug logging after investigation to reduce log noise.</li>
+            </ol>
+        </section>
+
+        <!-- FAQ -->
+        <section id="faq">
+            <h2>FAQ</h2>
+
+            <div class="faq-item">
+                <h4>Can I install PolarSouls on my Velocity proxy?</h4>
+                <p>No. PolarSouls is a backend plugin — install it only on your Main and Limbo servers. It will not function on Velocity, BungeeCord, or Waterfall.</p>
+            </div>
+
+            <div class="faq-item">
+                <h4>Do I need the Limbo server if I use spectator death mode?</h4>
+                <p>The Limbo server is optional in <code>spectator</code> mode. Dead players stay on Main in spectator indefinitely. However, you still need it for <code>limbo</code> and <code>hybrid</code> modes.</p>
+            </div>
+
+            <div class="faq-item">
+                <h4>Can I use BungeeCord instead of Velocity?</h4>
+                <p>BungeeCord/Waterfall support is untested. Velocity with <code>modern</code> forwarding is recommended. If you test BungeeCord, please <a href="https://github.com/polarmc-technologies/PolarSouls-for-Hardcore/issues" target="_blank" rel="noopener noreferrer">report your findings</a>.</p>
+            </div>
+
+            <div class="faq-item">
+                <h4>Can my database be shared with other plugins?</h4>
+                <p>Yes. PolarSouls creates its own table (<code>hardcore_players</code> by default) and does not touch other tables. You can safely share a MySQL instance with CoreProtect or any other plugin.</p>
+            </div>
+
+            <div class="faq-item">
+                <h4>What happens if a player disconnects while dead in hybrid mode?</h4>
+                <p>If a dead player disconnects during the hybrid countdown, they are sent straight to Limbo on their next login — the timer does not wait for them to reconnect.</p>
+            </div>
+
+            <div class="faq-item">
+                <h4>Can I revive an offline player?</h4>
+                <p>Yes. Use <code>/psadmin revive &lt;player&gt;</code>. The revival is stored in the database and applied automatically when the player next logs in.</p>
+            </div>
+
+            <div class="faq-item">
+                <h4>How do I reset a player's data entirely?</h4>
+                <p>Run <code>/psadmin reset &lt;player&gt;</code>. This restores default lives, clears grace period, sets status to alive, and removes revive cooldowns.</p>
+            </div>
+
+            <div class="faq-item">
+                <h4>Can players abuse the Revive Skull to copy heads?</h4>
+                <p>The Revive Skull is a consumable-style item (it can be reused, but must be crafted). The GUI shows only currently dead players, so it cannot be used to generate heads for living players.</p>
+            </div>
+
+            <div class="faq-item">
+                <h4>How do I update PolarSouls?</h4>
+                <p>Stop both servers, replace the JAR in each <code>plugins/</code> folder with the new version, and start both servers. Both servers must always run the same version.</p>
+            </div>
+        </section>
+
+        <!-- SUPPORT -->
+        <section id="support">
+            <h2>Support &amp; Contributing</h2>
+            <p>Need help or found a bug? Here's how to get support:</p>
+            <ol class="numbered-list">
+                <li>Check the <a href="#troubleshooting">Troubleshooting</a> section above for common issues.</li>
+                <li>Review the <a href="#faq">FAQ</a> for quick answers.</li>
+                <li>Search <a href="https://github.com/polarmc-technologies/PolarSouls-for-Hardcore/issues" target="_blank" rel="noopener noreferrer">existing issues</a> on GitHub.</li>
+                <li><a href="https://github.com/polarmc-technologies/PolarSouls-for-Hardcore/issues/new" target="_blank" rel="noopener noreferrer">Open a new issue</a> with your server version, plugin version, and console logs.</li>
+            </ol>
+
+            <div class="info-box">
+                <h3>Contributing</h3>
+                <p>Contributions are welcome! Feel free to submit pull requests or open issues on the <a href="https://github.com/polarmc-technologies/PolarSouls-for-Hardcore" target="_blank" rel="noopener noreferrer">GitHub repository</a>. If you enjoy PolarSouls, consider hearting it on <a href="https://modrinth.com/plugin/polarsouls" target="_blank" rel="noopener noreferrer">Modrinth</a> and starring the repo.</p>
+            </div>
+
+            <h3>License</h3>
+            <p>PolarSouls is licensed under the <strong>GNU General Public License v3.0 (GPL-3.0)</strong>. You are free to use, modify, and distribute this plugin according to the terms of the license. See the <a href="https://github.com/polarmc-technologies/PolarSouls-for-Hardcore/blob/main/LICENSE" target="_blank" rel="noopener noreferrer">LICENSE file</a> for details.</p>
+        </section>
+
+    </main>
+
+    <footer>
+        <div class="container">
+            <p>&copy; 2026 PolarSouls. Licensed under GPL-3.0.</p>
+            <p>
+                <a href="https://github.com/polarmc-technologies/PolarSouls-for-Hardcore" target="_blank" rel="noopener noreferrer">View on GitHub</a>
+                &nbsp;·&nbsp;
+                <a href="https://modrinth.com/plugin/polarsouls" target="_blank" rel="noopener noreferrer">Modrinth</a>
+            </p>
+        </div>
+    </footer>
+
+    <script>
+        const themeToggle = document.getElementById('theme-toggle');
+        const themeIcon = document.getElementById('theme-icon');
+        const html = document.documentElement;
+
+        const currentTheme = localStorage.getItem('theme') || 'light';
+        html.setAttribute('data-theme', currentTheme);
+        updateIcon(currentTheme);
+
+        themeToggle.addEventListener('click', () => {
+            const previous = html.getAttribute('data-theme');
+            const next = previous === 'light' ? 'dark' : 'light';
+            html.setAttribute('data-theme', next);
+            localStorage.setItem('theme', next);
+            updateIcon(next);
+        });
+
+        function updateIcon(theme) {
+            if (theme === 'dark') {
+                themeIcon.src = 'assets/dark-mode.svg';
+                themeIcon.alt = 'Switch to light mode';
+            } else {
+                themeIcon.src = 'assets/light-mode.svg';
+                themeIcon.alt = 'Switch to dark mode';
+            }
+        }
+    </script>
+</body>
+</html>
