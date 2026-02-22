@@ -7,13 +7,7 @@
 A hardcore lives system plugin for Minecraft 1.21.X (Spigot/Paper/Purpur) designed for Velocity proxy networks. When you die enough times, you get sent to a Limbo server until your teammates bring you back.
 
 > **[Complete Documentation Wiki →](https://polarmc-technologies.github.io/PolarSouls-for-Hardcore/)** - Installation guides, configuration reference, commands, troubleshooting, and more!
->
-> **Quick Links:**
-> - [Quick Start Guide](https://polarmc-technologies.github.io/PolarSouls-for-Hardcore/quick-start.html)
-> - [Installation Guide](https://polarmc-technologies.github.io/PolarSouls-for-Hardcore/installation.html)
-> - [Configuration Reference](https://polarmc-technologies.github.io/PolarSouls-for-Hardcore/configuration.html)
-> - [Troubleshooting](https://polarmc-technologies.github.io/PolarSouls-for-Hardcore/troubleshooting.html)
-> - [FAQ](https://polarmc-technologies.github.io/PolarSouls-for-Hardcore/faq.html)
+
 
 ## Features
 
