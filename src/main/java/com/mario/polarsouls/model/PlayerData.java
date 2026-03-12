@@ -26,14 +26,12 @@ public class PlayerData {
                 System.currentTimeMillis(), 0L);
     }
 
-    public boolean isInGracePeriod(int gracePeriodHours) {
-        if (gracePeriodHours <= 0) return false;
-        long gracePeriodMillis = gracePeriodHours * 3600_000L;
+    public boolean isInGracePeriod(long gracePeriodMillis) {
+        if (gracePeriodMillis <= 0) return false;
         return (System.currentTimeMillis() - firstJoin) < gracePeriodMillis;
     }
 
-    public String getGraceTimeRemaining(int gracePeriodHours) {
-        long gracePeriodMillis = gracePeriodHours * 3600_000L;
+    public String getGraceTimeRemaining(long gracePeriodMillis) {
         long elapsed = System.currentTimeMillis() - firstJoin;
         long remaining = gracePeriodMillis - elapsed;
 
