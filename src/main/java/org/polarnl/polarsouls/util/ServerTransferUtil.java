@@ -1,10 +1,10 @@
-package com.mario.polarsouls.util;
+package org.polarnl.polarsouls.util;
 
 import org.bukkit.entity.Player;
 
 import com.google.common.io.ByteArrayDataOutput;
 import com.google.common.io.ByteStreams;
-import com.mario.polarsouls.PolarSouls;
+import org.polarnl.polarsouls.PolarSouls;
 
 public final class ServerTransferUtil {
 
