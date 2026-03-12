@@ -1,4 +1,4 @@
-package com.mario.polarsouls.hrm;
+package org.polarnl.polarsouls.hrm;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -29,9 +29,9 @@ import org.bukkit.inventory.meta.BlockStateMeta;
 import org.bukkit.inventory.meta.SkullMeta;
 import org.bukkit.scheduler.BukkitRunnable;
 
-import com.mario.polarsouls.PolarSouls;
-import com.mario.polarsouls.database.DatabaseManager;
-import com.mario.polarsouls.model.PlayerData;
+import org.polarnl.polarsouls.PolarSouls;
+import org.polarnl.polarsouls.database.DatabaseManager;
+import org.polarnl.polarsouls.model.PlayerData;
 
 public class HeadDropListener implements Listener {
 
