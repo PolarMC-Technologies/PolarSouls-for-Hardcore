@@ -17,6 +17,7 @@ import org.bukkit.inventory.meta.SkullMeta;
 
 import com.mario.polarsouls.PolarSouls;
 import com.mario.polarsouls.database.DatabaseManager;
+import com.mario.polarsouls.model.PlayerData;
 
 public class HeadDropListener implements Listener {
 
@@ -49,18 +50,28 @@ public class HeadDropListener implements Listener {
         // only drop head if really dead (work pls)
         if (plugin.isHrmDropHeads()) {
             Bukkit.getScheduler().runTaskLaterAsynchronously(plugin, () -> {
-                boolean dead = db.isPlayerDead(player.getUniqueId());
-                if (dead) {
-                    // Drop head on main thread
-                    Bukkit.getScheduler().runTask(plugin, () -> {
-                        ItemStack head = createPlayerHead(player);
-                        world.dropItemNaturally(deathLoc, head);
-                        plugin.debug("Dropped " + player.getName() + "'s head at "
-                                + deathLoc.getBlockX() + ", " + deathLoc.getBlockY()
-                                + ", " + deathLoc.getBlockZ());
-                    });
+                PlayerData data = db.getPlayer(player.getUniqueId());
+                if (data == null) {
+                    plugin.debug("Skipping head drop for " + player.getName() + " (no data).");
+                    return;
                 }
-            }, 10L); // 0.5s delay beacause idfk it feels good
+                if (!data.isDead()) {
+                    plugin.debug("Skipping head drop for " + player.getName() + " (not dead).");
+                    return;
+                }
+                if (data.isInGracePeriod(plugin.getGracePeriodMillis())) {
+                    plugin.debug("Skipping head drop for " + player.getName() + " (grace period).");
+                    return;
+                }
+                // Drop head on main thread
+                Bukkit.getScheduler().runTask(plugin, () -> {
+                    ItemStack head = createPlayerHead(player);
+                    world.dropItemNaturally(deathLoc, head);
+                    plugin.debug("Dropped " + player.getName() + "'s head at "
+                            + deathLoc.getBlockX() + ", " + deathLoc.getBlockY()
+                            + ", " + deathLoc.getBlockZ());
+                });
+            }, 10L); // 0.5s delay because idfk it feels good
         }
     }
 
