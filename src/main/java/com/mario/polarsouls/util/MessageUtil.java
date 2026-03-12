@@ -27,14 +27,14 @@ public final class MessageUtil {
     }
 
     public static String getRaw(String key, Object... replacements) {
-        String msg = messages.getOrDefault(key, "&cMissing message: " + key);
+        String messageContent = messages.getOrDefault(key, "&cMissing message: " + key);
 
         for (int i = 0; i < replacements.length - 1; i += 2) {
             String placeholder = "%" + replacements[i] + "%";
             String value = String.valueOf(replacements[i + 1]);
-            msg = msg.replace(placeholder, value);
+            messageContent = messageContent.replace(placeholder, value);
         }
-        return msg;
+        return messageContent;
     }
 
     public static String get(String key, Object... replacements) {
