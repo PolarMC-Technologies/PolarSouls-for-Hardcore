@@ -31,6 +31,7 @@ import com.mario.polarsouls.listener.MainServerListener;
 import com.mario.polarsouls.task.LimboCheckTask;
 import com.mario.polarsouls.task.MainReviveCheckTask;
 import com.mario.polarsouls.util.MessageUtil;
+import com.mario.polarsouls.util.TimeUtil;
 import com.mario.polarsouls.util.UpdateChecker;
 
 @SuppressWarnings("java:S6548")
@@ -59,7 +60,7 @@ public final class PolarSouls extends JavaPlugin {
     private static final String BORDER_BOTTOM = "╚═══════════════════════════════════════════════════════════╝";
 
     private int defaultLives;
-    private int gracePeriodHours;
+    private long gracePeriodMillis;
     private int livesOnRevive;
     private int maxLives;
 
@@ -257,7 +258,7 @@ public final class PolarSouls extends JavaPlugin {
         limboServerName     = cfg.getString("limbo-server-name", MODE_LIMBO);
 
         defaultLives        = cfg.getInt("lives.default", 2);
-        gracePeriodHours    = cfg.getInt("lives.grace-period-hours", 24);
+        gracePeriodMillis   = loadGracePeriod(cfg);
         livesOnRevive       = cfg.getInt("lives.on-revive", 1);
         maxLives            = cfg.getInt("lives.max-lives", 5);
 
@@ -282,6 +283,27 @@ public final class PolarSouls extends JavaPlugin {
         }
 
         MessageUtil.loadMessages(cfg);
+    }
+
+    private long loadGracePeriod(FileConfiguration cfg) {
+        // Try new string format first (e.g., "1h30m")
+        String gracePeriodStr = cfg.getString("lives.grace-period");
+        if (gracePeriodStr != null) {
+            long millis = TimeUtil.parseTimeToMillis(gracePeriodStr);
+            if (millis >= 0) {
+                return millis;
+            }
+            getLogger().warning("Invalid grace-period format: " + gracePeriodStr + ". Using default of 24h.");
+        }
+
+        // Fall back to old format (hours as integer) for backward compatibility
+        int hours = cfg.getInt("lives.grace-period-hours", -1);
+        if (hours >= 0) {
+            return hours * 3600_000L;
+        }
+
+        // Default to 24 hours
+        return 24 * 3600_000L;
     }
 
     private void loadLimboSpawn() {
@@ -362,8 +384,8 @@ public final class PolarSouls extends JavaPlugin {
         return defaultLives;
     }
 
-    public int getGracePeriodHours() {
-        return gracePeriodHours;
+    public long getGracePeriodMillis() {
+        return gracePeriodMillis;
     }
 
     public int getLivesOnRevive() {
