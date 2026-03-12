@@ -3,78 +3,76 @@
 
 @import "{{ site.theme }}";
 
-/* Minimal Cayman-safe palette tweaks inspired by the previous docs look. */
-:root {
-  --ps-navy: #243447;
-  --ps-teal: #1e9f96;
-  --ps-soft: #f4f7fa;
-  --ps-link: #116a8f;
-  --ps-link-hover: #0d4f6b;
+.docs-layout {
+  display: grid;
+  grid-template-columns: 250px minmax(0, 1fr);
+  gap: 2rem;
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 2rem 1rem;
 }
 
-.page-header {
-  background-color: var(--ps-navy);
-  background-image: linear-gradient(120deg, #243447 0%, #2c536f 55%, #1e9f96 100%);
-}
-
-.project-name {
-  text-shadow: 0 1px 2px rgba(0, 0, 0, 0.28);
-}
-
-.project-tagline {
-  color: #d9e7f1;
-}
-
-.main-content h1,
-.main-content h2,
-.main-content h3 {
-  color: var(--ps-navy);
-}
-
-.main-content h2 {
-  border-bottom: 1px solid #d7e1ea;
-  padding-bottom: 0.25rem;
-}
-
-.main-content a {
-  color: var(--ps-link);
-}
-
-.main-content a:hover {
-  color: var(--ps-link-hover);
-}
-
-.main-content blockquote {
-  border-left: 5px solid var(--ps-teal);
-  background: var(--ps-soft);
-  border-radius: 0 6px 6px 0;
-}
-
-.main-content table th {
-  background: #edf3f8;
-  color: #1f3344;
-}
-
-.main-content pre {
+.docs-sidebar {
+  position: sticky;
+  top: 1rem;
+  align-self: start;
+  border: 1px solid #e3e9ee;
   border-radius: 8px;
-  border: 1px solid #dbe5ef;
-  background: #f8fbfd;
+  background: #fff;
+  padding: 1rem;
 }
 
-.main-content code {
-  color: #a83232;
+.docs-sidebar-title {
+  margin: 0 0 0.75rem;
+  font-size: 0.9rem;
+  font-weight: 700;
+  color: #2f3e4e;
+  text-transform: uppercase;
+  letter-spacing: 0.03em;
 }
 
-.btn {
-  border-color: rgba(255, 255, 255, 0.45);
+.docs-sidebar-list {
+  margin: 0;
+  padding: 0;
+  list-style: none;
 }
 
-.btn:hover {
-  background: rgba(255, 255, 255, 0.2);
+.docs-sidebar-list li + li {
+  margin-top: 0.3rem;
 }
 
-@media (max-width: 768px) {
-  .page-header {
-    padding: 2rem 1rem;
+.docs-sidebar a {
+  display: block;
+  border-radius: 6px;
+  padding: 0.4rem 0.55rem;
+  color: #1f4f73;
+  text-decoration: none;
+}
+
+.docs-sidebar a:hover {
+  background: #f1f8f8;
+  text-decoration: none;
+}
+
+.docs-sidebar a.is-active {
+  background: #e8f5f4;
+  color: #155e5a;
+  font-weight: 700;
+}
+
+.docs-layout .main-content {
+  max-width: none;
+  margin: 0;
+  padding: 0;
+}
+
+@media (max-width: 900px) {
+  .docs-layout {
+    grid-template-columns: 1fr;
+    gap: 1rem;
+  }
+
+  .docs-sidebar {
+    position: static;
   }
 }
