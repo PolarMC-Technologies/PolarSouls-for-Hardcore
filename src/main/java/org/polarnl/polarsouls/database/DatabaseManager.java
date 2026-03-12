@@ -1,4 +1,4 @@
-package com.mario.polarsouls.database;
+package org.polarnl.polarsouls.database;
 
 import java.sql.Connection;
 import java.sql.PreparedStatement;
@@ -12,8 +12,8 @@ import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.logging.Level;
 
-import com.mario.polarsouls.PolarSouls;
-import com.mario.polarsouls.model.PlayerData;
+import org.polarnl.polarsouls.PolarSouls;
+import org.polarnl.polarsouls.model.PlayerData;
 import com.zaxxer.hikari.HikariConfig;
 import com.zaxxer.hikari.HikariDataSource;
 
