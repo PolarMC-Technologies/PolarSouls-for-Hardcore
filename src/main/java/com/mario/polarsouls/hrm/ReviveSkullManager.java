@@ -29,9 +29,7 @@ import com.mario.polarsouls.PolarSouls;
 import com.mario.polarsouls.model.PlayerData;
 import com.mario.polarsouls.util.MessageUtil;
 
-/**
- * Craftable Revive Skull: recipe, right-click menu for picking dead players' heads.
- */
+// craftable revive skull thingy from HRM
 public class ReviveSkullManager implements Listener {
 
     private static final String MENU_TITLE = "\u00A75\u00A7lRevive - Select Player";
@@ -41,7 +39,7 @@ public class ReviveSkullManager implements Listener {
 
     public ReviveSkullManager(PolarSouls plugin) {
         this.plugin = plugin;
-        // Use a stable namespace based on the plugin name to avoid legacy recipe keys
+        // use a stable namespace based on the plugin name to avoid legacy recipe keys because I feel like it
         String ns = plugin.getName() != null ? plugin.getName().toLowerCase(Locale.ROOT) : "polarsouls";
         this.reviveSkullKey = new NamespacedKey(ns, "revive_skull");
     }
