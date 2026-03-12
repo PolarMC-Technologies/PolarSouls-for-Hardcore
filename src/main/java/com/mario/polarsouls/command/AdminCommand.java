@@ -21,6 +21,7 @@ import com.mario.polarsouls.database.DatabaseManager;
 import com.mario.polarsouls.model.PlayerData;
 import com.mario.polarsouls.util.MessageUtil;
 import com.mario.polarsouls.util.ServerTransferUtil;
+import com.mario.polarsouls.util.TimeUtil;
 
 public class AdminCommand implements CommandExecutor, TabCompleter {
 
@@ -28,6 +29,7 @@ public class AdminCommand implements CommandExecutor, TabCompleter {
     private static final String KEY_LIVES = "lives";
     private static final String KEY_ACTION = "action";
     private static final String KEY_HOURS = "hours";
+    private static final String KEY_TIME = "time";
     private static final String SUB_LIVES = "lives";
     private static final String SUB_GRACE = "grace";
     private static final String SUB_REVIVE = "revive";
@@ -129,7 +131,7 @@ public class AdminCommand implements CommandExecutor, TabCompleter {
     private void handleGrace(CommandSender sender, String[] args) {
         if (args.length < 3) {
             sender.sendMessage(MessageUtil.colorize(
-                    "&cUsage: /psadmin grace <set|remove> <player> [hours]"));
+                    "&cUsage: /psadmin grace <set|remove> <player> [time]"));
             return;
         }
 
@@ -162,19 +164,25 @@ public class AdminCommand implements CommandExecutor, TabCompleter {
     private void applyGraceSet(CommandSender sender, String[] args, PlayerData data) {
         if (args.length < 4) {
             sender.sendMessage(MessageUtil.colorize(
-                    "&cUsage: /psadmin grace set <player> <hours>"));
+                    "&cUsage: /psadmin grace set <player> <time> (e.g., 1h30m, 2h, 90m)"));
             return;
         }
-        int hours = parseIntOrError(sender, args[3]);
-        if (hours < 0) return;
+        String timeStr = args[3];
+        long millis = TimeUtil.parseTimeToMillis(timeStr);
+        
+        if (millis < 0) {
+            sender.sendMessage(MessageUtil.colorize(
+                    "&cInvalid time format: " + timeStr + ". Use formats like: 1h30m, 2h, 90m"));
+            return;
+        }
 
         db.setFirstJoin(data.getUuid(), System.currentTimeMillis());
 
-        plugin.getLogger().log(Level.INFO, "{0} set grace period for {1} ({2}h)",
-                new Object[]{sender.getName(), data.getUsername(), hours});
-        sender.sendMessage(MessageUtil.get("admin-grace-set",
-                KEY_PLAYER, data.getUsername(),
-                KEY_HOURS, hours));
+        String formattedTime = TimeUtil.formatTime(millis);
+        plugin.getLogger().log(Level.INFO, "{0} set grace period for {1} ({2})",
+                new Object[]{sender.getName(), data.getUsername(), formattedTime});
+        sender.sendMessage(MessageUtil.colorize(
+                "&aGrace period set for &e" + data.getUsername() + "&a (" + formattedTime + " from now)."));
     }
 
     private void handleKill(CommandSender sender, String[] args) {
@@ -344,12 +352,12 @@ public class AdminCommand implements CommandExecutor, TabCompleter {
     }
 
     private String buildGraceStatus(PlayerData data) {
-        int graceHours = plugin.getGracePeriodHours();
-        if (graceHours <= 0) {
+        long graceMillis = plugin.getGracePeriodMillis();
+        if (graceMillis <= 0) {
             return "&7Disabled";
         }
-        if (data.isInGracePeriod(graceHours)) {
-            return "&a" + data.getGraceTimeRemaining(graceHours) + " remaining";
+        if (data.isInGracePeriod(graceMillis)) {
+            return "&a" + data.getGraceTimeRemaining(graceMillis) + " remaining";
         }
         return "&7Expired";
     }
@@ -365,7 +373,7 @@ public class AdminCommand implements CommandExecutor, TabCompleter {
         sender.sendMessage(MessageUtil.colorize("&e/psadmin lives set <player> <n>  &7- Set lives"));
         sender.sendMessage(MessageUtil.colorize("&e/psadmin lives give <player> <n> &7- Add lives"));
         sender.sendMessage(MessageUtil.colorize("&e/psadmin lives take <player> <n> &7- Remove lives"));
-        sender.sendMessage(MessageUtil.colorize("&e/psadmin grace set <player> <h>  &7- Grant grace (hours)"));
+        sender.sendMessage(MessageUtil.colorize("&e/psadmin grace set <player> <time> &7- Grant grace (e.g., 1h30m, 2h, 90m)"));
         sender.sendMessage(MessageUtil.colorize("&e/psadmin grace remove <player>   &7- Remove grace"));
         sender.sendMessage(MessageUtil.colorize("&e/psadmin kill <player>           &7- Force-kill"));
         sender.sendMessage(MessageUtil.colorize("&e/psadmin revive <player> [lives] &7- Revive"));
@@ -453,7 +461,7 @@ public class AdminCommand implements CommandExecutor, TabCompleter {
         return switch (sub) {
             case SUB_LIVES -> Arrays.asList("1", "2", "3", "5");
             case SUB_GRACE -> "set".equalsIgnoreCase(args[1])
-                    ? Arrays.asList("1", "6", "12", "24")
+                    ? Arrays.asList("1h", "6h", "12h", "24h", "1h30m", "2h30m")
                     : Collections.emptyList();
             default -> Collections.emptyList();
         };
