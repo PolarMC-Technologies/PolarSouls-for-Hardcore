@@ -46,7 +46,7 @@ public class HeadDropListener implements Listener {
                     + " in " + world.getName());
         }
 
-        // Drop head only if this was the killing blow (check DB after lives decrement)
+        // only drop head if really dead (work pls)
         if (plugin.isHrmDropHeads()) {
             Bukkit.getScheduler().runTaskLaterAsynchronously(plugin, () -> {
                 boolean dead = db.isPlayerDead(player.getUniqueId());
@@ -60,7 +60,7 @@ public class HeadDropListener implements Listener {
                                 + ", " + deathLoc.getBlockZ());
                     });
                 }
-            }, 10L); // 0.5s delay to ensure MainServerListener has saved to DB
+            }, 10L); // 0.5s delay beacause idfk it feels good
         }
     }
 
