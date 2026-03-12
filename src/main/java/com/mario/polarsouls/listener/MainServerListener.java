@@ -96,7 +96,7 @@ public class MainServerListener implements Listener {
         final PlayerData finalData = data;
         Bukkit.getScheduler().runTask(plugin, () -> {
             if (player.isOnline()) {
-                String timeRemaining = finalData.getGraceTimeRemaining(plugin.getGracePeriodHours());
+                String timeRemaining = finalData.getGraceTimeRemaining(plugin.getGracePeriodMillis());
                 player.sendMessage(MessageUtil.get("death-grace-period",
                         "time_remaining", timeRemaining));
             }
@@ -169,7 +169,7 @@ public class MainServerListener implements Listener {
             data = PlayerData.createNew(uuid, player.getName(), plugin.getDefaultLives());
         }
 
-        if (data.isInGracePeriod(plugin.getGracePeriodHours())) {
+        if (data.isInGracePeriod(plugin.getGracePeriodMillis())) {
             pendingLimbo.remove(uuid);
             restoreIfAccidentalSpectator(player, uuid);
             notifyGracePeriod(player, data);
@@ -203,7 +203,7 @@ public class MainServerListener implements Listener {
     }
 
     private void notifyGracePeriod(Player player, PlayerData data) {
-        String timeRemaining = data.getGraceTimeRemaining(plugin.getGracePeriodHours());
+        String timeRemaining = data.getGraceTimeRemaining(plugin.getGracePeriodMillis());
         final String msg = MessageUtil.get("death-grace-period", "time_remaining", timeRemaining);
         Bukkit.getScheduler().runTask(plugin, () -> {
             if (player.isOnline()) {
