@@ -1,5 +1,8 @@
 package com.mario.polarsouls;
 
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.Objects;
 import java.util.Set;
 import java.util.UUID;
@@ -11,6 +14,9 @@ import org.bukkit.Location;
 import org.bukkit.World;
 import org.bukkit.command.PluginCommand;
 import org.bukkit.configuration.file.FileConfiguration;
+import org.bukkit.event.EventHandler;
+import org.bukkit.event.Listener;
+import org.bukkit.event.world.WorldLoadEvent;
 import org.bukkit.plugin.java.JavaPlugin;
 
 import com.mario.polarsouls.command.AdminCommand;
@@ -35,13 +41,17 @@ import com.mario.polarsouls.util.TimeUtil;
 import com.mario.polarsouls.util.UpdateChecker;
 
 @SuppressWarnings("java:S6548")
-public final class PolarSouls extends JavaPlugin {
+public final class PolarSouls extends JavaPlugin implements Listener {
 
     private static PolarSouls instance;
 
     private DatabaseManager databaseManager;
     private boolean isLimboServer;
     private boolean debugMode;
+    
+    // Store listeners to call refresh methods on config reload
+    private MainServerListener mainServerListener;
+    private LimboServerListener limboServerListener;
 
     private String mainServerName;
     private String limboServerName;
@@ -79,8 +89,13 @@ public final class PolarSouls extends JavaPlugin {
     private boolean hrmLeaveStructureBase;
     private boolean hrmHeadEffects;
     private boolean hrmReviveSkullRecipe;
+    private boolean hardcoreHearts;
+    private boolean limboOpSecurityEnabled;
+    private Set<String> limboTrustedAdmins;
+    private final Map<String, Boolean> originalWorldHardcore = new HashMap<>();
     private ReviveSkullManager reviveSkullManager;
     private ExtraLifeManager extraLifeManager;
+    private HeadDropListener headDropListener;
 
     private Location limboSpawn;
     private final Set<UUID> limboDeadPlayers = ConcurrentHashMap.newKeySet();
@@ -89,9 +104,15 @@ public final class PolarSouls extends JavaPlugin {
     public void onEnable() {
         setInstance(this);
         saveDefaultConfig();
+
+        for (World world : getServer().getWorlds()) {
+            originalWorldHardcore.put(world.getName(), world.isHardcore());
+        }
+
         loadConfigValues();
 
         getServer().getMessenger().registerOutgoingPluginChannel(this, "BungeeCord");
+        getServer().getPluginManager().registerEvents(this, this);
 
         databaseManager = new DatabaseManager(this);
         if (!databaseManager.initialize()) {
@@ -99,6 +120,9 @@ public final class PolarSouls extends JavaPlugin {
             getServer().getPluginManager().disablePlugin(this);
             return;
         }
+
+        // Check version compatibility between Main and Limbo servers
+        checkVersionCompatibility();
 
         registerCommands();
 
@@ -146,6 +170,13 @@ public final class PolarSouls extends JavaPlugin {
     public void onDisable() {
         getServer().getMessenger().unregisterOutgoingPluginChannel(this);
 
+        if (hardcoreHearts) {
+            for (World world : getServer().getWorlds()) {
+                boolean original = originalWorldHardcore.getOrDefault(world.getName(), false);
+                world.setHardcore(original);
+            }
+        }
+
         if (reviveSkullManager != null) {
             reviveSkullManager.unregisterRecipe();
         }
@@ -167,17 +198,17 @@ public final class PolarSouls extends JavaPlugin {
 
     private void enableMainMode() {
         getLogger().info("Registering MAIN server listeners...");
-        getServer().getPluginManager().registerEvents(
-                new MainServerListener(this), this);
+        mainServerListener = new MainServerListener(this);
+        getServer().getPluginManager().registerEvents(mainServerListener, this);
 
         int intervalSeconds = getConfig().getInt("limbo.check-interval-seconds", 3);
-        int intervalTicks = intervalSeconds * 20;
+        long intervalTicks = (long) intervalSeconds * 20L;
         new MainReviveCheckTask(this).runTaskTimerAsynchronously(this, 60L, intervalTicks);
         getLogger().log(Level.INFO, "Main revive check task started (every {0}s).", intervalSeconds);
 
         if (hrmEnabled) {
-            getServer().getPluginManager().registerEvents(
-                    new HeadDropListener(this), this);
+            headDropListener = new HeadDropListener(this);
+            getServer().getPluginManager().registerEvents(headDropListener, this);
             getServer().getPluginManager().registerEvents(
                     new RevivalStructureListener(this), this);
 
@@ -206,11 +237,11 @@ public final class PolarSouls extends JavaPlugin {
 
     private void enableLimboMode() {
         getLogger().info("Registering LIMBO server listeners and tasks...");
-        getServer().getPluginManager().registerEvents(
-                new LimboServerListener(this), this);
+        limboServerListener = new LimboServerListener(this);
+        getServer().getPluginManager().registerEvents(limboServerListener, this);
 
         int intervalSeconds = getConfig().getInt("limbo.check-interval-seconds", 3);
-        int intervalTicks = intervalSeconds * 20;
+        long intervalTicks = (long) intervalSeconds * 20L;
         new LimboCheckTask(this).runTaskTimerAsynchronously(this, 60L, intervalTicks);
         getLogger().log(Level.INFO, "Limbo check task started (every {0}s).", intervalSeconds);
     }
@@ -269,6 +300,24 @@ public final class PolarSouls extends JavaPlugin {
         hybridTimeoutSeconds = cfg.getInt("main.hybrid-timeout-seconds", 300);
         reviveCooldownSeconds = cfg.getInt("lives.revive-cooldown-seconds", 30);
         extraLifeEnabled    = cfg.getBoolean("extra-life.enabled", true);
+        hardcoreHearts      = cfg.getBoolean("hardcore-hearts", true);
+        limboOpSecurityEnabled = cfg.getBoolean("limbo-op-security-check", true);
+        limboTrustedAdmins  = ConcurrentHashMap.newKeySet();
+        // Normalize whitelist entries: trim whitespace and lowercase non-UUID entries (usernames)
+        for (String entry : cfg.getStringList("limbo-trusted-admins")) {
+            String trimmed = entry.trim();
+            // Keep UUIDs in original case (they contain dashes), lowercase usernames for case-insensitive matching
+            if (trimmed.contains("-")) {
+                limboTrustedAdmins.add(trimmed); // UUID format, keep as-is
+            } else {
+                limboTrustedAdmins.add(trimmed.toLowerCase()); // Username, normalize to lowercase
+            }
+        }
+
+        for (World world : getServer().getWorlds()) {
+            boolean original = originalWorldHardcore.getOrDefault(world.getName(), false);
+            world.setHardcore(hardcoreHearts || original);
+        }
 
         hrmEnabled            = cfg.getBoolean("hrm.enabled", true);
         hrmDropHeads          = cfg.getBoolean("hrm.drop-heads", true);
@@ -283,6 +332,14 @@ public final class PolarSouls extends JavaPlugin {
         }
 
         MessageUtil.loadMessages(cfg);
+        
+        // Refresh cached config values in listeners after config reload
+        if (mainServerListener != null) {
+            mainServerListener.refreshConfigCache();
+        }
+        if (limboServerListener != null) {
+            limboServerListener.refreshLimboSpawnCache();
+        }
     }
 
     private long loadGracePeriod(FileConfiguration cfg) {
@@ -293,7 +350,7 @@ public final class PolarSouls extends JavaPlugin {
             if (millis >= 0) {
                 return millis;
             }
-            getLogger().warning("Invalid grace-period format: " + gracePeriodStr + ". Using default of 24h.");
+            getLogger().log(Level.WARNING, "Invalid grace-period format: {0}. Using default of 24h.", gracePeriodStr);
         }
 
         // Fall back to old format (hours as integer) for backward compatibility
@@ -319,9 +376,9 @@ public final class PolarSouls extends JavaPlugin {
 
         if (world == null) { // world not loaded yet, defer
             Bukkit.getScheduler().runTaskLater(this, () -> {
-                World w = Bukkit.getWorld(resolvedWorldName);
-                if (w != null) {
-                    limboSpawn = buildSpawnLocation(w, cfg);
+                World limboWorld = Bukkit.getWorld(resolvedWorldName);
+                if (limboWorld != null) {
+                    limboSpawn = buildSpawnLocation(limboWorld, cfg);
                     debug("Limbo spawn loaded: " + limboSpawn);
                 } else {
                     getLogger().log(Level.WARNING, "Limbo spawn world ''{0}'' not found!", resolvedWorldName);
@@ -352,6 +409,20 @@ public final class PolarSouls extends JavaPlugin {
         cfg.set(CFG_SPAWN_YAW, (double) loc.getYaw());
         cfg.set(CFG_SPAWN_PITCH, (double) loc.getPitch());
         saveConfig();
+        
+        // Refresh cached limbo spawn in listener
+        if (limboServerListener != null) {
+            limboServerListener.refreshLimboSpawnCache();
+        }
+    }
+
+    @EventHandler
+    public void onWorldLoad(WorldLoadEvent event) {
+        World world = event.getWorld();
+        originalWorldHardcore.putIfAbsent(world.getName(), world.isHardcore());
+        if (hardcoreHearts) {
+            world.setHardcore(true);
+        }
     }
 
     public void debug(String message) {
@@ -360,12 +431,20 @@ public final class PolarSouls extends JavaPlugin {
         }
     }
 
+    public boolean isDebugMode() {
+        return debugMode;
+    }
+
     public static PolarSouls getInstance() {
         return instance;
     }
 
     public DatabaseManager getDatabaseManager() {
         return databaseManager;
+    }
+
+    public MainServerListener getMainServerListener() {
+        return mainServerListener;
     }
 
     public boolean isLimboServer() {
@@ -454,5 +533,63 @@ public final class PolarSouls extends JavaPlugin {
 
     public boolean isHrmReviveSkullRecipe() {
         return hrmEnabled && hrmReviveSkullRecipe;
+    }
+
+    public boolean isLimboOpSecurityEnabled() {
+        return limboOpSecurityEnabled;
+    }
+
+    public Set<String> getLimboTrustedAdmins() {
+        return Collections.unmodifiableSet(limboTrustedAdmins);
+    }
+
+    public void removeDroppedHeads(UUID ownerUuid) {
+        if (headDropListener != null) {
+            headDropListener.removeDroppedHeads(ownerUuid);
+        }
+    }
+
+    // checks if main and limbo are running same version, warns if not
+    private void checkVersionCompatibility() {
+        String currentVersion = getDescription().getVersion();
+        // Use different keys for main and limbo servers to properly track each
+        String versionKey = isLimboServer ? "limbo_version" : "main_version";
+        String otherVersionKey = isLimboServer ? "main_version" : "limbo_version";
+
+        String storedVersion = databaseManager.getPluginVersion(versionKey);
+        String otherServerVersion = databaseManager.getPluginVersion(otherVersionKey);
+
+        // Always update our version in database (allows version changes to be detected immediately)
+        databaseManager.savePluginVersion(versionKey, currentVersion);
+
+        if (storedVersion != null && !currentVersion.equals(storedVersion)) {
+            getLogger().log(Level.INFO, "Plugin version updated from {0} to {1}",
+                    new Object[]{storedVersion, currentVersion});
+        } else if (storedVersion == null) {
+            getLogger().log(Level.INFO, "Plugin version {0} registered in database for {1} server.",
+                    new Object[]{currentVersion, isLimboServer ? "Limbo" : "Main"});
+        }
+
+        // Check if the other server (Main vs Limbo) has a different version
+        if (otherServerVersion != null && !currentVersion.equals(otherServerVersion)) {
+            String ourRole = isLimboServer ? "Limbo" : "Main";
+            String otherRole = isLimboServer ? "Main" : "Limbo";
+            getLogger().warning("╔════════════════════════════════════════╗");
+            getLogger().warning("║  ⚠️  VERSION MISMATCH DETECTED!       ║");
+            getLogger().warning("╠════════════════════════════════════════╣");
+            getLogger().log(Level.WARNING, "║ {0} Server: {1}", new Object[]{
+                    String.format("%-6s", ourRole), String.format("%-27s", currentVersion)});
+            getLogger().log(Level.WARNING, "║ {0} Server: {1}", new Object[]{
+                    String.format("%-6s", otherRole), String.format("%-27s", otherServerVersion)});
+            getLogger().warning("║                                        ║");
+            getLogger().warning("║ ENSURE both Main and Limbo servers    ║");
+            getLogger().warning("║ run the SAME plugin version!          ║");
+            getLogger().warning("║                                        ║");
+            getLogger().warning("║ Mismatched versions may cause         ║");
+            getLogger().warning("║ data corruption or unexpected issues! ║");
+            getLogger().warning("╚════════════════════════════════════════╝");
+        } else {
+            debug("Version check passed: " + currentVersion);
+        }
     }
 }
