@@ -1,4 +1,4 @@
-package com.mario.polarsouls.command;
+package org.polarnl.polarsouls.command;
 
 import java.util.logging.Level;
 
@@ -9,9 +9,9 @@ import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 
-import com.mario.polarsouls.PolarSouls;
-import com.mario.polarsouls.util.CommandUtil;
-import com.mario.polarsouls.util.MessageUtil;
+import org.polarnl.polarsouls.PolarSouls;
+import org.polarnl.polarsouls.util.CommandUtil;
+import org.polarnl.polarsouls.util.MessageUtil;
 
 public class SetLimboSpawnCommand implements CommandExecutor {
 
