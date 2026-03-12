@@ -1,4 +1,4 @@
-package com.mario.polarsouls.listener;
+package org.polarnl.polarsouls.listener;
 
 import org.bukkit.Bukkit;
 import org.bukkit.GameMode;
@@ -15,8 +15,8 @@ import org.bukkit.event.player.PlayerMoveEvent;
 import org.bukkit.event.player.PlayerPortalEvent;
 import org.bukkit.event.player.PlayerQuitEvent;
 
-import com.mario.polarsouls.PolarSouls;
-import com.mario.polarsouls.util.MessageUtil;
+import org.polarnl.polarsouls.PolarSouls;
+import org.polarnl.polarsouls.util.MessageUtil;
 
 public class LimboServerListener implements Listener {
 
