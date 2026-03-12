@@ -4,7 +4,7 @@
 # This plugin implements a hardcore lives system with Limbo exile and revival mechanics.
 # Read all sections carefully to configure correctly for your network.
 #
-# Please read the wiki for more information: https://ssoggytacoblud.github.io/PolarSouls-for-Hardcore/
+# Please read the wiki for more information: https://polarmc-technologies.github.io/PolarSouls-for-Hardcore/
 #
 # ═══════════════════════════════════════════════════════════════════════════════
 #  QUICK SETUP GUIDE 
@@ -94,7 +94,7 @@ limbo-op-security-check: true
 # Example:
 #   limbo-trusted-admins:
 #     - "069a79f4-44e9-4726-a5be-fca90e38aaf5"  # UUID format (recommended)
-#     - "SSoggyTacoBlud"                          # Username format
+#     - "YourUsername"                          # Username format
 # 
 # To apply changes:
 #   - Edit this list and save the file
