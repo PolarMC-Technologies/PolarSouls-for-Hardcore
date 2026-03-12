@@ -29,7 +29,10 @@ public class LimboCheckTask extends BukkitRunnable {
         List<UUID> onlinePlayers = collectOnlinePlayers();
         if (onlinePlayers.isEmpty()) return;
 
-        plugin.debug("Limbo check: scanning " + onlinePlayers.size() + " player(s)...");
+        // Avoid string concatenation overhead unless debug is enabled
+        if (plugin.isDebugMode()) {
+            plugin.debug("Limbo check: scanning " + onlinePlayers.size() + " player(s)...");
+        }
 
         List<UUID> toRelease = findRevivedPlayers(onlinePlayers);
 
@@ -55,7 +58,10 @@ public class LimboCheckTask extends BukkitRunnable {
         for (UUID uuid : onlinePlayers) {
             if (!plugin.getDatabaseManager().isPlayerDead(uuid)) {
                 toRelease.add(uuid);
-                plugin.debug("Player " + uuid + " has been revived! Releasing...");
+                // Avoid string concatenation overhead unless debug is enabled
+                if (plugin.isDebugMode()) {
+                    plugin.debug("Player " + uuid + " has been revived! Releasing...");
+                }
             }
         }
         return toRelease;
