@@ -1,4 +1,4 @@
-package com.mario.polarsouls;
+package org.polarnl.polarsouls;
 
 import java.util.Collections;
 import java.util.HashMap;
@@ -19,26 +19,26 @@ import org.bukkit.event.Listener;
 import org.bukkit.event.world.WorldLoadEvent;
 import org.bukkit.plugin.java.JavaPlugin;
 
-import com.mario.polarsouls.command.AdminCommand;
-import com.mario.polarsouls.command.LeaveLimboCommand;
-import com.mario.polarsouls.command.ReviveCommand;
-import com.mario.polarsouls.command.SetLimboSpawnCommand;
-import com.mario.polarsouls.command.SetLivesCommand;
-import com.mario.polarsouls.command.StatusCommand;
-import com.mario.polarsouls.command.VisitLimboCommand;
-import com.mario.polarsouls.database.DatabaseManager;
-import com.mario.polarsouls.hrm.ExtraLifeManager;
-import com.mario.polarsouls.hrm.HeadDropListener;
-import com.mario.polarsouls.hrm.HeadEffectsTask;
-import com.mario.polarsouls.hrm.RevivalStructureListener;
-import com.mario.polarsouls.hrm.ReviveSkullManager;
-import com.mario.polarsouls.listener.LimboServerListener;
-import com.mario.polarsouls.listener.MainServerListener;
-import com.mario.polarsouls.task.LimboCheckTask;
-import com.mario.polarsouls.task.MainReviveCheckTask;
-import com.mario.polarsouls.util.MessageUtil;
-import com.mario.polarsouls.util.TimeUtil;
-import com.mario.polarsouls.util.UpdateChecker;
+import org.polarnl.polarsouls.command.AdminCommand;
+import org.polarnl.polarsouls.command.LeaveLimboCommand;
+import org.polarnl.polarsouls.command.ReviveCommand;
+import org.polarnl.polarsouls.command.SetLimboSpawnCommand;
+import org.polarnl.polarsouls.command.SetLivesCommand;
+import org.polarnl.polarsouls.command.StatusCommand;
+import org.polarnl.polarsouls.command.VisitLimboCommand;
+import org.polarnl.polarsouls.database.DatabaseManager;
+import org.polarnl.polarsouls.hrm.ExtraLifeManager;
+import org.polarnl.polarsouls.hrm.HeadDropListener;
+import org.polarnl.polarsouls.hrm.HeadEffectsTask;
+import org.polarnl.polarsouls.hrm.RevivalStructureListener;
+import org.polarnl.polarsouls.hrm.ReviveSkullManager;
+import org.polarnl.polarsouls.listener.LimboServerListener;
+import org.polarnl.polarsouls.listener.MainServerListener;
+import org.polarnl.polarsouls.task.LimboCheckTask;
+import org.polarnl.polarsouls.task.MainReviveCheckTask;
+import org.polarnl.polarsouls.util.MessageUtil;
+import org.polarnl.polarsouls.util.TimeUtil;
+import org.polarnl.polarsouls.util.UpdateChecker;
 
 @SuppressWarnings("java:S6548")
 public final class PolarSouls extends JavaPlugin implements Listener {
