@@ -1,4 +1,4 @@
-package com.mario.polarsouls.hrm;
+package org.polarnl.polarsouls.hrm;
 
 import java.util.List;
 import java.util.Locale;
@@ -25,9 +25,9 @@ import org.bukkit.inventory.meta.ItemMeta;
 import org.bukkit.inventory.meta.SkullMeta;
 import org.bukkit.persistence.PersistentDataType;
 
-import com.mario.polarsouls.PolarSouls;
-import com.mario.polarsouls.model.PlayerData;
-import com.mario.polarsouls.util.MessageUtil;
+import org.polarnl.polarsouls.PolarSouls;
+import org.polarnl.polarsouls.model.PlayerData;
+import org.polarnl.polarsouls.util.MessageUtil;
 
 // craftable revive skull thingy from HRM
 public class ReviveSkullManager implements Listener {
