@@ -71,7 +71,7 @@ public class MainServerListener implements Listener {
         if (data.isDead()) {
             redirectToLimbo(player);
         } else {
-            // Gamemode check must happen on the main thread for accurate state
+            // gamemode check must happen on the main thread
             Bukkit.getScheduler().runTask(plugin, () -> {
                 if (!player.isOnline()) return;
                 if (player.getGameMode() != GameMode.SURVIVAL) {
@@ -157,7 +157,7 @@ public class MainServerListener implements Listener {
             return;
         }
 
-        // Mark for processing before async DB check
+        // mark for processing before async DB check
         pendingLimbo.add(uuid);
 
         Bukkit.getScheduler().runTaskAsynchronously(plugin, () -> handleDeathAsync(player, uuid));
@@ -182,7 +182,7 @@ public class MainServerListener implements Listener {
                 + ", isDead: " + data.isDead());
 
         if (data.isDead()) {
-            // UUID stays in pendingLimbo (already added in onPlayerDeath)
+            // UUID stays in pendingLimbo
             handleFinalDeath(player, uuid);
         } else {
             pendingLimbo.remove(uuid);
@@ -226,7 +226,7 @@ public class MainServerListener implements Listener {
     private void handleFinalDeath(Player player, UUID uuid) {
         String deathMode = plugin.getDeathMode();
 
-        // Send death message only; gamemode change deferred to onPlayerRespawn
+        // send death message only, gamemode change sent to onPlayerRespawn
         Bukkit.getScheduler().runTask(plugin, () -> {
             if (!player.isOnline()) {
                 pendingLimbo.remove(uuid);
@@ -282,12 +282,12 @@ public class MainServerListener implements Listener {
         Player player = event.getPlayer();
         UUID uuid = player.getUniqueId();
 
-        // Only handle players who died their final death
+        // only handle players who died their final actual death
         if (!pendingLimbo.remove(uuid)) return;
 
         String deathMode = plugin.getDeathMode();
 
-        // Delay 1 tick so the client finishes respawning
+        // 1 tick delay so client doesn lag behind
         Bukkit.getScheduler().runTaskLater(plugin, () -> {
             if (!player.isOnline()) return;
 
@@ -320,7 +320,7 @@ public class MainServerListener implements Listener {
 
     @EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)
     public void onGameModeChange(PlayerGameModeChangeEvent event) {
-        // Detect external SPECTATOR->SURVIVAL change (HRM or other plugin revive)
+        // detect external SPECTATOR->SURVIVAL change (HRM or other plugin revive)
         String deathMode = plugin.getDeathMode();
         boolean shouldDetect = !PolarSouls.MODE_LIMBO.equals(deathMode) || plugin.isDetectHrmRevive();
         if (!shouldDetect) return;
@@ -336,7 +336,7 @@ public class MainServerListener implements Listener {
             plugin.debug("Detected gamemode change SPECTATOR->SURVIVAL for "
                     + player.getName() + " (possible HRM revive)");
 
-            // Cancel any pending hybrid-mode transfer
+            // cancel any pending hybrid transfer
             cancelHybridTransfer(uuid);
 
             grantReviveCooldown(uuid);
