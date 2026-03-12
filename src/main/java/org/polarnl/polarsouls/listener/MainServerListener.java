@@ -1,4 +1,4 @@
-package com.mario.polarsouls.listener;
+package org.polarnl.polarsouls.listener;
 
 import java.util.HashMap;
 import java.util.HashSet;
@@ -21,11 +21,11 @@ import org.bukkit.event.player.PlayerQuitEvent;
 import org.bukkit.event.player.PlayerRespawnEvent;
 import org.bukkit.scheduler.BukkitTask;
 
-import com.mario.polarsouls.PolarSouls;
-import com.mario.polarsouls.database.DatabaseManager;
-import com.mario.polarsouls.model.PlayerData;
-import com.mario.polarsouls.util.MessageUtil;
-import com.mario.polarsouls.util.ServerTransferUtil;
+import org.polarnl.polarsouls.PolarSouls;
+import org.polarnl.polarsouls.database.DatabaseManager;
+import org.polarnl.polarsouls.model.PlayerData;
+import org.polarnl.polarsouls.util.MessageUtil;
+import org.polarnl.polarsouls.util.ServerTransferUtil;
 
 public class MainServerListener implements Listener {
 
