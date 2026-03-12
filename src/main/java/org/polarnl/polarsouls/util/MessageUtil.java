@@ -1,4 +1,4 @@
-package com.mario.polarsouls.util;
+package org.polarnl.polarsouls.util;
 
 import java.util.HashMap;
 import java.util.Map;
