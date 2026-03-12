@@ -110,6 +110,7 @@ public final class PolarSouls extends JavaPlugin {
         String mode = isLimboServer ? "LIMBO SERVER" : "MAIN SERVER";
         String version = getDescription().getVersion();
         
+        // you see this ascii art is alot better than the updatechecker one am i right
         getLogger().info("");
         getLogger().info(BORDER_TOP);
         getLogger().info(BORDER_EMPTY);
