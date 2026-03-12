@@ -1,0 +1,15 @@
+<aside class="docs-sidebar" aria-label="Documentation navigation">
+  <p class="docs-sidebar-title">Documentation</p>
+  <nav>
+    <ul class="docs-sidebar-list">
+      <li><a class="{% if page.url == '/' or page.url == '/index.html' %}is-active{% endif %}" href="{{ '/' | relative_url }}">Home</a></li>
+      <li><a class="{% if page.url contains 'quick-start' %}is-active{% endif %}" href="{{ '/quick-start' | relative_url }}">Quick Start</a></li>
+      <li><a class="{% if page.url contains 'installation' %}is-active{% endif %}" href="{{ '/installation' | relative_url }}">Installation</a></li>
+      <li><a class="{% if page.url contains 'configuration' %}is-active{% endif %}" href="{{ '/configuration' | relative_url }}">Configuration</a></li>
+      <li><a class="{% if page.url contains 'commands' %}is-active{% endif %}" href="{{ '/commands' | relative_url }}">Commands</a></li>
+      <li><a class="{% if page.url contains 'revival-system' %}is-active{% endif %}" href="{{ '/revival-system' | relative_url }}">Revival System</a></li>
+      <li><a class="{% if page.url contains 'troubleshooting' %}is-active{% endif %}" href="{{ '/troubleshooting' | relative_url }}">Troubleshooting</a></li>
+      <li><a class="{% if page.url contains 'faq' %}is-active{% endif %}" href="{{ '/faq' | relative_url }}">FAQ</a></li>
+    </ul>
+  </nav>
+</aside>
