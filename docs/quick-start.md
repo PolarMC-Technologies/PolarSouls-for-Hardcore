@@ -19,7 +19,7 @@ Before you begin, ensure you have:
 ### Step 1: Download
 
 Download the latest `PolarSouls-1.3.6.jar` from:
-- [GitHub Releases](https://github.com/SSoggyTacoBlud/PolarSouls-for-Hardcore/releases)
+- [GitHub Releases](https://github.com/polarmc-technologies/PolarSouls-for-Hardcore/releases)
 - [Modrinth](https://modrinth.com/plugin/polarsouls)
 
 ### Step 2: Install Plugin
@@ -161,7 +161,7 @@ For the complete command list, see [Commands](commands).
 - [Configuration Reference](configuration)
 - [Troubleshooting](troubleshooting)
 - [FAQ](faq)
-- [Report Issues](https://github.com/SSoggyTacoBlud/PolarSouls-for-Hardcore/issues)
+- [Report Issues](https://github.com/polarmc-technologies/PolarSouls-for-Hardcore/issues)
 
 ---
 
