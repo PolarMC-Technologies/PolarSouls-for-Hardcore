@@ -30,10 +30,7 @@ import com.mario.polarsouls.database.DatabaseManager;
 import com.mario.polarsouls.model.PlayerData;
 import com.mario.polarsouls.util.MessageUtil;
 
-/**
- * Detects the HRM revival ritual structure when a player head is placed.
- * Structure is a 3x3x3 pillar: soul sand/stairs/ore base, fence+roses middle, player head on top.
- */
+// detects when player head is placed for HRM strcuture (so cool to short it to HRM i know)
 public class RevivalStructureListener implements Listener {
 
     private final PolarSouls plugin;
@@ -52,7 +49,7 @@ public class RevivalStructureListener implements Listener {
         Material type = placed.getType();
         if (type != Material.PLAYER_HEAD && type != Material.PLAYER_WALL_HEAD) return;
 
-        // Get skull owner from the placed item
+        // get owner of placed head
         ItemStack item = event.getItemInHand();
         if (!(item.getItemMeta() instanceof SkullMeta skullMeta)) return;
 
@@ -62,13 +59,13 @@ public class RevivalStructureListener implements Listener {
         UUID ownerUuid = skullOwner.getUniqueId();
         Player placer = event.getPlayer();
 
-        // Check the revival structure
+        // check if structure is correct because idk it feels pretty essential
         if (!isRitualStructure(placed)) {
             checkIncompleteStructure(placed, placer);
             return;
         }
 
-        // Check database asynchronously
+        // db checkkkkk
         Bukkit.getScheduler().runTaskAsynchronously(plugin, () -> {
             PlayerData data = db.getPlayer(ownerUuid);
 
@@ -93,7 +90,7 @@ public class RevivalStructureListener implements Listener {
                     "{0} revived {1} via ritual structure!",
                     new Object[]{placer.getName(), data.getUsername()});
 
-            // Run visual effects on main thread
+            // visual effects on main thread
             Bukkit.getScheduler().runTask(plugin, () ->
                     performRevival(placed, placer, ownerUuid, data.getUsername()));
         });
@@ -124,17 +121,17 @@ public class RevivalStructureListener implements Listener {
         revived.setGameMode(GameMode.SURVIVAL);
         revived.sendMessage(MessageUtil.get("revive-success"));
 
-        // Clear effects and apply revival buff (matches HRM)
+        // effects after revive since HRM does it too and i have it built in so
         revived.getActivePotionEffects().forEach(e ->
                 revived.removePotionEffect(e.getType()));
 
-        int duration = 100; // 5 seconds
+        int duration = 100; // 5 seconds (for people who dont uderstand ticks ig)
         revived.addPotionEffect(new PotionEffect(
                 PotionEffectType.RESISTANCE, duration, 4, false, true));
         revived.addPotionEffect(new PotionEffect(
                 PotionEffectType.GLOWING, duration, 0, false, true));
 
-        // Totem of undying animation
+        // attempt to do totem of undying animation (will prob oinly work if you are revived within the spectator time window but hey its worth a shot and its cool for that window anyway)
         revived.playEffect(EntityEffect.TOTEM_RESURRECT);
     }
 
@@ -144,27 +141,27 @@ public class RevivalStructureListener implements Listener {
         int hz = headBlock.getZ();
         World world = headBlock.getWorld();
 
-        // Fence below head
+        // fence below da head
         if (!Tag.FENCES.isTagged(world.getBlockAt(hx, hy - 1, hz).getType())) return false;
 
-        // Ore below fence
+        // ore block below the fence
         if (!Tag.BEACON_BASE_BLOCKS.isTagged(world.getBlockAt(hx, hy - 2, hz).getType())) return false;
 
         int by = hy - 2;
 
-        // Soul sand corners
+        // soul sand corners
         if (!isSoulSand(world, hx - 1, by, hz - 1)) return false;
         if (!isSoulSand(world, hx + 1, by, hz - 1)) return false;
         if (!isSoulSand(world, hx - 1, by, hz + 1)) return false;
         if (!isSoulSand(world, hx + 1, by, hz + 1)) return false;
 
-        // Stair edges
+        // stair edges
         if (!isStair(world, hx, by, hz - 1)) return false;
         if (!isStair(world, hx - 1, by, hz)) return false;
         if (!isStair(world, hx + 1, by, hz)) return false;
         if (!isStair(world, hx, by, hz + 1)) return false;
 
-        // Wither roses at corners
+        // wither roses on the corners on the soul sand
         int my = hy - 1;
         if (!isWitherRose(world, hx - 1, my, hz - 1)) return false;
         if (!isWitherRose(world, hx + 1, my, hz - 1)) return false;
@@ -192,27 +189,23 @@ public class RevivalStructureListener implements Listener {
         World world = headBlock.getWorld();
         boolean leaveBase = plugin.isHrmLeaveStructureBase();
 
-        // Top layer: head
+        // head
         setAir(world, hx, hy, hz);
 
-        // Middle layer: fence + 4 roses
+        // fence + 4 roses
         setAir(world, hx, hy - 1, hz);
         setAir(world, hx - 1, hy - 1, hz - 1);
         setAir(world, hx + 1, hy - 1, hz - 1);
         setAir(world, hx - 1, hy - 1, hz + 1);
         setAir(world, hx + 1, hy - 1, hz + 1);
 
-        // Bottom layer: only break if configured
         if (!leaveBase) {
             int by = hy - 2;
-            // Ore center
             setAir(world, hx, by, hz);
-            // Soul sand corners
             setAir(world, hx - 1, by, hz - 1);
             setAir(world, hx + 1, by, hz - 1);
             setAir(world, hx - 1, by, hz + 1);
             setAir(world, hx + 1, by, hz + 1);
-            // Stair edges
             setAir(world, hx, by, hz - 1);
             setAir(world, hx - 1, by, hz);
             setAir(world, hx + 1, by, hz);
@@ -233,7 +226,7 @@ public class RevivalStructureListener implements Listener {
         Block fence = world.getBlockAt(hx, hy - 1, hz);
         Block ore = world.getBlockAt(hx, hy - 2, hz);
 
-        // Partial match - fence+ore present but rest is wrong
+        // partial match - fence+ore present but rest is wrong (for retarded people)
         if (Tag.FENCES.isTagged(fence.getType())
                 && Tag.BEACON_BASE_BLOCKS.isTagged(ore.getType())) {
             placer.sendMessage(ChatColor.RED + "The revival structure is incomplete!");
