@@ -68,7 +68,7 @@ All modes work with all revival methods:
 - Admin commands (`/psadmin revive`)
 
 ## Built-in HRM (Hardcore Revive Mode)
-*(revival mechanics "borrowed" from [Hardcore Revive Mod](https://modrinth.com/plugin/hardcore-revive-mod))*
+*(revival mechanics forked from [JakeCCz's Hardcore Revive Mod](https://modrinth.com/plugin/hardcore-revive-mod))*
 
 Comes with a full revival system:
 
@@ -254,7 +254,7 @@ After setup, test everything:
 ## Installation
 
 ### Step 1: Download
-Download the latest release (`PolarSouls-1.3.6.jar`) from the [Releases page](https://github.com/polarmc-technologies/PolarSouls-for-Hardcore/releases).
+Download the latest release (`PolarSouls-2.1.2.jar`) from the [Releases page](https://github.com/polarmc-technologies/PolarSouls-for-Hardcore/releases).
 
 ### Step 2: Install Plugin
 Place `PolarSouls-1.3.6.jar` in the `plugins/` folder of **both** servers:
@@ -632,7 +632,7 @@ PolarSouls includes automatic update checking via Modrinth:
 
 ## Credits
 
-- **Revival mechanics** "inspired" by [Hardcore Revive Mod](https://modrinth.com/plugin/hardcore-revive-mod)
+- **Revival mechanics** forked from [JakeCCz's Hardcore Revive Mod](https://modrinth.com/plugin/hardcore-revive-mod)
 - **Author:** SSoggyTacoMan and GitHub Copilot for some bug fixes
 - **License:** GPL-3.0
 
