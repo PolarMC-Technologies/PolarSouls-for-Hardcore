@@ -116,7 +116,7 @@ public class LimboServerListener implements Listener {
         if (player.hasPermission(PERM_BYPASS)) return;
         if (player.hasPermission("PolarSouls.admin")) return;
 
-        // Visitors are unrestricted
+        // visitors (not dead in main) are unrestricted
         if (!plugin.getLimboDeadPlayers().contains(player.getUniqueId())) return;
 
         String command = event.getMessage().toLowerCase().split(" ")[0];
