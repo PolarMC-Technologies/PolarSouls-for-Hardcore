@@ -1,4 +1,4 @@
-package com.mario.polarsouls.command;
+package org.polarnl.polarsouls.command;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -13,15 +13,15 @@ import org.bukkit.command.CommandSender;
 import org.bukkit.command.TabCompleter;
 import org.bukkit.entity.Player;
 
-import com.mario.polarsouls.PolarSouls;
-import com.mario.polarsouls.database.DatabaseManager;
-import com.mario.polarsouls.model.PlayerData;
-import com.mario.polarsouls.util.CommandUtil;
-import com.mario.polarsouls.util.MessageUtil;
-import com.mario.polarsouls.util.PermissionUtil;
-import com.mario.polarsouls.util.PlayerRevivalUtil;
-import com.mario.polarsouls.util.ServerTransferUtil;
-import com.mario.polarsouls.util.TabCompleteUtil;
+import org.polarnl.polarsouls.PolarSouls;
+import org.polarnl.polarsouls.database.DatabaseManager;
+import org.polarnl.polarsouls.model.PlayerData;
+import org.polarnl.polarsouls.util.CommandUtil;
+import org.polarnl.polarsouls.util.MessageUtil;
+import org.polarnl.polarsouls.util.PermissionUtil;
+import org.polarnl.polarsouls.util.PlayerRevivalUtil;
+import org.polarnl.polarsouls.util.ServerTransferUtil;
+import org.polarnl.polarsouls.util.TabCompleteUtil;
 
 public class ReviveCommand implements CommandExecutor, TabCompleter {
 
