@@ -1,7 +1,7 @@
-package com.mario.polarsouls.util;
+package org.polarnl.polarsouls.util;
 
-import com.mario.polarsouls.PolarSouls;
-import com.mario.polarsouls.model.PlayerData;
+import org.polarnl.polarsouls.PolarSouls;
+import org.polarnl.polarsouls.model.PlayerData;
 import org.bukkit.Bukkit;
 import org.bukkit.GameMode;
 import org.bukkit.entity.Player;
