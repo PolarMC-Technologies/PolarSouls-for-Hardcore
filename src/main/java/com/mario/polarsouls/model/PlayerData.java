@@ -9,7 +9,7 @@ public class PlayerData {
     private int lives;
     private boolean isDead;
     private long firstJoin;    // epoch millis
-    private long lastDeath;    // epoch millis, 0 = never died
+    private long lastDeath;    // epoch millis, 0 = never died (yet)
 
     public PlayerData(UUID uuid, String username, int lives, boolean isDead,
                       long firstJoin, long lastDeath) {
