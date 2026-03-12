@@ -1,4 +1,4 @@
-package com.mario.polarsouls.task;
+package org.polarnl.polarsouls.task;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -10,8 +10,8 @@ import org.bukkit.GameMode;
 import org.bukkit.entity.Player;
 import org.bukkit.scheduler.BukkitRunnable;
 
-import com.mario.polarsouls.PolarSouls;
-import com.mario.polarsouls.util.MessageUtil;
+import org.polarnl.polarsouls.PolarSouls;
+import org.polarnl.polarsouls.util.MessageUtil;
 
 // pings the db on main server for spectators who've been revived externally and then restores em to survival
 
