@@ -1,4 +1,4 @@
-package com.mario.polarsouls.util;
+package org.polarnl.polarsouls.util;
 
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
