@@ -1,4 +1,4 @@
-package com.mario.polarsouls.hrm;
+package org.polarnl.polarsouls.hrm;
 
 import java.util.HashSet;
 import java.util.Set;
@@ -12,7 +12,7 @@ import org.bukkit.potion.PotionEffect;
 import org.bukkit.potion.PotionEffectType;
 import org.bukkit.scheduler.BukkitRunnable;
 
-import com.mario.polarsouls.PolarSouls;
+import org.polarnl.polarsouls.PolarSouls;
 
 // does that thingy with effects when you wear player head
 public class HeadEffectsTask extends BukkitRunnable {
