@@ -119,7 +119,7 @@ The `pool-size` setting controls how many database connections are maintained:
 
 Get the latest version:
 - [GitHub Releases](https://github.com/polarmc-technologies/PolarSouls-for-Hardcore/releases)
-- [Modrinth](https://modrinth.com/plugin/polarsouls)
+- [Modrinth](https://modrinth.com/project/Pb03qu6T)
 
 Download `PolarSouls-1.3.6.jar` (or latest version).
 
