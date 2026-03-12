@@ -4,15 +4,26 @@ This directory contains the source files for the PolarSouls documentation websit
 
 ## Documentation Structure
 
-The documentation is a **single-page HTML site** (`index.html`) with all content and navigation in one file.
+The documentation is a **Jekyll site** using the `jekyll-theme-cayman` theme with Markdown pages.
 
-- **index.html** - Complete documentation (overview, quick start, installation, configuration, commands, revival system, troubleshooting, FAQ)
-- **styles.css** - All styling for the documentation site
-- **assets/** - SVG icons and other static assets
+- **index.md** - Documentation home page and entry point
+- **quick-start.md** - Quick setup guide
+- **installation.md** - Full installation and network setup
+- **configuration.md** - Configuration reference
+- **commands.md** - Command list and permissions
+- **revival-system.md** - Revival mechanics and structures
+- **troubleshooting.md** - Common problems and fixes
+- **faq.md** - Frequently asked questions
+- **assets/css/style.scss** - Lightweight Cayman theme overrides
 
 ## Viewing Locally
 
-To preview the documentation locally, simply open `docs/index.html` in any browser — no build step required.
+To preview with Jekyll locally:
+
+1. `cd docs`
+2. `bundle install`
+3. `bundle exec jekyll serve`
+4. Open the local URL shown in the terminal (usually `http://127.0.0.1:4000/PolarSouls-for-Hardcore/`)
 
 ## Deployment
 
@@ -24,14 +35,15 @@ The documentation is automatically deployed to GitHub Pages when changes are pus
 
 To contribute to the documentation:
 
-1. Edit `index.html` (content) or `styles.css` (styling) directly
-2. Open `index.html` in a browser to verify your changes
+1. Edit the relevant Markdown page in `docs/*.md`
+2. Adjust `assets/css/style.scss` only when visual overrides are needed
+3. Preview with `bundle exec jekyll serve`
 3. Submit a pull request with your changes
 
 Please ensure:
-- Navigation anchors stay in sync with section IDs in `index.html`
+- Internal links between pages remain valid (`quick-start`, `installation`, etc.)
 - Code examples are properly formatted
-- Both light and dark themes look correct (use the theme toggle button)
+- The site renders correctly on desktop and mobile widths
 
 ## Questions?
 

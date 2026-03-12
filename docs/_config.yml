@@ -3,6 +3,13 @@ title: PolarSouls Documentation
 description: Comprehensive hardcore lives system plugin for Minecraft 1.21.X
 baseurl: "/PolarSouls-for-Hardcore"
 url: "https://polarmc-technologies.github.io"
+theme: jekyll-theme-cayman
+
+plugins:
+  - jekyll-seo-tag
+  - jekyll-sitemap
+
+show_downloads: false
 
 # Exclude from processing
 exclude:
