@@ -1,17 +1,14 @@
 package org.polarnl.polarsouls.command;
 
-import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.logging.Level;
 
 import org.bukkit.Bukkit;
-import org.bukkit.GameMode;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
 import org.bukkit.command.TabCompleter;
-import org.bukkit.entity.Player;
 
 import org.polarnl.polarsouls.PolarSouls;
 import org.polarnl.polarsouls.database.DatabaseManager;
@@ -20,7 +17,6 @@ import org.polarnl.polarsouls.util.CommandUtil;
 import org.polarnl.polarsouls.util.MessageUtil;
 import org.polarnl.polarsouls.util.PermissionUtil;
 import org.polarnl.polarsouls.util.PlayerRevivalUtil;
-import org.polarnl.polarsouls.util.ServerTransferUtil;
 import org.polarnl.polarsouls.util.TabCompleteUtil;
 
 public class ReviveCommand implements CommandExecutor, TabCompleter {
