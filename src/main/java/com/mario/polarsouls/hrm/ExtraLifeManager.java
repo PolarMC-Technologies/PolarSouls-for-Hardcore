@@ -47,7 +47,7 @@ public class ExtraLifeManager implements Listener {
     public void registerRecipe() {
         ItemStack result = createExtraLifeItem();
 
-        // Read recipe shape and ingredients from config
+        // check recipe shape and ingredients from config
         var cfg = plugin.getConfig();
         String row1 = cfg.getString("extra-life.recipe.row1", "GEG");
         String row2 = cfg.getString("extra-life.recipe.row2", "ENE");
