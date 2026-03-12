@@ -20,7 +20,7 @@ Before you begin, ensure you have:
 
 Download the latest `PolarSouls-1.3.6.jar` from:
 - [GitHub Releases](https://github.com/polarmc-technologies/PolarSouls-for-Hardcore/releases)
-- [Modrinth](https://modrinth.com/plugin/polarsouls)
+- [Modrinth](https://modrinth.com/project/Pb03qu6T)
 
 ### Step 2: Install Plugin
 
