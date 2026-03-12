@@ -1,4 +1,4 @@
-package com.mario.polarsouls.model;
+package org.polarnl.polarsouls.model;
 
 import java.util.UUID;
 
