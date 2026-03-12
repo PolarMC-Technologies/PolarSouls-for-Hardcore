@@ -13,10 +13,8 @@ import org.bukkit.scheduler.BukkitRunnable;
 import com.mario.polarsouls.PolarSouls;
 import com.mario.polarsouls.util.MessageUtil;
 
-/**
- * Polls the DB on the Main server for spectators who've been revived externally,
- * and restores them to survival.
- */
+// pings the db on main server for spectators who've been revived externally and then restores em to survival
+
 public class MainReviveCheckTask extends BukkitRunnable {
 
     private static final String PERM_BYPASS = "PolarSouls.bypass";
