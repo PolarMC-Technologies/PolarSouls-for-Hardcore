@@ -61,12 +61,12 @@ public class StatusCommand implements CommandExecutor, TabCompleter {
             if (data.isDead()) {
                 sender.sendMessage(MessageUtil.get("status-dead",
                         KEY_PLAYER, data.getUsername()));
-            } else if (data.isInGracePeriod(plugin.getGracePeriodHours())) {
+            } else if (data.isInGracePeriod(plugin.getGracePeriodMillis())) {
                 sender.sendMessage(MessageUtil.get("status-grace",
                         KEY_PLAYER, data.getUsername(),
                         "lives", data.getLives(),
                         "time_remaining", data.getGraceTimeRemaining(
-                                plugin.getGracePeriodHours())));
+                                plugin.getGracePeriodMillis())));
             } else {
                 sender.sendMessage(MessageUtil.get("status-alive",
                         KEY_PLAYER, data.getUsername(),
