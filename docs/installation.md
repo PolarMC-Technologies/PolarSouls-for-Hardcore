@@ -118,7 +118,7 @@ The `pool-size` setting controls how many database connections are maintained:
 ### Download
 
 Get the latest version:
-- [GitHub Releases](https://github.com/SSoggyTacoBlud/PolarSouls-for-Hardcore/releases)
+- [GitHub Releases](https://github.com/polarmc-technologies/PolarSouls-for-Hardcore/releases)
 - [Modrinth](https://modrinth.com/plugin/polarsouls)
 
 Download `PolarSouls-1.3.6.jar` (or latest version).
@@ -172,7 +172,7 @@ try = [
 
 ### For BungeeCord/Waterfall
 
-> **Note:** BungeeCord/Waterfall support is untested. Please [report](https://github.com/SSoggyTacoBlud/PolarSouls-for-Hardcore/issues) if you test it!
+> **Note:** BungeeCord/Waterfall support is untested. Please [report](https://github.com/polarmc-technologies/PolarSouls-for-Hardcore/issues) if you test it!
 
 **In BungeeCord `config.yml`:**
 ```yaml
@@ -386,7 +386,7 @@ Now that PolarSouls is installed:
 - [Configuration Reference](configuration)
 - [Troubleshooting Guide](troubleshooting)
 - [FAQ](faq)
-- [Report Issues](https://github.com/SSoggyTacoBlud/PolarSouls-for-Hardcore/issues)
+- [Report Issues](https://github.com/polarmc-technologies/PolarSouls-for-Hardcore/issues)
 
 ---
 
