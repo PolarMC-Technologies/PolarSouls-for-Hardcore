@@ -1,11 +1,11 @@
-package com.mario.polarsouls.util;
+package org.polarnl.polarsouls.util;
 
 import java.util.Set;
 
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 
-import com.mario.polarsouls.PolarSouls;
+import org.polarnl.polarsouls.PolarSouls;
 
 /**
  * Utility class for permission-related operations.
