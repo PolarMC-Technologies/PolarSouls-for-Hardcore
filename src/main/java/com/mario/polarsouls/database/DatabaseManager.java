@@ -18,8 +18,9 @@ import com.zaxxer.hikari.HikariDataSource;
 public class DatabaseManager {
 
     private static final String COL_IS_DEAD = "is_dead";
-    private static final String SELECT_ALL = "SELECT uuid, username, lives, is_dead, first_join, last_death FROM ";
+    private static final String SELECT_ALL = "SELECT uuid, username, lives, is_dead, first_join, last_death, last_seen FROM ";
     private static final String UPDATE = "UPDATE ";
+    private static final int MYSQL_DUPLICATE_COLUMN = 1060;
 
     private final PolarSouls plugin;
     private HikariDataSource dataSource;
@@ -85,13 +86,31 @@ public class DatabaseManager {
                 + "lives INT NOT NULL DEFAULT " + plugin.getDefaultLives() + ", "
                 + "is_dead BOOLEAN NOT NULL DEFAULT FALSE, "
                 + "first_join BIGINT NOT NULL, "
-                + "last_death BIGINT NOT NULL DEFAULT 0"
+                + "last_death BIGINT NOT NULL DEFAULT 0, "
+                + "last_seen BIGINT NOT NULL DEFAULT 0"
                 + ") ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;";
 
         try (Connection conn = dataSource.getConnection();
-             Statement stmt = conn.createStatement()) {
+              Statement stmt = conn.createStatement()) {
             stmt.executeUpdate(sql);
+            ensureLastSeenColumn(conn);
             plugin.debug("Table '" + tableName + "' verified/created.");
+        }
+    }
+
+    private void ensureLastSeenColumn(Connection conn) {
+        String sql = "ALTER TABLE " + tableName
+                + " ADD COLUMN last_seen BIGINT NOT NULL DEFAULT 0";
+        try (Statement stmt = conn.createStatement()) {
+            stmt.executeUpdate(sql);
+            plugin.debug("Added last_seen column to '" + tableName + "'.");
+        } catch (SQLException e) {
+            String sqlState = e.getSQLState();
+            boolean duplicateColumn = e.getErrorCode() == MYSQL_DUPLICATE_COLUMN
+                    || "42S21".equals(sqlState);
+            if (!duplicateColumn) {
+                plugin.getLogger().log(Level.WARNING, "Failed to ensure last_seen column", e);
+            }
         }
     }
 
@@ -102,7 +121,8 @@ public class DatabaseManager {
                 rs.getInt("lives"),
                 rs.getBoolean(COL_IS_DEAD),
                 rs.getLong("first_join"),
-                rs.getLong("last_death")
+                rs.getLong("last_death"),
+                rs.getLong("last_seen")
         );
     }
 
@@ -144,13 +164,14 @@ public class DatabaseManager {
 
     public void savePlayer(PlayerData data) {
         String sql = "INSERT INTO " + tableName
-                + " (uuid, username, lives, is_dead, first_join, last_death) "
-                + "VALUES (?, ?, ?, ?, ?, ?) "
+                + " (uuid, username, lives, is_dead, first_join, last_death, last_seen) "
+                + "VALUES (?, ?, ?, ?, ?, ?, ?) "
                 + "ON DUPLICATE KEY UPDATE "
                 + "username = VALUES(username), "
                 + "lives = VALUES(lives), "
                 + "is_dead = VALUES(is_dead), "
-                + "last_death = VALUES(last_death)";
+                + "last_death = VALUES(last_death), "
+                + "last_seen = VALUES(last_seen)";
 
         try (Connection conn = dataSource.getConnection();
              PreparedStatement ps = conn.prepareStatement(sql)) {
@@ -161,6 +182,7 @@ public class DatabaseManager {
             ps.setBoolean(4, data.isDead());
             ps.setLong(5, data.getFirstJoin());
             ps.setLong(6, data.getLastDeath());
+            ps.setLong(7, data.getLastSeen());
 
             ps.executeUpdate();
             plugin.debug("Saved player data: " + data);
@@ -236,6 +258,20 @@ public class DatabaseManager {
             ps.executeUpdate();
         } catch (SQLException e) {
             plugin.getLogger().log(Level.WARNING, () -> "Failed to set first_join for " + uuid);
+        }
+    }
+
+    public void setLastSeen(UUID uuid, long lastSeen) {
+        String sql = UPDATE + tableName + " SET last_seen = ? WHERE uuid = ?";
+
+        try (Connection conn = dataSource.getConnection();
+             PreparedStatement ps = conn.prepareStatement(sql)) {
+
+            ps.setLong(1, lastSeen);
+            ps.setString(2, uuid.toString());
+            ps.executeUpdate();
+        } catch (SQLException e) {
+            plugin.getLogger().log(Level.WARNING, () -> "Failed to set last_seen for " + uuid);
         }
     }
 
