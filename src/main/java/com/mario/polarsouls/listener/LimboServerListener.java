@@ -23,9 +23,20 @@ public class LimboServerListener implements Listener {
     private static final String PERM_BYPASS = "PolarSouls.bypass";
 
     private final PolarSouls plugin;
+    
+    // Cache limbo spawn location to avoid repeated lookups
+    private Location cachedLimboSpawn;
 
     public LimboServerListener(PolarSouls plugin) {
         this.plugin = plugin;
+        refreshLimboSpawnCache();
+    }
+    
+    /**
+     * Refresh cached limbo spawn (call on config reload or spawn change)
+     */
+    public void refreshLimboSpawnCache() {
+        this.cachedLimboSpawn = plugin.getLimboSpawn();
     }
 
     @EventHandler(priority = EventPriority.HIGHEST)
@@ -33,7 +44,9 @@ public class LimboServerListener implements Listener {
         Player player = event.getPlayer();
 
         if (player.hasPermission(PERM_BYPASS)) {
-            plugin.debug(player.getName() + " has bypass, skipping limbo lockdown.");
+            if (plugin.isDebugMode()) {
+                plugin.debug(player.getName() + " has bypass, skipping limbo lockdown.");
+            }
             return;
         }
 
@@ -47,7 +60,9 @@ public class LimboServerListener implements Listener {
                     plugin.getLimboDeadPlayers().add(player.getUniqueId());
                     applyLimboState(player);
                 } else {
-                    plugin.debug(player.getName() + " is alive, visiting Limbo.");
+                    if (plugin.isDebugMode()) {
+                        plugin.debug(player.getName() + " is alive, visiting Limbo.");
+                    }
                     player.setGameMode(GameMode.SURVIVAL);
                     player.sendMessage(MessageUtil.get("limbo-visitor-welcome"));
                 }
@@ -75,7 +90,7 @@ public class LimboServerListener implements Listener {
         player.setFoodLevel(20);
         player.setSaturation(20f);
 
-        Location spawn = plugin.getLimboSpawn();
+        Location spawn = cachedLimboSpawn; // Use cached value
         if (spawn != null && spawn.getWorld() != null) {
             player.teleport(findSafeLocation(spawn));
         } else {
@@ -85,7 +100,10 @@ public class LimboServerListener implements Listener {
         }
 
         player.sendMessage(MessageUtil.getNoPrefix("limbo-welcome"));
-        plugin.debug("Applied limbo state to " + player.getName());
+        
+        if (plugin.isDebugMode()) {
+            plugin.debug("Applied limbo state to " + player.getName());
+        }
     }
 
     private static Location findSafeLocation(Location loc) {
@@ -94,14 +112,14 @@ public class LimboServerListener implements Listener {
         if (world == null) return safe;
 
         int maxY = world.getMaxHeight();
-        int x = safe.getBlockX();
-        int z = safe.getBlockZ();
+        int safeBlockX = safe.getBlockX();
+        int safeBlockZ = safe.getBlockZ();
         int startY = safe.getBlockY();
 
-        for (int y = startY; y < maxY - 1; y++) {
-            if (world.getBlockAt(x, y, z).getType().isAir()
-                    && world.getBlockAt(x, y + 1, z).getType().isAir()) {
-                safe.setY(y);
+        for (int blockY = startY; blockY < maxY - 1; blockY++) {
+            if (world.getBlockAt(safeBlockX, blockY, safeBlockZ).getType().isAir()
+                    && world.getBlockAt(safeBlockX, blockY + 1, safeBlockZ).getType().isAir()) {
+                safe.setY(blockY);
                 return safe;
             }
         }
@@ -162,7 +180,7 @@ public class LimboServerListener implements Listener {
 
         Location to = event.getTo();
         if (to != null && to.getY() < -64) {
-            Location spawn = plugin.getLimboSpawn();
+            Location spawn = cachedLimboSpawn; // Use cached value
             if (spawn != null && spawn.getWorld() != null) {
                 player.teleport(spawn);
             } else {
