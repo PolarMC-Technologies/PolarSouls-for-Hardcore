@@ -2,18 +2,18 @@
 
 ![PolarSouls Banner](https://cdn.modrinth.com/data/Pb03qu6T/images/70ce5f45786d4716bb6d47d242ee3238a2b4ec4a.jpeg)
 
-**Version 1.3.6** | [Modrinth](https://modrinth.com/plugin/polarsouls) | [GitHub](https://github.com/SSoggyTacoBlud/PolarSouls-for-Hardcore)
+**Version 1.3.6** | [Modrinth](https://modrinth.com/plugin/polarsouls) | [GitHub](https://github.com/polarmc-technologies/PolarSouls-for-Hardcore)
 
 A hardcore lives system plugin for Minecraft 1.21.X (Spigot/Paper/Purpur) designed for Velocity proxy networks. When you die enough times, you get sent to a Limbo server until your teammates bring you back.
 
-> **[Complete Documentation Wiki →](https://ssoggytacoblud.github.io/PolarSouls-for-Hardcore/)** - Installation guides, configuration reference, commands, troubleshooting, and more!
+> **[Complete Documentation Wiki →](https://polarmc-technologies.github.io/PolarSouls-for-Hardcore/)** - Installation guides, configuration reference, commands, troubleshooting, and more!
 >
 > **Quick Links:**
-> - [Quick Start Guide](https://ssoggytacoblud.github.io/PolarSouls-for-Hardcore/quick-start.html)
-> - [Installation Guide](https://ssoggytacoblud.github.io/PolarSouls-for-Hardcore/installation.html)
-> - [Configuration Reference](https://ssoggytacoblud.github.io/PolarSouls-for-Hardcore/configuration.html)
-> - [Troubleshooting](https://ssoggytacoblud.github.io/PolarSouls-for-Hardcore/troubleshooting.html)
-> - [FAQ](https://ssoggytacoblud.github.io/PolarSouls-for-Hardcore/faq.html)
+> - [Quick Start Guide](https://polarmc-technologies.github.io/PolarSouls-for-Hardcore/quick-start.html)
+> - [Installation Guide](https://polarmc-technologies.github.io/PolarSouls-for-Hardcore/installation.html)
+> - [Configuration Reference](https://polarmc-technologies.github.io/PolarSouls-for-Hardcore/configuration.html)
+> - [Troubleshooting](https://polarmc-technologies.github.io/PolarSouls-for-Hardcore/troubleshooting.html)
+> - [FAQ](https://polarmc-technologies.github.io/PolarSouls-for-Hardcore/faq.html)
 
 ## Features
 
@@ -249,12 +249,12 @@ After setup, test everything:
 4. Run `/psadmin revive <player>` from Main console
 5. Check that you got sent back to Main
 
-> **Note:** BungeeCord/Waterfall not tested but might work. Let us know if you try it! [Open an issue](https://github.com/SSoggyTacoBlud/PolarSouls-for-Hardcore/issues)
+> **Note:** BungeeCord/Waterfall not tested but might work. Let us know if you try it! [Open an issue](https://github.com/polarmc-technologies/PolarSouls-for-Hardcore/issues)
 
 ## Installation
 
 ### Step 1: Download
-Download the latest release (`PolarSouls-1.3.6.jar`) from the [Releases page](https://github.com/SSoggyTacoBlud/PolarSouls-for-Hardcore/releases).
+Download the latest release (`PolarSouls-1.3.6.jar`) from the [Releases page](https://github.com/polarmc-technologies/PolarSouls-for-Hardcore/releases).
 
 ### Step 2: Install Plugin
 Place `PolarSouls-1.3.6.jar` in the `plugins/` folder of **both** servers:
@@ -320,7 +320,7 @@ Adjust settings in `config.yml` to match your server's needs:
 - Extra Life recipe
 - Messages and colors
 
-The `config.yml` includes detailed comments explaining each setting. If you need help, feel free to reach out via [GitHub Issues](https://github.com/SSoggyTacoBlud/PolarSouls-for-Hardcore/issues).
+The `config.yml` includes detailed comments explaining each setting. If you need help, feel free to reach out via [GitHub Issues](https://github.com/polarmc-technologies/PolarSouls-for-Hardcore/issues).
 
 ## Config
 
@@ -481,16 +481,16 @@ Variables you can use:
 
 ```bash
 # Check a player's status
-/pstatus SSoggyTacoBlud
-# Output: SSoggyTacoBlud - Lives: 2 - Status: Alive
+/pstatus YourUsername
+# Output: YourUsername - Lives: 2 - Status: Alive
 
 # Revive a dead player
-/revive SSoggyTacoBlud
+/revive YourUsername
 # or
-/psadmin revive SSoggyTacoBlud
+/psadmin revive YourUsername
 
 # Give a player extra lives
-/psadmin lives SSoggyTacoBlud 5
+/psadmin lives YourUsername 5
 
 # Set a 48-hour grace period
 /psadmin grace NewPlayer 48
@@ -499,11 +499,11 @@ Variables you can use:
 /psadmin kill TestPlayer
 
 # View detailed player information
-/psadmin info SSoggyTacoBlud
+/psadmin info YourUsername
 # Shows: UUID, username, lives, death status, join time, grace period, last seen
 
 # Reset a player's data
-/psadmin reset SSoggyTacoBlud
+/psadmin reset YourUsername
 # Resets to default lives, clears grace period
 
 # Reload configuration
@@ -615,7 +615,7 @@ If issues persist:
 1. Enable debug mode: `debug: true` in config
 2. Restart servers and reproduce the issue
 3. Check console logs for errors
-4. [Open an issue](https://github.com/SSoggyTacoBlud/PolarSouls-for-Hardcore/issues) with:
+4. [Open an issue](https://github.com/polarmc-technologies/PolarSouls-for-Hardcore/issues) with:
    - PolarSouls version
    - Minecraft version
    - Proxy type (Velocity/BungeeCord)
@@ -639,8 +639,8 @@ PolarSouls includes automatic update checking via Modrinth:
 ## Contributing
 
 Issues, suggestions, and pull requests are welcome!
-- Report bugs: [GitHub Issues](https://github.com/SSoggyTacoBlud/PolarSouls-for-Hardcore/issues)
-- Feature requests: [GitHub Issues](https://github.com/SSoggyTacoBlud/PolarSouls-for-Hardcore/issues)
+- Report bugs: [GitHub Issues](https://github.com/polarmc-technologies/PolarSouls-for-Hardcore/issues)
+- Feature requests: [GitHub Issues](https://github.com/polarmc-technologies/PolarSouls-for-Hardcore/issues)
 
 ## License
 
