@@ -1,4 +1,4 @@
-package com.mario.polarsouls.command;
+package org.polarnl.polarsouls.command;
 
 import org.bukkit.Bukkit;
 import org.bukkit.command.Command;
@@ -6,9 +6,9 @@ import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 
-import com.mario.polarsouls.PolarSouls;
-import com.mario.polarsouls.util.MessageUtil;
-import com.mario.polarsouls.util.ServerTransferUtil;
+import org.polarnl.polarsouls.PolarSouls;
+import org.polarnl.polarsouls.util.MessageUtil;
+import org.polarnl.polarsouls.util.ServerTransferUtil;
 
 public class VisitLimboCommand implements CommandExecutor {
 
