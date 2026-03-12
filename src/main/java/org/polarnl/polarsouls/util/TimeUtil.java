@@ -1,4 +1,4 @@
-package com.mario.polarsouls.util;
+package org.polarnl.polarsouls.util;
 
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
