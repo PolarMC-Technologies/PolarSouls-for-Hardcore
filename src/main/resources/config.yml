@@ -36,7 +36,7 @@
 # ───────────────────────────────────────────────────────────────────────────────
 # Plugin Features & Updates
 # ───────────────────────────────────────────────────────────────────────────────
-# Check for plugin updates on startup (Modrinth)
+# Check for plugin updates on startup (GitHub: PolarMC-Technologies/PolarSouls-for-Hardcore)
 # [CONFIG] BOTH SERVERS: Keep the same on both
 check-for-updates: true
 
