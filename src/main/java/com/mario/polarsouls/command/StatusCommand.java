@@ -14,6 +14,7 @@ import com.mario.polarsouls.PolarSouls;
 import com.mario.polarsouls.database.DatabaseManager;
 import com.mario.polarsouls.model.PlayerData;
 import com.mario.polarsouls.util.MessageUtil;
+import com.mario.polarsouls.util.TabCompleteUtil;
 
 public class StatusCommand implements CommandExecutor, TabCompleter {
 
@@ -40,7 +41,7 @@ public class StatusCommand implements CommandExecutor, TabCompleter {
         } else if (sender instanceof org.bukkit.entity.Player player) {
             targetName = player.getName();
         } else {
-            String msg = MessageUtil.colorize("&cUsage: /hlstatus <player>");
+            String msg = MessageUtil.colorize("&cUsage: /pstatus <player>");
             if (msg != null) {
                 sender.sendMessage(msg);
             }
@@ -81,14 +82,7 @@ public class StatusCommand implements CommandExecutor, TabCompleter {
     public List<String> onTabComplete(CommandSender sender, Command command,
                                        String alias, String[] args) {
         if (args.length == 1) {
-            List<String> suggestions = new ArrayList<>();
-            String partial = args[0].toLowerCase();
-            for (var player : Bukkit.getOnlinePlayers()) {
-                if (player.getName().toLowerCase().startsWith(partial)) {
-                    suggestions.add(player.getName());
-                }
-            }
-            return suggestions;
+            return TabCompleteUtil.getOnlinePlayerNames(args[0]);
         }
         return Collections.emptyList();
     }
