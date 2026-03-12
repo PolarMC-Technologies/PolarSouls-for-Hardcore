@@ -1,6 +1,6 @@
 name: PolarSouls
 version: ${project.version}
-main: com.mario.polarsouls.PolarSouls
+main: org.polarnl.polarsouls.PolarSouls
 api-version: '1.21'
 author: Mario
 description: Hardcore lives system with cross-server Limbo exile and revival mechanics
