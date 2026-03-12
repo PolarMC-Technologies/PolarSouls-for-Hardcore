@@ -14,10 +14,7 @@ import org.bukkit.scheduler.BukkitRunnable;
 
 import com.mario.polarsouls.PolarSouls;
 
-/**
- * Applies/removes potion effects when a player wears a player head.
- * Gives nausea on equip, plus slowness, health boost, and resistance while worn.
- */
+// does that thingy with effects when you wear player head
 public class HeadEffectsTask extends BukkitRunnable {
 
     private static final int INFINITE_DURATION = Integer.MAX_VALUE;
@@ -36,18 +33,16 @@ public class HeadEffectsTask extends BukkitRunnable {
             boolean wearing = isWearingPlayerHead(player);
 
             if (wearing && !wearingHead.contains(uuid)) {
-                // Just equipped a player head
                 applyEffects(player);
                 wearingHead.add(uuid);
                 plugin.debug(player.getName() + " equipped a player head, applying effects.");
             } else if (!wearing && wearingHead.remove(uuid)) {
-                // Just removed a player head
                 removeEffects(player);
                 plugin.debug(player.getName() + " removed player head, removing effects.");
             }
         }
 
-        // Clean up disconnected players
+        // get rid of disconnected people since they stink
         wearingHead.removeIf(uuid -> Bukkit.getPlayer(uuid) == null);
     }
 
@@ -57,11 +52,11 @@ public class HeadEffectsTask extends BukkitRunnable {
     }
 
     private static void applyEffects(Player player) {
-        // Nausea: 200 ticks = 10 seconds (one-time on equip)
+        // naseau thingy 200 ticks
         player.addPotionEffect(new PotionEffect(
                 PotionEffectType.NAUSEA, 200, 0, false, false));
 
-        // Persistent effects while wearing
+        // effects stay until head gone
         player.addPotionEffect(new PotionEffect(
                 PotionEffectType.SLOWNESS, INFINITE_DURATION, 0, false, false));
         player.addPotionEffect(new PotionEffect(
