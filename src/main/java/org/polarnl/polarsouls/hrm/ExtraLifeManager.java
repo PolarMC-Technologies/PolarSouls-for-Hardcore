@@ -1,4 +1,4 @@
-package com.mario.polarsouls.hrm;
+package org.polarnl.polarsouls.hrm;
 
 import java.util.List;
 import java.util.logging.Level;
@@ -23,10 +23,10 @@ import org.bukkit.persistence.PersistentDataType;
 import org.bukkit.potion.PotionEffect;
 import org.bukkit.potion.PotionEffectType;
 
-import com.mario.polarsouls.PolarSouls;
-import com.mario.polarsouls.database.DatabaseManager;
-import com.mario.polarsouls.model.PlayerData;
-import com.mario.polarsouls.util.MessageUtil;
+import org.polarnl.polarsouls.PolarSouls;
+import org.polarnl.polarsouls.database.DatabaseManager;
+import org.polarnl.polarsouls.model.PlayerData;
+import org.polarnl.polarsouls.util.MessageUtil;
 
 public class ExtraLifeManager implements Listener {
 
