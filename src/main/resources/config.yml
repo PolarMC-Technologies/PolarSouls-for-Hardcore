@@ -13,9 +13,13 @@ database:
   pool-size: 5
   table-name: "hardcore_players"
 
+# Grace period: Time before a new player starts losing lives on death
+# Supports flexible time formats: "2h" (2 hours), "1h30m" (1.5 hours), "90m" (90 minutes)
+# Also accepts plain numbers for backward compatibility (interpreted as hours)
+# Examples: "24h", "1h30m", "2h30m", "90m", "0" (disabled)
 lives:
   default: 2
-  grace-period-hours: 0
+  grace-period: "0"
   on-revive: 1
   max-lives: 5
   revive-cooldown-seconds: 30
