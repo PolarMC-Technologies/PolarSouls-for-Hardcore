@@ -100,7 +100,7 @@ To allow a user to execute admin commands on the Limbo server, you have three op
 # In config.yml
 limbo-trusted-admins:
   - "069a79f4-44e9-4726-a5be-fca90e38aaf5"  # UUID format (recommended)
-  - "SSoggyTacoBlud"                          # Username format also works
+  - "YourUsername"                          # Username format also works
 ```
 
 - UUIDs are recommended (won't break if player changes name)
