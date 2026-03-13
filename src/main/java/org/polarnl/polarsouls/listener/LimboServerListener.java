@@ -33,7 +33,7 @@ public class LimboServerListener implements Listener {
     }
     
     /**
-     * Refresh cached limbo spawn (call on config reload or spawn change)
+     * refreshes the cached limbo spawn location (call on config reload or spawn change).
      */
     public void refreshLimboSpawnCache() {
         this.cachedLimboSpawn = plugin.getLimboSpawn();

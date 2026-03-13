@@ -2,9 +2,6 @@ package org.polarnl.polarsouls.util;
 
 import org.bukkit.command.CommandSender;
 
-/**
- * Utility class for common command operations.
- */
 public final class CommandUtil {
 
     private CommandUtil() {
@@ -12,11 +9,11 @@ public final class CommandUtil {
     }
 
     /**
-     * Check if sender has the required permission and send error message if not.
+     * checks whether the sender has a permission, sending the default deny message when missing.
      *
-     * @param sender     The command sender
-     * @param permission The permission node to check
-     * @return true if sender has permission, false otherwise
+     * @param sender the command sender
+     * @param permission the permission node to check
+     * @return true when allowed
      */
     public static boolean checkPermission(CommandSender sender, String permission) {
         if (!sender.hasPermission(permission)) {
@@ -27,12 +24,12 @@ public final class CommandUtil {
     }
 
     /**
-     * Check if sender has the required permission and send custom error message if not.
+     * checks whether the sender has a permission, sending a custom deny message when missing.
      *
-     * @param sender     The command sender
-     * @param permission The permission node to check
-     * @param message    The error message to send if permission check fails
-     * @return true if sender has permission, false otherwise
+     * @param sender the command sender
+     * @param permission the permission node to check
+     * @param message the message to send when denied
+     * @return true when allowed
      */
     public static boolean checkPermission(CommandSender sender, String permission, String message) {
         if (!sender.hasPermission(permission)) {
