@@ -541,6 +541,18 @@ public final class PolarSouls extends JavaPlugin implements Listener {
         return hrmEnabled && hrmReviveSkullRecipe;
     }
 
+    public boolean isHrmHeadPlaceAsBlock() {
+        return hrmHeadPlaceAsBlock;
+    }
+
+    public boolean isHrmHeadNoDespawn() {
+        return hrmHeadNoDespawn;
+    }
+
+    public boolean isHrmHeadFireproof() {
+        return hrmHeadFireproof;
+    }
+
     public boolean isLimboOpSecurityEnabled() {
         return limboOpSecurityEnabled;
     }
