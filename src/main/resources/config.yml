@@ -286,6 +286,27 @@ hrm:
   # [CONFIG] BOTH
   drop-heads: true
   
+  # Place the death head as a solid block instead of dropping it as an item entity
+  # When true, the head is permanently embedded in the world at the death location.
+  # This is the recommended approach as it inherently solves both despawn and lava-burn
+  # issues without any extra work.
+  # When false, the head is dropped as a normal item entity - see the options below
+  # for controlling its behaviour in that case.
+  # [CONFIG] BOTH
+  head-place-as-block: true
+  
+  # (Only applies when head-place-as-block is false)
+  # Prevent the dropped head item from despawning naturally (normally after 5 minutes)
+  # When true, the item will stay in the world until a player picks it up.
+  # [CONFIG] BOTH
+  head-no-despawn: true
+  
+  # (Only applies when head-place-as-block is false)
+  # Make the dropped head item immune to fire and lava
+  # When true, the item entity cannot be destroyed by fire, lava, or explosions.
+  # [CONFIG] BOTH
+  head-fireproof: true
+  
   # Send death location message when player dies
   # Helps teammates find the revival structure location
   # [CONFIG] BOTH

@@ -102,7 +102,7 @@ public class HeadDropListener implements Listener {
                         plugin.debug("No suitable block found to place " + player.getName() + "'s head.");
                     }
                 });
-            }, 10L); // 0.5s delay because idfk it feels good
+            }, 10L); // 0.5s delay because why not it would break otherwise
         }
     }
 
