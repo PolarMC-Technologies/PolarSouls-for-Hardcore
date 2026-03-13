@@ -22,6 +22,7 @@ import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
+import org.bukkit.event.entity.ItemDespawnEvent;
 import org.bukkit.event.entity.PlayerDeathEvent;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.InventoryHolder;
@@ -86,24 +87,55 @@ public class HeadDropListener implements Listener {
                     }
                     return;
                 }
-                // Place head as a block on main thread so it never burns or despawns
+                // Place / drop the head on the main thread
                 Bukkit.getScheduler().runTask(plugin, () -> {
-                    Block block = findSuitableBlock(world, deathLoc);
-                    if (block != null) {
-                        block.setType(Material.PLAYER_HEAD, false);
-                        Skull skull = (Skull) block.getState();
-                        skull.setOwningPlayer(player);
-                        skull.update(true, false);
-                        if (plugin.isDebugMode()) {
-                            plugin.debug("Placed " + player.getName() + "'s head block at "
-                                    + block.getX() + ", " + block.getY() + ", " + block.getZ());
+                    if (plugin.isHrmHeadPlaceAsBlock()) {
+                        // Place as a permanent block — never burns, never despawns
+                        Block block = findSuitableBlock(world, deathLoc);
+                        if (block != null) {
+                            block.setType(Material.PLAYER_HEAD, false);
+                            Skull skull = (Skull) block.getState();
+                            skull.setOwningPlayer(player);
+                            skull.update(true, false);
+                            if (plugin.isDebugMode()) {
+                                plugin.debug("Placed " + player.getName() + "'s head block at "
+                                        + block.getX() + ", " + block.getY() + ", " + block.getZ());
+                            }
+                        } else if (plugin.isDebugMode()) {
+                            plugin.debug("No suitable block found to place " + player.getName() + "'s head.");
                         }
-                    } else if (plugin.isDebugMode()) {
-                        plugin.debug("No suitable block found to place " + player.getName() + "'s head.");
+                    } else {
+                        // Drop as item entity
+                        ItemStack head = createPlayerHead(player);
+                        Item item = world.dropItemNaturally(deathLoc, head);
+                        if (plugin.isHrmHeadFireproof()) {
+                            item.setInvulnerable(true);
+                        }
+                        if (plugin.isDebugMode()) {
+                            plugin.debug("Dropped " + player.getName() + "'s head at "
+                                    + deathLoc.getBlockX() + ", " + deathLoc.getBlockY()
+                                    + ", " + deathLoc.getBlockZ()
+                                    + (plugin.isHrmHeadFireproof() ? " (fireproof)" : "")
+                                    + (plugin.isHrmHeadNoDespawn() ? " (no-despawn)" : ""));
+                        }
                     }
                 });
             }, 10L); // 0.5s delay because why not it would break otherwise
         }
+    }
+
+    @EventHandler
+    public void onItemDespawn(ItemDespawnEvent event) {
+        if (!plugin.isHrmDropHeads() || plugin.isHrmHeadPlaceAsBlock() || !plugin.isHrmHeadNoDespawn()) return;
+        if (isOwnedPlayerHead(event.getEntity().getItemStack())) {
+            event.setCancelled(true);
+        }
+    }
+
+    private static boolean isOwnedPlayerHead(ItemStack stack) {
+        if (stack == null || stack.getType() != Material.PLAYER_HEAD) return false;
+        if (!(stack.getItemMeta() instanceof SkullMeta skullMeta)) return false;
+        return skullMeta.getOwningPlayer() != null;
     }
 
     public static ItemStack createPlayerHead(Player player) {
