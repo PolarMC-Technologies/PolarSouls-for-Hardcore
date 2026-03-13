@@ -13,7 +13,9 @@ import org.bukkit.Material;
 import org.bukkit.OfflinePlayer;
 import org.bukkit.Tag;
 import org.bukkit.World;
+import org.bukkit.block.Block;
 import org.bukkit.block.BlockState;
+import org.bukkit.block.Skull;
 import org.bukkit.entity.Item;
 import org.bukkit.entity.ItemFrame;
 import org.bukkit.entity.Player;
@@ -84,14 +86,20 @@ public class HeadDropListener implements Listener {
                     }
                     return;
                 }
-                // Drop head on main thread
+                // Place head as a block on main thread so it never burns or despawns
                 Bukkit.getScheduler().runTask(plugin, () -> {
-                    ItemStack head = createPlayerHead(player);
-                    world.dropItemNaturally(deathLoc, head);
-                    if (plugin.isDebugMode()) {
-                        plugin.debug("Dropped " + player.getName() + "'s head at "
-                                + deathLoc.getBlockX() + ", " + deathLoc.getBlockY()
-                                + ", " + deathLoc.getBlockZ());
+                    Block block = findSuitableBlock(world, deathLoc);
+                    if (block != null) {
+                        block.setType(Material.PLAYER_HEAD, false);
+                        Skull skull = (Skull) block.getState();
+                        skull.setOwningPlayer(player);
+                        skull.update(true, false);
+                        if (plugin.isDebugMode()) {
+                            plugin.debug("Placed " + player.getName() + "'s head block at "
+                                    + block.getX() + ", " + block.getY() + ", " + block.getZ());
+                        }
+                    } else if (plugin.isDebugMode()) {
+                        plugin.debug("No suitable block found to place " + player.getName() + "'s head.");
                     }
                 });
             }, 10L); // 0.5s delay because idfk it feels good
@@ -245,6 +253,13 @@ public class HeadDropListener implements Listener {
                                 if (state instanceof InventoryHolder holder) {
                                     removedCount.addAndGet(removeFromInventory(holder.getInventory(), ownerUuid));
                                 }
+                                if (state instanceof Skull skull) {
+                                    OfflinePlayer skullOwner = skull.getOwningPlayer();
+                                    if (skullOwner != null && skullOwner.getUniqueId().equals(ownerUuid)) {
+                                        skull.getBlock().setType(Material.AIR);
+                                        removedCount.incrementAndGet();
+                                    }
+                                }
                             }
                         }
                         chunkIndex++;
@@ -333,6 +348,17 @@ public class HeadDropListener implements Listener {
 
     private static boolean isShulkerBox(Material type) {
         return Tag.SHULKER_BOXES.isTagged(type);
+    }
+
+    private static Block findSuitableBlock(World world, Location loc) {
+        int x = loc.getBlockX(), y = loc.getBlockY(), z = loc.getBlockZ();
+        for (int dy : new int[]{0, 1, -1}) {
+            Block b = world.getBlockAt(x, y + dy, z);
+            if (b.isPassable()) {
+                return b;
+            }
+        }
+        return null;
     }
 
     private static boolean isOwnedHead(ItemStack stack, UUID ownerUuid) {
