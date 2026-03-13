@@ -286,12 +286,13 @@ hrm:
   # [CONFIG] BOTH
   drop-heads: true
   
-  # Place the death head as a solid block instead of dropping it as an item entity
-  # When true, the head is permanently embedded in the world at the death location.
-  # This is the recommended approach as it inherently solves both despawn and lava-burn
-  # issues without any extra work.
-  # When false, the head is dropped as a normal item entity - see the options below
-  # for controlling its behaviour in that case.
+  # Place the death head as a solid block instead of dropping it as an item entity.
+  # The plugin scans upward from the death location to find the first air block above
+  # solid ground — so if you die in lava it emerges above the lava surface, always
+  # reachable. Players break the block to pick up the skull item, then carry it to
+  # the revival structure as normal. The block cannot burn or despawn.
+  # When false, the head spawns as an item entity — use head-no-despawn and
+  # head-fireproof below to control its behaviour in that case.
   # [CONFIG] BOTH
   head-place-as-block: true
   

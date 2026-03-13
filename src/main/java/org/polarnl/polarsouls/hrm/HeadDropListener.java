@@ -383,14 +383,36 @@ public class HeadDropListener implements Listener {
     }
 
     private static Block findSuitableBlock(World world, Location loc) {
-        int x = loc.getBlockX(), y = loc.getBlockY(), z = loc.getBlockZ();
-        for (int dy : new int[]{0, 1, -1}) {
-            Block b = world.getBlockAt(x, y + dy, z);
-            if (b.isPassable()) {
-                return b;
+        int x = loc.getBlockX();
+        int startY = loc.getBlockY();
+        int z = loc.getBlockZ();
+        int maxY = Math.min(startY + 64, world.getMaxHeight() - 1);
+
+        // Preferred: first air block sitting on top of a solid surface, scanning upward.
+        // This naturally rises above lava/water pools to the nearest accessible floor/surface.
+        for (int y = startY; y <= maxY; y++) {
+            Block candidate = world.getBlockAt(x, y, z);
+            if (!isAirBlock(candidate)) continue;
+            Block below = world.getBlockAt(x, y - 1, z);
+            if (below.getType().isSolid()) {
+                return candidate;
             }
         }
+
+        // Fallback: any air block going upward (e.g. open cave ceiling, or hovering above lava)
+        for (int y = startY; y <= maxY; y++) {
+            Block candidate = world.getBlockAt(x, y, z);
+            if (isAirBlock(candidate)) {
+                return candidate;
+            }
+        }
+
         return null;
+    }
+
+    private static boolean isAirBlock(Block b) {
+        Material t = b.getType();
+        return t == Material.AIR || t == Material.CAVE_AIR || t == Material.VOID_AIR;
     }
 
     private static boolean isOwnedHead(ItemStack stack, UUID ownerUuid) {
