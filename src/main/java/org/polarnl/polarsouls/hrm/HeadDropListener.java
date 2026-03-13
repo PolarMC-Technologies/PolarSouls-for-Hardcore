@@ -162,22 +162,30 @@ public class HeadDropListener implements Listener {
         return head;
     }
 
-    // Removes all of a player's heads from existence across all worlds
-    // This operation is spread across multiple ticks to prevent server lag on large servers
-    // It's only called when a player is revived, not on every death
+    // Removes every copy of a player's head from the world when they are revived.
+    // Called once per revive, never on death.
     //
-    // IMPORTANT: This method schedules work across multiple ticks to avoid lag spikes
-    // Multi-tick approach prevents server freezing on large servers with many chunks/entities/players
+    // Two-pass design:
     //
-    // Performance considerations:
-    // - Processes a limited number of items per tick (configurable via batch sizes)
-    // - Spreads work across multiple server ticks to maintain server responsiveness
-    // - Total cleanup time: ~1-2 seconds on large servers vs single-tick lag spike
-    // - Alternative approaches considered:
-    //   1. Track head locations on drop (memory overhead, complex state management)
-    //   2. Limit cleanup to specific radius (heads could remain far from spawn)
-    //   3. Single-tick scan (causes lag spikes, rejected based on PR feedback)
-    // - Current approach prioritizes server performance and responsiveness
+    //  Pass 1 – Targeted removal (always O(n) with n = number of placed head blocks)
+    //   headBlockLocations stores the Location of every skull block placed at death.
+    //   On revive we look up those exact coords, force-load the chunk if necessary,
+    //   verify the block still belongs to this player, set it to AIR, then release
+    //   the chunk again if we had to load it.  This is instant and chunk-safe.
+    //   Limitation: the map is in-memory only.  If the server restarts between death
+    //   and revival the entries are lost and pass 2 acts as the safety net.
+    //
+    //  Pass 2 – Tick-spread fallback scan
+    //   Catches anything pass 1 missed: item entities (item-entity mode), item frames,
+    //   player/ender-chest inventories, shulker boxes, and stale skull blocks left by
+    //   older plugin versions that lacked location tracking.
+    //   Work is spread across multiple server ticks to avoid lag spikes:
+    //     • Item entities  – 50 per tick
+    //     • Item frames    – 50 per tick
+    //     • Chunks (block scan, block-mode only) – 10 per tick
+    //     • Online players – 5 per tick
+    //   The chunk scan phase is skipped entirely when head-place-as-block is false
+    //   because in item-entity mode there are no skull blocks to find in chunks.
     public void removeDroppedHeads(UUID ownerUuid) {
         // --- Targeted removal for block-mode heads ---
         // Remove known skull block locations first.  We force-load the chunk if
@@ -212,9 +220,12 @@ public class HeadDropListener implements Listener {
             });
         }
 
-        // --- Fallback: tick-spread scan across all loaded chunks/entities ---
-        // Catches anything the targeted removal missed (e.g. heads placed by an
-        // older version, or item entities / item frames placed by players).
+        // --- Pass 2: tick-spread fallback scan ---
+        // In block-mode the chunk scan is necessary as a safety net for stale blocks
+        // (server restart between death and revive loses the tracked location).
+        // In item-entity mode there are never any skull blocks to find, so we skip
+        // the whole chunk phase and save a significant amount of per-tick work.
+        final boolean scanChunksForBlocks = plugin.isHrmHeadPlaceAsBlock();
         new BukkitRunnable() {
             private final List<World> worlds = new ArrayList<>(Bukkit.getWorlds());
             private final List<Player> players = new ArrayList<>(Bukkit.getOnlinePlayers());
@@ -231,7 +242,7 @@ public class HeadDropListener implements Listener {
             private boolean processingChunks = false;
             private boolean processingPlayers = false;
 
-            // Batch sizes to process per tick (tunable for performance)
+            // Batch sizes to process per tick
             private final int ENTITIES_PER_TICK = 50;
             private final int CHUNKS_PER_TICK = 10;
             private final int PLAYERS_PER_TICK = 5;
@@ -276,9 +287,13 @@ public class HeadDropListener implements Listener {
                 // Process item frames from worlds
                 if (processingItemFrames) {
                     if (worldIndex >= worlds.size()) {
-                        // Done with item frames, move to chunks
                         processingItemFrames = false;
-                        processingChunks = true;
+                        // Skip chunk scan entirely in item-entity mode — no skull blocks exist
+                        if (scanChunksForBlocks) {
+                            processingChunks = true;
+                        } else {
+                            processingPlayers = true;
+                        }
                         worldIndex = 0;
                         return;
                     }

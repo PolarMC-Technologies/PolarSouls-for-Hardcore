@@ -376,55 +376,86 @@ Dead players' heads are central to the HRM revival system.
 
 ### Player Head Drops
 
-When a player loses all lives:
+When a player loses all lives, the plugin spawns their head near the death location. There are two modes for how this works, controlled by `hrm.head-place-as-block` in `config.yml`.
 
-1. Their player head **drops at the death location**
-2. The dead player receives a **message with coordinates**
-3. Teammates can collect the head
-4. Head is used in ritual structures or Revive Skull
+---
 
-### Death Location Messages
+#### Block Mode (`head-place-as-block: true`, default)
 
-Example message when you die:
+The head is placed as a **permanent skull block** in the world.
 
+- The plugin scans **upward** from the death Y coordinate to find the first open air block sitting on solid ground. If you die inside lava it emerges above the lava surface — always accessible.
+- The block persists forever. It can't burn, can't despawn, and can't be washed away by water.
+- Teammates **mine/break the block** to pick up the skull item as normal, then carry it to the revival structure.
+- On revival the plugin **removes the block automatically** (see Cleanup below).
+
+**Configuration:**
+```yaml
+hrm:
+  head-place-as-block: true
 ```
-💀 Death Location: X: 1234 Y: 64 Z: -5678
+
+---
+
+#### Item Entity Mode (`head-place-as-block: false`)
+
+The head is dropped as a standard **item entity** on the ground — the traditional Minecraft approach.
+
+Two extra options control its survival:
+
+| Option | What it does |
+|---|---|
+| `head-no-despawn: true` | Cancels the natural 5-minute despawn timer. The item stays until picked up. |
+| `head-fireproof: true` | Marks the item as invulnerable. Fire, lava, and explosions can't destroy it. |
+
+**Configuration:**
+```yaml
+hrm:
+  head-place-as-block: false
+  head-no-despawn: true    # item never despawns
+  head-fireproof: true     # item survives lava/fire
 ```
 
-This helps teammates find the dropped head.
+---
+
+### Head Cleanup on Revival
+
+When a player is revived (any method — ritual, skull, command, admin), the plugin **removes all copies of their head** from the world. This runs in two passes:
+
+**Pass 1 — Targeted removal (instant)**
+If the server placed the head as a block, it stored the exact location in memory. On revive it looks up those coordinates directly, force-loads the chunk if it isn't currently loaded, removes the block, and releases the chunk. This is always correct regardless of whether the chunk is loaded or not.
+
+> **Note:** The location map is in-memory only. If the server restarts between a player's death and their revival, Pass 1 has no data and Pass 2 acts as the safety net.
+
+**Pass 2 — Tick-spread scan (fallback)**
+Scans across all worlds to catch anything Pass 1 missed: item entities, item frames, player inventories, ender chests, shulker boxes, and any stale skull blocks left from before location tracking was introduced. Work is spread across multiple server ticks to avoid lag spikes on large servers.
+
+In item-entity mode the chunk block scan is skipped entirely (no skull blocks to find), making cleanup faster.
+
+---
 
 ### Wearing Head Effects
 
 When a living player **wears a dead player's head**, they receive:
 
-- ⚡ **Speed II** effect (faster movement)
-- 👁️ **Night Vision** effect (see in darkness)
-
-This gives a tactical advantage while carrying heads to the revival structure.
+- **Speed II** — faster movement to the revival structure
+- **Night Vision** — see in darkness en route
 
 **Configuration:**
-
 ```yaml
 hrm:
-  head-wearing-effects: true     # Enable/disable effects
+  head-wearing-effects: true
 ```
 
-### Getting Heads Without Death
+### Getting Heads Without a Physical Drop
 
-**Using the Revive Skull:**
+If the original head was lost, burned, or simply too far away, use the **Revive Skull** to get a fresh copy:
 
 1. Right-click a Revive Skull
-2. Select a dead player from the menu
-3. Receive their head
+2. Select the dead player from the menu
+3. Receive their head instantly
 
-This is useful if the original head was lost or destroyed.
-
-### Head Preservation
-
-- ⏱️ Heads stay on ground for 5 minutes by default (Minecraft setting)
-- 💾 Data persists in database permanently
-- Can use Revive Skull to get another copy anytime
-- Same player can be revived multiple times
+The database always holds a permanent record of which players are dead, so a new head can be obtained at any time regardless of what happened to the original.
 
 ---
 
@@ -447,6 +478,9 @@ hrm:
   head-wearing-effects: true    # Speed/night vision on heads
   detect-hrm-revive: true       # Auto-detect completed structures
   leave-structure-base: true    # Keep structure after revival
+  head-place-as-block: true     # Place head as permanent block (recommended)
+  head-no-despawn: true         # (item-entity mode) head item never despawns
+  head-fireproof: true          # (item-entity mode) head item survives fire/lava
 ```
 
 ### Lives on Revival
