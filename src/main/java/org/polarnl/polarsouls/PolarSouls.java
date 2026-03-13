@@ -89,6 +89,9 @@ public final class PolarSouls extends JavaPlugin implements Listener {
     private boolean hrmLeaveStructureBase;
     private boolean hrmHeadEffects;
     private boolean hrmReviveSkullRecipe;
+    private boolean hrmHeadPlaceAsBlock;
+    private boolean hrmHeadNoDespawn;
+    private boolean hrmHeadFireproof;
     private boolean hardcoreHearts;
     private boolean limboOpSecurityEnabled;
     private Set<String> limboTrustedAdmins;
@@ -326,6 +329,9 @@ public final class PolarSouls extends JavaPlugin implements Listener {
         hrmLeaveStructureBase = cfg.getBoolean("hrm.leave-structure-base", true);
         hrmHeadEffects        = cfg.getBoolean("hrm.head-wearing-effects", true);
         hrmReviveSkullRecipe  = cfg.getBoolean("hrm.revive-skull-recipe", true);
+        hrmHeadPlaceAsBlock   = cfg.getBoolean("hrm.head-place-as-block", true);
+        hrmHeadNoDespawn      = cfg.getBoolean("hrm.head-no-despawn", true);
+        hrmHeadFireproof      = cfg.getBoolean("hrm.head-fireproof", true);
 
         if (isLimboServer) {
             loadLimboSpawn();
@@ -533,6 +539,18 @@ public final class PolarSouls extends JavaPlugin implements Listener {
 
     public boolean isHrmReviveSkullRecipe() {
         return hrmEnabled && hrmReviveSkullRecipe;
+    }
+
+    public boolean isHrmHeadPlaceAsBlock() {
+        return hrmHeadPlaceAsBlock;
+    }
+
+    public boolean isHrmHeadNoDespawn() {
+        return hrmHeadNoDespawn;
+    }
+
+    public boolean isHrmHeadFireproof() {
+        return hrmHeadFireproof;
     }
 
     public boolean isLimboOpSecurityEnabled() {

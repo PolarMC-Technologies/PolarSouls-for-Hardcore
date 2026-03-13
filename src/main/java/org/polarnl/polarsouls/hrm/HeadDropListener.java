@@ -2,7 +2,9 @@ package org.polarnl.polarsouls.hrm;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 import java.util.UUID;
+import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.atomic.AtomicInteger;
 
 import org.bukkit.Bukkit;
@@ -13,13 +15,16 @@ import org.bukkit.Material;
 import org.bukkit.OfflinePlayer;
 import org.bukkit.Tag;
 import org.bukkit.World;
+import org.bukkit.block.Block;
 import org.bukkit.block.BlockState;
+import org.bukkit.block.Skull;
 import org.bukkit.entity.Item;
 import org.bukkit.entity.ItemFrame;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
+import org.bukkit.event.entity.ItemDespawnEvent;
 import org.bukkit.event.entity.PlayerDeathEvent;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.InventoryHolder;
@@ -40,6 +45,9 @@ public class HeadDropListener implements Listener {
 
     private final PolarSouls plugin;
     private final DatabaseManager db;
+    // Tracks locations of skull blocks placed on death so cleanup can remove them
+    // directly, even if their chunk is unloaded at revive time.
+    private final Map<UUID, List<Location>> headBlockLocations = new ConcurrentHashMap<>();
 
     public HeadDropListener(PolarSouls plugin) {
         this.plugin = plugin;
@@ -84,17 +92,74 @@ public class HeadDropListener implements Listener {
                     }
                     return;
                 }
-                // Drop head on main thread
+                // Place / drop the head on the main thread
                 Bukkit.getScheduler().runTask(plugin, () -> {
-                    ItemStack head = createPlayerHead(player);
-                    world.dropItemNaturally(deathLoc, head);
-                    if (plugin.isDebugMode()) {
-                        plugin.debug("Dropped " + player.getName() + "'s head at "
-                                + deathLoc.getBlockX() + ", " + deathLoc.getBlockY()
-                                + ", " + deathLoc.getBlockZ());
+                    if (plugin.isHrmHeadPlaceAsBlock()) {
+                        // Place as a permanent block — never burns, never despawns
+                        Block block = findSuitableBlock(world, deathLoc);
+                        if (block != null) {
+                            block.setType(Material.PLAYER_HEAD, false);
+                            Skull skull = (Skull) block.getState();
+                            skull.setOwningPlayer(player);
+                            skull.update(true, false);
+                            // Remember this location so cleanup can find it even
+                            // if the chunk gets unloaded before the player is revived
+                            headBlockLocations
+                                    .computeIfAbsent(player.getUniqueId(), k -> new ArrayList<>())
+                                    .add(block.getLocation());
+                            if (plugin.isDebugMode()) {
+                                plugin.debug("Placed " + player.getName() + "'s head block at "
+                                        + block.getX() + ", " + block.getY() + ", " + block.getZ());
+                            }
+                        } else {
+                            // Fallback so the head is never lost when no block can be placed.
+                            dropHeadItem(world, deathLoc, player);
+                            if (plugin.isDebugMode()) {
+                                plugin.debug("No suitable block found to place " + player.getName()
+                                        + "'s head; fell back to item drop.");
+                            }
+                        }
+                    } else {
+                        // Drop as item entity
+                        dropHeadItem(world, deathLoc, player);
                     }
                 });
-            }, 10L); // 0.5s delay because idfk it feels good
+            }, 10L); // 0.5s delay because why not it would break otherwise
+        }
+    }
+
+    @EventHandler
+    public void onItemDespawn(ItemDespawnEvent event) {
+        if (!plugin.isHrmDropHeads() || plugin.isHrmHeadPlaceAsBlock() || !plugin.isHrmHeadNoDespawn()) return;
+        UUID ownerUuid = getHeadOwnerUuid(event.getEntity().getItemStack());
+        if (ownerUuid == null) return;
+
+        PlayerData data = db.getPlayer(ownerUuid);
+        if (data != null && data.isDead()) {
+            event.setCancelled(true);
+        }
+    }
+
+    private UUID getHeadOwnerUuid(ItemStack stack) {
+        if (stack == null || stack.getType() != Material.PLAYER_HEAD) return null;
+        if (!(stack.getItemMeta() instanceof SkullMeta skullMeta)) return null;
+        OfflinePlayer owner = skullMeta.getOwningPlayer();
+        if (owner == null) return null;
+        return owner.getUniqueId();
+    }
+
+    private void dropHeadItem(World world, Location deathLoc, Player player) {
+        ItemStack head = createPlayerHead(player);
+        Item item = world.dropItemNaturally(deathLoc, head);
+        if (plugin.isHrmHeadFireproof()) {
+            item.setInvulnerable(true);
+        }
+        if (plugin.isDebugMode()) {
+            plugin.debug("Dropped " + player.getName() + "'s head at "
+                    + deathLoc.getBlockX() + ", " + deathLoc.getBlockY()
+                    + ", " + deathLoc.getBlockZ()
+                    + (plugin.isHrmHeadFireproof() ? " (fireproof)" : "")
+                    + (plugin.isHrmHeadNoDespawn() ? " (no-despawn)" : ""));
         }
     }
 
@@ -112,23 +177,70 @@ public class HeadDropListener implements Listener {
         return head;
     }
 
-    // Removes all of a player's heads from existence across all worlds
-    // This operation is spread across multiple ticks to prevent server lag on large servers
-    // It's only called when a player is revived, not on every death
+    // Removes every copy of a player's head from the world when they are revived.
+    // Called once per revive, never on death.
     //
-    // IMPORTANT: This method schedules work across multiple ticks to avoid lag spikes
-    // Multi-tick approach prevents server freezing on large servers with many chunks/entities/players
+    // Two-pass design:
     //
-    // Performance considerations:
-    // - Processes a limited number of items per tick (configurable via batch sizes)
-    // - Spreads work across multiple server ticks to maintain server responsiveness
-    // - Total cleanup time: ~1-2 seconds on large servers vs single-tick lag spike
-    // - Alternative approaches considered:
-    //   1. Track head locations on drop (memory overhead, complex state management)
-    //   2. Limit cleanup to specific radius (heads could remain far from spawn)
-    //   3. Single-tick scan (causes lag spikes, rejected based on PR feedback)
-    // - Current approach prioritizes server performance and responsiveness
+    //  Pass 1 – Targeted removal (always O(n) with n = number of placed head blocks)
+    //   headBlockLocations stores the Location of every skull block placed at death.
+    //   On revive we look up those exact coords, force-load the chunk if necessary,
+    //   verify the block still belongs to this player, set it to AIR, then release
+    //   the chunk again if we had to load it.  This is instant and chunk-safe.
+    //   Limitation: the map is in-memory only.  If the server restarts between death
+    //   and revival the entries are lost and pass 2 acts as the safety net.
+    //
+    //  Pass 2 – Tick-spread fallback scan
+    //   Catches anything pass 1 missed: item entities (item-entity mode), item frames,
+    //   player/ender-chest inventories, shulker boxes, and stale skull blocks left by
+    //   older plugin versions that lacked location tracking.
+    //   Work is spread across multiple server ticks to avoid lag spikes:
+    //     • Item entities  – 50 per tick
+    //     • Item frames    – 50 per tick
+    //     • Chunks (block scan, block-mode only) – 10 per tick
+    //     • Online players – 5 per tick
+    //   The chunk scan phase is skipped entirely when head-place-as-block is false
+    //   because in item-entity mode there are no skull blocks to find in chunks.
     public void removeDroppedHeads(UUID ownerUuid) {
+        // --- Targeted removal for block-mode heads ---
+        // Remove known skull block locations first.  We force-load the chunk if
+        // needed so this works even when the chunk is currently unloaded.
+        List<Location> knownLocations = headBlockLocations.remove(ownerUuid);
+        if (knownLocations != null) {
+            Bukkit.getScheduler().runTask(plugin, () -> {
+                for (Location loc : knownLocations) {
+                    World w = loc.getWorld();
+                    if (w == null) continue;
+                    boolean wasLoaded = w.isChunkLoaded(loc.getBlockX() >> 4, loc.getBlockZ() >> 4);
+                    // getBlockAt force-loads the chunk if not already loaded
+                    Block b = w.getBlockAt(loc);
+                    if (b.getType() == Material.PLAYER_HEAD || b.getType() == Material.PLAYER_WALL_HEAD) {
+                        BlockState state = b.getState();
+                        if (state instanceof Skull skull) {
+                            OfflinePlayer owner = skull.getOwningPlayer();
+                            if (owner != null && owner.getUniqueId().equals(ownerUuid)) {
+                                b.setType(Material.AIR);
+                                if (plugin.isDebugMode()) {
+                                    plugin.debug("Removed tracked head block for " + ownerUuid
+                                            + " at " + b.getX() + ", " + b.getY() + ", " + b.getZ());
+                                }
+                            }
+                        }
+                    }
+                    // Unload the chunk again if we loaded it just for cleanup
+                    if (!wasLoaded) {
+                        w.unloadChunkRequest(loc.getBlockX() >> 4, loc.getBlockZ() >> 4);
+                    }
+                }
+            });
+        }
+
+        // --- Pass 2: tick-spread fallback scan ---
+        // In block-mode the chunk scan is necessary as a safety net for stale blocks
+        // (server restart between death and revive loses the tracked location).
+        // In item-entity mode there are never any skull blocks to find, so we skip
+        // the whole chunk phase and save a significant amount of per-tick work.
+        final boolean scanChunksForBlocks = plugin.isHrmHeadPlaceAsBlock();
         new BukkitRunnable() {
             private final List<World> worlds = new ArrayList<>(Bukkit.getWorlds());
             private final List<Player> players = new ArrayList<>(Bukkit.getOnlinePlayers());
@@ -145,7 +257,7 @@ public class HeadDropListener implements Listener {
             private boolean processingChunks = false;
             private boolean processingPlayers = false;
 
-            // Batch sizes to process per tick (tunable for performance)
+            // Batch sizes to process per tick
             private final int ENTITIES_PER_TICK = 50;
             private final int CHUNKS_PER_TICK = 10;
             private final int PLAYERS_PER_TICK = 5;
@@ -190,9 +302,13 @@ public class HeadDropListener implements Listener {
                 // Process item frames from worlds
                 if (processingItemFrames) {
                     if (worldIndex >= worlds.size()) {
-                        // Done with item frames, move to chunks
                         processingItemFrames = false;
-                        processingChunks = true;
+                        // Skip chunk scan entirely in item-entity mode — no skull blocks exist
+                        if (scanChunksForBlocks) {
+                            processingChunks = true;
+                        } else {
+                            processingPlayers = true;
+                        }
                         worldIndex = 0;
                         return;
                     }
@@ -244,6 +360,13 @@ public class HeadDropListener implements Listener {
                             for (BlockState state : chunk.getTileEntities()) {
                                 if (state instanceof InventoryHolder holder) {
                                     removedCount.addAndGet(removeFromInventory(holder.getInventory(), ownerUuid));
+                                }
+                                if (state instanceof Skull skull) {
+                                    OfflinePlayer skullOwner = skull.getOwningPlayer();
+                                    if (skullOwner != null && skullOwner.getUniqueId().equals(ownerUuid)) {
+                                        skull.getBlock().setType(Material.AIR);
+                                        removedCount.incrementAndGet();
+                                    }
                                 }
                             }
                         }
@@ -333,6 +456,39 @@ public class HeadDropListener implements Listener {
 
     private static boolean isShulkerBox(Material type) {
         return Tag.SHULKER_BOXES.isTagged(type);
+    }
+
+    private static Block findSuitableBlock(World world, Location loc) {
+        int x = loc.getBlockX();
+        int startY = loc.getBlockY();
+        int z = loc.getBlockZ();
+        int maxY = Math.min(startY + 64, world.getMaxHeight() - 1);
+
+        // Preferred: first air block sitting on top of a solid surface, scanning upward.
+        // This naturally rises above lava/water pools to the nearest accessible floor/surface.
+        for (int y = startY; y <= maxY; y++) {
+            Block candidate = world.getBlockAt(x, y, z);
+            if (!isAirBlock(candidate)) continue;
+            Block below = world.getBlockAt(x, y - 1, z);
+            if (below.getType().isSolid()) {
+                return candidate;
+            }
+        }
+
+        // Fallback: any air block going upward (e.g. open cave ceiling, or hovering above lava)
+        for (int y = startY; y <= maxY; y++) {
+            Block candidate = world.getBlockAt(x, y, z);
+            if (isAirBlock(candidate)) {
+                return candidate;
+            }
+        }
+
+        return null;
+    }
+
+    private static boolean isAirBlock(Block b) {
+        Material t = b.getType();
+        return t == Material.AIR || t == Material.CAVE_AIR || t == Material.VOID_AIR;
     }
 
     private static boolean isOwnedHead(ItemStack stack, UUID ownerUuid) {

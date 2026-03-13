@@ -6,9 +6,6 @@ import org.bukkit.entity.Player;
 import java.util.ArrayList;
 import java.util.List;
 
-/**
- * Utility class for tab completion functionality across commands.
- */
 public final class TabCompleteUtil {
 
     private TabCompleteUtil() {
@@ -16,10 +13,10 @@ public final class TabCompleteUtil {
     }
 
     /**
-     * Get a list of online player names that start with the given prefix.
+     * gets online player names matching the given prefix.
      *
-     * @param prefix The prefix to filter by (case-insensitive)
-     * @return List of matching player names
+     * @param prefix the prefix to filter by (case-insensitive)
+     * @return list of matching player names
      */
     public static List<String> getOnlinePlayerNames(String prefix) {
         List<String> names = new ArrayList<>();
@@ -33,11 +30,11 @@ public final class TabCompleteUtil {
     }
 
     /**
-     * Filter a list of options by prefix (case-insensitive).
+     * filters options by prefix (case-insensitive).
      *
-     * @param options List of options to filter
-     * @param prefix  The prefix to filter by
-     * @return List of matching options
+     * @param options list of options to filter
+     * @param prefix the prefix to match
+     * @return list of matching options
      */
     public static List<String> filterStartsWith(List<String> options, String prefix) {
         List<String> result = new ArrayList<>();

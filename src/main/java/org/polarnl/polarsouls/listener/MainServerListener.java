@@ -54,7 +54,7 @@ public class MainServerListener implements Listener {
     }
     
     /**
-     * Refresh cached config values (call on config reload)
+     * refreshes cached config values (call on config reload).
      */
     public void refreshConfigCache() {
         this.cachedDeathMode = plugin.getDeathMode();
@@ -458,11 +458,9 @@ public class MainServerListener implements Listener {
     }
 
     /**
-     * Cancel any pending hybrid transfer task for the given player.
-     * This should be called when a player is revived or their death state changes
-     * to prevent them from being unexpectedly sent to Limbo.
+     * cancels any pending hybrid transfer task for the given player.
      *
-     * @param uuid The UUID of the player whose hybrid transfer should be cancelled
+     * @param uuid the UUID of the player
      */
     public void cancelHybridTransfer(UUID uuid) {
         BukkitTask task = hybridPendingTransfers.remove(uuid);
@@ -473,12 +471,10 @@ public class MainServerListener implements Listener {
     }
 
     /**
-     * Register a hybrid transfer task for the given player.
-     * This allows the task to be properly tracked and cancelled if the player
-     * is revived or their death state changes before the timeout expires.
+     * registers a hybrid transfer task for later cancellation or replacement.
      *
-     * @param uuid The UUID of the player
-     * @param task The scheduled task that will send the player to Limbo
+     * @param uuid the UUID of the player
+     * @param task the scheduled transfer task
      */
     public void registerHybridTransfer(UUID uuid, BukkitTask task) {
         // Cancel any existing task first

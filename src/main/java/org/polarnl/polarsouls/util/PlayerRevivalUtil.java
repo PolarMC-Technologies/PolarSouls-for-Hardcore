@@ -6,9 +6,6 @@ import org.bukkit.Bukkit;
 import org.bukkit.GameMode;
 import org.bukkit.entity.Player;
 
-/**
- * Utility class for player revival operations.
- */
 public final class PlayerRevivalUtil {
 
     private PlayerRevivalUtil() {
@@ -16,11 +13,10 @@ public final class PlayerRevivalUtil {
     }
 
     /**
-     * Restore an online spectator player to survival mode and optionally transfer to main server.
-     * This method handles the restoration of a dead player back to survival mode.
+     * restores an online spectator to survival and optionally transfers them from limbo.
      *
-     * @param plugin The PolarSouls plugin instance
-     * @param data   The player data containing UUID and other information
+     * @param plugin the PolarSouls plugin instance
+     * @param data the player data
      */
     public static void restoreOnlineSpectator(PolarSouls plugin, PlayerData data) {
         Player target = Bukkit.getPlayer(data.getUuid());

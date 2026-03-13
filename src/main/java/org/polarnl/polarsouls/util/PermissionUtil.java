@@ -7,9 +7,6 @@ import org.bukkit.entity.Player;
 
 import org.polarnl.polarsouls.PolarSouls;
 
-/**
- * Utility class for permission-related operations.
- */
 public final class PermissionUtil {
 
     private PermissionUtil() {
@@ -17,15 +14,11 @@ public final class PermissionUtil {
     }
 
     /**
-     * Check if a command sender should be blocked from executing admin/revive commands
-     * due to Limbo-only OP security restrictions.
-     * 
-     * This security check prevents users who have OP status only on the Limbo server
-     * from executing privileged commands like /revive and /psadmin.
-     * 
-     * @param sender The command sender to check
-     * @param plugin The plugin instance
-     * @return true if the sender should be blocked, false if allowed
+     * checks whether a sender should be blocked by limbo-only OP security rules.
+     *
+     * @param sender the command sender to check
+     * @param plugin the plugin instance
+     * @return true when the sender should be blocked
      */
     public static boolean isBlockedByLimboOpSecurity(CommandSender sender, PolarSouls plugin) {
         // If security check is disabled, allow all
@@ -72,9 +65,9 @@ public final class PermissionUtil {
     }
 
     /**
-     * Send a security block message to the command sender.
-     * 
-     * @param sender The command sender to send the message to
+     * sends the limbo OP security block message.
+     *
+     * @param sender the command sender
      */
     public static void sendSecurityBlockMessage(CommandSender sender) {
         sender.sendMessage(MessageUtil.colorize("&cSecurity Error: On the Limbo server, OP status cannot be used to execute this command."));

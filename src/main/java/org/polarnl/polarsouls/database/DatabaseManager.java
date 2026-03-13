@@ -129,11 +129,11 @@ public class DatabaseManager {
     }
 
     /**
-     * Ensure a column exists in the table. If it already exists, the error is silently ignored.
+     * ensures a column exists in the table, ignoring duplicate-column errors.
      *
-     * @param conn       Database connection
-     * @param columnName Name of the column to add
-     * @param definition SQL definition of the column (e.g., "BIGINT NOT NULL DEFAULT 0")
+     * @param conn database connection
+     * @param columnName name of the column to add
+     * @param definition SQL definition of the column (for example, "BIGINT NOT NULL DEFAULT 0")
      */
     private void ensureColumn(Connection conn, String columnName, String definition) {
         String sql = "ALTER TABLE " + tableName + " ADD COLUMN " + columnName + " " + definition;
@@ -360,10 +360,8 @@ public class DatabaseManager {
     }
 
     /**
-     * Manually invalidate the death status cache for a player.
-     * This should be called if death status changes through non-standard means
-     * (e.g., direct database manipulation, external tools, etc.).
-     * Note: savePlayer(), revivePlayer(), and setLives() already invalidate the cache.
+     * manually invalidates a player's death status cache entry.
+     * use this when external changes bypass savePlayer(), revivePlayer(), or setLives().
      */
     public void invalidateDeathStatusCache(UUID uuid) {
         deathStatusCache.remove(uuid);

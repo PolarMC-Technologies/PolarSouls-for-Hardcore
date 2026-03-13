@@ -58,12 +58,13 @@ public class AdminCommand implements CommandExecutor, TabCompleter {
     private final Map<String, PendingGrace> pendingGraceConfirmations = new ConcurrentHashMap<>();
 
     /**
-     * Stores pending grace confirmations so we can ask before overwriting.
-     * @param targetUuid The UUID of the player whose grace is being set
-     * @param targetName The username of the target player
-     * @param requestedMillis The requested grace period duration in milliseconds
-     * @param existingGraceUntil The existing grace_until timestamp (if any)
-     * @param createdAt Timestamp when this pending confirmation was created (for TTL cleanup)
+     * stores pending grace confirmation data used before overwriting an existing grace period.
+     *
+     * @param targetUuid the UUID of the player whose grace is being set
+     * @param targetName the username of the target player
+     * @param requestedMillis the requested grace duration in milliseconds
+     * @param existingGraceUntil the existing grace_until timestamp, if present
+     * @param createdAt when this pending confirmation was created (for TTL cleanup)
      */
     private record PendingGrace(UUID targetUuid, String targetName, long requestedMillis, long existingGraceUntil, long createdAt) {}
 
@@ -75,8 +76,8 @@ public class AdminCommand implements CommandExecutor, TabCompleter {
     }
 
     /**
-     * Generate a consistent key for pending grace confirmations.
-     * Uses a stable identifier to avoid key changes from proxy/plugin wrappers.
+     * generates a stable key for pending grace confirmations.
+     * uses sender UUID for players and name for non-player senders.
      */
     private String getConfirmationKey(CommandSender sender) {
         if (sender instanceof Player player) {
@@ -89,7 +90,7 @@ public class AdminCommand implements CommandExecutor, TabCompleter {
         }
     }
     /**
-     * Remove pending confirmations older than 5 minutes to prevent memory leaks.
+     * removes pending confirmations older than 5 minutes.
      */
     private void cleanupStalePendingConfirmations() {
         long now = System.currentTimeMillis();

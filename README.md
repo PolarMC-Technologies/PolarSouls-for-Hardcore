@@ -67,10 +67,16 @@ All modes work with all revival methods:
 Comes with a full revival system:
 
 ### Player Head Drops
-- When you lose all your lives, your head drops where you died
+- When you lose all your lives, your head spawns where you died
 - You get coords in chat so your team knows where to look
 - Heads are needed for the revival ritual
 - Can disable this in `config.yml` (`hrm.drop-heads: false`)
+
+**Head placement modes** (`hrm.head-place-as-block`):
+- **Block mode (default):** Head is placed as a permanent skull block. Scans upward from the death spot to find the first accessible air pocket above solid ground, so dying in lava places the head *above* the lava surface. Can't burn or despawn. Break the block to pick up the skull item, then use it in the revival structure as normal.
+- **Item entity mode:** Head drops as a normal item. Use `head-no-despawn: true` to prevent the 5-minute despawn and `head-fireproof: true` to make it survive lava/fire.
+
+**On revival** the plugin automatically removes all copies of the head from the world.
 
 ### Revival Ritual Structure
 Build a 3x3x3 beacon-ish structure to bring people back:
