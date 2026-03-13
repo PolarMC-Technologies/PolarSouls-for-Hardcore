@@ -111,23 +111,17 @@ public class HeadDropListener implements Listener {
                                 plugin.debug("Placed " + player.getName() + "'s head block at "
                                         + block.getX() + ", " + block.getY() + ", " + block.getZ());
                             }
-                        } else if (plugin.isDebugMode()) {
-                            plugin.debug("No suitable block found to place " + player.getName() + "'s head.");
+                        } else {
+                            // Fallback so the head is never lost when no block can be placed.
+                            dropHeadItem(world, deathLoc, player);
+                            if (plugin.isDebugMode()) {
+                                plugin.debug("No suitable block found to place " + player.getName()
+                                        + "'s head; fell back to item drop.");
+                            }
                         }
                     } else {
                         // Drop as item entity
-                        ItemStack head = createPlayerHead(player);
-                        Item item = world.dropItemNaturally(deathLoc, head);
-                        if (plugin.isHrmHeadFireproof()) {
-                            item.setInvulnerable(true);
-                        }
-                        if (plugin.isDebugMode()) {
-                            plugin.debug("Dropped " + player.getName() + "'s head at "
-                                    + deathLoc.getBlockX() + ", " + deathLoc.getBlockY()
-                                    + ", " + deathLoc.getBlockZ()
-                                    + (plugin.isHrmHeadFireproof() ? " (fireproof)" : "")
-                                    + (plugin.isHrmHeadNoDespawn() ? " (no-despawn)" : ""));
-                        }
+                        dropHeadItem(world, deathLoc, player);
                     }
                 });
             }, 10L); // 0.5s delay because why not it would break otherwise
@@ -137,15 +131,36 @@ public class HeadDropListener implements Listener {
     @EventHandler
     public void onItemDespawn(ItemDespawnEvent event) {
         if (!plugin.isHrmDropHeads() || plugin.isHrmHeadPlaceAsBlock() || !plugin.isHrmHeadNoDespawn()) return;
-        if (isOwnedPlayerHead(event.getEntity().getItemStack())) {
+        UUID ownerUuid = getHeadOwnerUuid(event.getEntity().getItemStack());
+        if (ownerUuid == null) return;
+
+        PlayerData data = db.getPlayer(ownerUuid);
+        if (data != null && data.isDead()) {
             event.setCancelled(true);
         }
     }
 
-    private static boolean isOwnedPlayerHead(ItemStack stack) {
-        if (stack == null || stack.getType() != Material.PLAYER_HEAD) return false;
-        if (!(stack.getItemMeta() instanceof SkullMeta skullMeta)) return false;
-        return skullMeta.getOwningPlayer() != null;
+    private UUID getHeadOwnerUuid(ItemStack stack) {
+        if (stack == null || stack.getType() != Material.PLAYER_HEAD) return null;
+        if (!(stack.getItemMeta() instanceof SkullMeta skullMeta)) return null;
+        OfflinePlayer owner = skullMeta.getOwningPlayer();
+        if (owner == null) return null;
+        return owner.getUniqueId();
+    }
+
+    private void dropHeadItem(World world, Location deathLoc, Player player) {
+        ItemStack head = createPlayerHead(player);
+        Item item = world.dropItemNaturally(deathLoc, head);
+        if (plugin.isHrmHeadFireproof()) {
+            item.setInvulnerable(true);
+        }
+        if (plugin.isDebugMode()) {
+            plugin.debug("Dropped " + player.getName() + "'s head at "
+                    + deathLoc.getBlockX() + ", " + deathLoc.getBlockY()
+                    + ", " + deathLoc.getBlockZ()
+                    + (plugin.isHrmHeadFireproof() ? " (fireproof)" : "")
+                    + (plugin.isHrmHeadNoDespawn() ? " (no-despawn)" : ""));
+        }
     }
 
     public static ItemStack createPlayerHead(Player player) {
