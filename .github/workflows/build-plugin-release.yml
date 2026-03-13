@@ -55,9 +55,10 @@ jobs:
             fi
           fi
 
-          JAR_PATH="$(ls target/*.jar | grep -v 'sources.jar' | grep -v 'javadoc.jar' | grep -v 'original-' | head -n 1)"
+          # Always publish the shaded plugin artifact so runtime deps are bundled.
+          JAR_PATH="$(ls target/*-shaded.jar 2>/dev/null | head -n 1 || true)"
           if [[ -z "${JAR_PATH}" ]]; then
-            echo "No plugin jar found in target/."
+            echo "No shaded plugin jar found in target/ (expected *-shaded.jar)."
             exit 1
           fi
 
