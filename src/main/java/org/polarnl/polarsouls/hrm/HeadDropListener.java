@@ -2,7 +2,9 @@ package org.polarnl.polarsouls.hrm;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 import java.util.UUID;
+import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.atomic.AtomicInteger;
 
 import org.bukkit.Bukkit;
@@ -43,6 +45,9 @@ public class HeadDropListener implements Listener {
 
     private final PolarSouls plugin;
     private final DatabaseManager db;
+    // Tracks locations of skull blocks placed on death so cleanup can remove them
+    // directly, even if their chunk is unloaded at revive time.
+    private final Map<UUID, List<Location>> headBlockLocations = new ConcurrentHashMap<>();
 
     public HeadDropListener(PolarSouls plugin) {
         this.plugin = plugin;
@@ -97,6 +102,11 @@ public class HeadDropListener implements Listener {
                             Skull skull = (Skull) block.getState();
                             skull.setOwningPlayer(player);
                             skull.update(true, false);
+                            // Remember this location so cleanup can find it even
+                            // if the chunk gets unloaded before the player is revived
+                            headBlockLocations
+                                    .computeIfAbsent(player.getUniqueId(), k -> new ArrayList<>())
+                                    .add(block.getLocation());
                             if (plugin.isDebugMode()) {
                                 plugin.debug("Placed " + player.getName() + "'s head block at "
                                         + block.getX() + ", " + block.getY() + ", " + block.getZ());
@@ -169,6 +179,42 @@ public class HeadDropListener implements Listener {
     //   3. Single-tick scan (causes lag spikes, rejected based on PR feedback)
     // - Current approach prioritizes server performance and responsiveness
     public void removeDroppedHeads(UUID ownerUuid) {
+        // --- Targeted removal for block-mode heads ---
+        // Remove known skull block locations first.  We force-load the chunk if
+        // needed so this works even when the chunk is currently unloaded.
+        List<Location> knownLocations = headBlockLocations.remove(ownerUuid);
+        if (knownLocations != null) {
+            Bukkit.getScheduler().runTask(plugin, () -> {
+                for (Location loc : knownLocations) {
+                    World w = loc.getWorld();
+                    if (w == null) continue;
+                    boolean wasLoaded = w.isChunkLoaded(loc.getBlockX() >> 4, loc.getBlockZ() >> 4);
+                    // getBlockAt force-loads the chunk if not already loaded
+                    Block b = w.getBlockAt(loc);
+                    if (b.getType() == Material.PLAYER_HEAD || b.getType() == Material.PLAYER_WALL_HEAD) {
+                        BlockState state = b.getState();
+                        if (state instanceof Skull skull) {
+                            OfflinePlayer owner = skull.getOwningPlayer();
+                            if (owner != null && owner.getUniqueId().equals(ownerUuid)) {
+                                b.setType(Material.AIR);
+                                if (plugin.isDebugMode()) {
+                                    plugin.debug("Removed tracked head block for " + ownerUuid
+                                            + " at " + b.getX() + ", " + b.getY() + ", " + b.getZ());
+                                }
+                            }
+                        }
+                    }
+                    // Unload the chunk again if we loaded it just for cleanup
+                    if (!wasLoaded) {
+                        w.unloadChunkRequest(loc.getBlockX() >> 4, loc.getBlockZ() >> 4);
+                    }
+                }
+            });
+        }
+
+        // --- Fallback: tick-spread scan across all loaded chunks/entities ---
+        // Catches anything the targeted removal missed (e.g. heads placed by an
+        // older version, or item entities / item frames placed by players).
         new BukkitRunnable() {
             private final List<World> worlds = new ArrayList<>(Bukkit.getWorlds());
             private final List<Player> players = new ArrayList<>(Bukkit.getOnlinePlayers());
