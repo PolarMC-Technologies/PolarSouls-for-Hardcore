@@ -5,13 +5,13 @@ title: Frequently Asked Questions
 
 # Frequently Asked Questions (FAQ)
 
-Quick answers to common questions about PolarSouls installation, configuration, and gameplay.
+Quick answers to common questions about SSoggySouls installation, configuration, and gameplay.
 
 ## Installation & Setup
 
-### Q: Can I install PolarSouls on my Velocity proxy?
+### Q: Can I install SSoggySouls on my Velocity proxy?
 
-**A:** No! PolarSouls is **NOT a proxy plugin**. Install it **only on your backend servers** (Main and Limbo). Installing on Velocity/BungeeCord/Waterfall will NOT work.
+**A:** No! SSoggySouls is **NOT a proxy plugin**. Install it **only on your backend servers** (Main and Limbo). Installing on Velocity/BungeeCord/Waterfall will NOT work.
 
 - - Install on Main server
 - - Install on Limbo server
@@ -33,7 +33,7 @@ Quick answers to common questions about PolarSouls installation, configuration, 
 
 ### Q: Can I use BungeeCord instead of Velocity?
 
-**A:** Maybe. BungeeCord/Waterfall support is **untested**. If you test it, please [report your findings](https://github.com/polarmc-technologies/PolarSouls-for-Hardcore/issues)!
+**A:** Maybe. BungeeCord/Waterfall support is **untested**. If you test it, please [report your findings](https://github.com/SSoggy-Group/SSoggySouls-for-Hardcore/issues)!
 
 Currently supported: **Velocity (recommended)**
 
@@ -49,7 +49,7 @@ Currently supported: **Velocity (recommended)**
 
 ### Q: Which version of Minecraft is supported?
 
-**A:** PolarSouls requires **Minecraft 1.21.X** with:
+**A:** SSoggySouls requires **Minecraft 1.21.X** with:
 - Spigot, Paper, or Purpur server software
 - Java 21 or higher
 
@@ -57,7 +57,7 @@ Currently supported: **Velocity (recommended)**
 
 ### Q: Can I share my database with other plugins?
 
-**A:** Yes! The database can be shared with other plugins (CoreProtect, etc.). PolarSouls creates its own table and won't interfere.
+**A:** Yes! The database can be shared with other plugins (CoreProtect, etc.). SSoggySouls creates its own table and won't interfere.
 
 ---
 
@@ -280,8 +280,8 @@ This gives tactical advantage while carrying the head to a revival structure. Th
 
 **A:** Both work the same way, but:
 
-- **`/revive`** - Requires `polarsouls.revive` permission (default: op)
-- **`/psadmin revive`** - Requires `polarsouls.admin` permission (admin only)
+- **`/revive`** - Requires `ssoggysouls.revive` permission (default: op)
+- **`/psadmin revive`** - Requires `ssoggysouls.admin` permission (admin only)
 
 Use `/revive` for moderators, `/psadmin revive` for admins only.
 
@@ -309,11 +309,11 @@ psadmin grace PlayerName 48
 
 | Permission | Description | Default |
 |------------|-------------|---------|
-| `polarsouls.admin` | Full admin access | op |
-| `polarsouls.revive` | Revive players | op |
-| `polarsouls.status` | Check status | true |
-| `polarsouls.visit` | Visit Limbo | true |
-| `polarsouls.bypass` | Bypass death mechanics | false |
+| `ssoggysouls.admin` | Full admin access | op |
+| `ssoggysouls.revive` | Revive players | op |
+| `ssoggysouls.status` | Check status | true |
+| `ssoggysouls.visit` | Visit Limbo | true |
+| `ssoggysouls.bypass` | Bypass death mechanics | false |
 
 ---
 
@@ -323,10 +323,10 @@ psadmin grace PlayerName 48
 
 ```bash
 # Give revive permission to a moderator
-/lp user ModName permission set polarsouls.revive true
+/lp user ModName permission set ssoggysouls.revive true
 
 # Give admin permission to a trusted admin
-/lp user AdminName permission set polarsouls.admin true
+/lp user AdminName permission set ssoggysouls.admin true
 ```
 
 ---
@@ -458,7 +458,7 @@ Try `/revive <player>` command instead to test if database works.
 
 ### Q: Both servers running different versions
 
-**A:** **Critical issue!** Both servers MUST run the same PolarSouls version:
+**A:** **Critical issue!** Both servers MUST run the same SSoggySouls version:
 
 - Download same `.jar` for both
 - Update both servers simultaneously
@@ -484,12 +484,12 @@ Try `/revive <player>` command instead to test if database works.
 2. Restart servers and reproduce issue
 3. Check console for errors
 4. Gather info:
-   - PolarSouls version
+   - SSoggySouls version
    - Minecraft version
    - Proxy type
    - Relevant config sections
    - Console errors/logs
-5. [Open an issue](https://github.com/polarmc-technologies/PolarSouls-for-Hardcore/issues) with details
+5. [Open an issue](https://github.com/SSoggy-Group/SSoggySouls-for-Hardcore/issues) with details
 
 ---
 
@@ -497,7 +497,7 @@ Try `/revive <player>` command instead to test if database works.
 
 ### Q: Is this only for hardcore servers?
 
-**A:** No! PolarSouls works for any server style:
+**A:** No! SSoggySouls works for any server style:
 - **Hardcore** - One life mode
 - **Casual** - Multiple lives with forgiving grace periods
 - **Competitive** - Tight 2-3 life setup
@@ -509,13 +509,13 @@ Customize to your needs!
 
 ### Q: Can I use this with other death plugins?
 
-**A:** Probably not - conflicts likely. PolarSouls manages all death mechanics internally.
+**A:** Probably not - conflicts likely. SSoggySouls manages all death mechanics internally.
 
 ---
 
 ### Q: Does this work on 1.20 or earlier versions?
 
-**A:** No. PolarSouls requires **Minecraft 1.21.X**.
+**A:** No. SSoggySouls requires **Minecraft 1.21.X**.
 
 ---
 
@@ -533,7 +533,7 @@ Just remember to set spawn with `/setlimbospawn` after customizing.
 
 ### Q: Are there any performance concerns?
 
-**A:** PolarSouls is optimized for performance:
+**A:** SSoggySouls is optimized for performance:
 - Efficient database queries
 - Configurable check intervals
 - Connection pooling
@@ -569,7 +569,7 @@ Or set `enabled: false` to disable everything.
 - 📋 [Commands Reference](commands)
 - [Configuration Reference](configuration)
 - 🏗️ [Revival System Guide](revival-system)
-- [Report Issues](https://github.com/polarmc-technologies/PolarSouls-for-Hardcore/issues)
+- [Report Issues](https://github.com/SSoggy-Group/SSoggySouls-for-Hardcore/issues)
 
 ---
 

@@ -5,12 +5,12 @@
          http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <modelVersion>4.0.0</modelVersion>
 
-    <groupId>org.polarnl</groupId>
-    <artifactId>PolarSouls</artifactId>
+    <groupId>org.ssoggy</groupId>
+    <artifactId>SSoggySouls</artifactId>
     <version>2.2.1</version>
     <packaging>jar</packaging>
 
-    <name>PolarSouls</name>
+    <name>SSoggySouls</name>
     <description>Hardcore lives system for Velocity proxy network with Limbo exile and revival mechanics</description>
 
     <properties>
@@ -92,11 +92,11 @@
                                 <!-- Relocate to avoid conflicts with other plugins -->
                                 <relocation>
                                     <pattern>com.zaxxer.hikari</pattern>
-                                    <shadedPattern>org.polarnl.polarsouls.libs.hikari</shadedPattern>
+                                    <shadedPattern>org.ssoggy.ssoggysouls.libs.hikari</shadedPattern>
                                 </relocation>
                                 <relocation>
                                     <pattern>com.mysql</pattern>
-                                    <shadedPattern>org.polarnl.polarsouls.libs.mysql</shadedPattern>
+                                    <shadedPattern>org.ssoggy.ssoggysouls.libs.mysql</shadedPattern>
                                 </relocation>
                             </relocations>
                         </configuration>

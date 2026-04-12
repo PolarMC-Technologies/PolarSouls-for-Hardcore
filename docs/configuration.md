@@ -5,7 +5,7 @@ title: Configuration Reference
 
 # Configuration Reference
 
-Complete guide to configuring PolarSouls to match your server's needs.
+Complete guide to configuring SSoggySouls to match your server's needs.
 
 ## Table of Contents
 
@@ -23,9 +23,9 @@ Complete guide to configuring PolarSouls to match your server's needs.
 
 ## Overview
 
-PolarSouls uses a `config.yml` file that is automatically generated when you first run the plugin. This file is highly customizable and includes detailed comments explaining each setting.
+SSoggySouls uses a `config.yml` file that is automatically generated when you first run the plugin. This file is highly customizable and includes detailed comments explaining each setting.
 
-**Location:** `plugins/PolarSouls/config.yml` on both servers
+**Location:** `plugins/SSoggySouls/config.yml` on both servers
 
 > **Important:** After editing the config file, either:
 > - Restart both servers, or
@@ -86,7 +86,7 @@ If you give someone OP on the Limbo server (for example, to manage the Limbo wor
 
 When enabled (recommended), this security check will:
 1. **Block** all OP users on the Limbo server from executing admin/revive commands
-2. **Allow** OP users with the bypass permission `polarsouls.bypass-limbo-op-security`
+2. **Allow** OP users with the bypass permission `ssoggysouls.bypass-limbo-op-security`
 3. **Allow** non-OP users with explicit permission nodes
 4. **Allow** commands on the Main server regardless of how permissions are granted
 5. **Allow** console to always execute commands
@@ -111,7 +111,7 @@ limbo-trusted-admins:
 **Option 2: Grant bypass permission (requires LuckPerms or similar)**
 ```
 # Allows OP users to execute commands on Limbo server
-/lp user <player> permission set polarsouls.bypass-limbo-op-security true
+/lp user <player> permission set ssoggysouls.bypass-limbo-op-security true
 ```
 
 **Option 3: Grant explicit permissions without OP**
@@ -120,10 +120,10 @@ limbo-trusted-admins:
 /deop <player>
 
 # For revival commands:
-/lp user <player> permission set polarsouls.revive true
+/lp user <player> permission set ssoggysouls.revive true
 
 # For all admin commands:
-/lp user <player> permission set polarsouls.admin true
+/lp user <player> permission set ssoggysouls.admin true
 ```
 
 > **Tip:** Use Option 1 (whitelist) if you don't have a permissions plugin installed. It's the simplest and works out-of-the-box.
@@ -151,7 +151,7 @@ Both servers must use **identical** database credentials.
 database:
   host: "localhost"              # Database host
   port: 3306                     # Database port (default: 3306)
-  name: "polarsouls"             # Database name
+  name: "ssoggysouls"             # Database name
   username: "root"               # MySQL username
   password: "changeme"           # MySQL password - CHANGE THIS!
   pool-size: 5                   # Connection pool size
@@ -172,7 +172,7 @@ Use the database host provided by your hosting panel, not "localhost":
 database:
   host: "db-pterodactyl.c9akciq32cpl.us-east-1.rds.amazonaws.com"
   port: 3306
-  name: "s123_polarsouls"
+  name: "s123_ssoggysouls"
   username: "u123_admin"
   password: "your_secure_password"
 ```

@@ -5,7 +5,7 @@ title: Quick Start Guide
 
 # Quick Start Guide
 
-This guide will help you get PolarSouls up and running in 8 simple steps. For more detailed instructions, see the [Installation Guide](installation).
+This guide will help you get SSoggySouls up and running in 8 simple steps. For more detailed instructions, see the [Installation Guide](installation).
 
 ## Prerequisites
 
@@ -18,15 +18,15 @@ Before you begin, ensure you have:
 
 ### Step 1: Download
 
-Download the latest `PolarSouls-1.3.6.jar` from:
-- [GitHub Releases](https://github.com/polarmc-technologies/PolarSouls-for-Hardcore/releases)
+Download the latest `SSoggySouls-1.3.6.jar` from:
+- [GitHub Releases](https://github.com/SSoggy-Group/SSoggySouls-for-Hardcore/releases)
 - [Modrinth](https://modrinth.com/project/Pb03qu6T)
 
 ### Step 2: Install Plugin
 
-Place `PolarSouls-1.3.6.jar` in the `plugins/` folder of **both** servers:
-- Main server: `/plugins/PolarSouls-1.3.6.jar`
-- Limbo server: `/plugins/PolarSouls-1.3.6.jar`
+Place `SSoggySouls-1.3.6.jar` in the `plugins/` folder of **both** servers:
+- Main server: `/plugins/SSoggySouls-1.3.6.jar`
+- Limbo server: `/plugins/SSoggySouls-1.3.6.jar`
 
 > **Important:** Install on backend servers only, NOT on the Velocity proxy!
 
@@ -35,7 +35,7 @@ Place `PolarSouls-1.3.6.jar` in the `plugins/` folder of **both** servers:
 1. Start both servers to generate default `config.yml` files
 2. Stop both servers after generation
 
-You should see a `plugins/PolarSouls/config.yml` file on each server.
+You should see a `plugins/SSoggySouls/config.yml` file on each server.
 
 ### Step 4: Configure Database
 
@@ -45,7 +45,7 @@ Edit `config.yml` on **both servers** with **identical** database credentials:
 database:
   host: "localhost"        # Your database host
   port: 3306               # Your database port
-  name: "polarsouls"       # Your database name
+  name: "ssoggysouls"       # Your database name
   username: "root"         # Your MySQL username
   password: "your_password" # Your MySQL password
   pool-size: 5
@@ -161,7 +161,7 @@ For the complete command list, see [Commands](commands).
 - [Configuration Reference](configuration)
 - [Troubleshooting](troubleshooting)
 - [FAQ](faq)
-- [Report Issues](https://github.com/polarmc-technologies/PolarSouls-for-Hardcore/issues)
+- [Report Issues](https://github.com/SSoggy-Group/SSoggySouls-for-Hardcore/issues)
 
 ---
 

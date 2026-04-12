@@ -1,12 +1,12 @@
-# PolarSouls
+# SSoggySouls
 
-![PolarSouls Banner](https://cdn.modrinth.com/data/Pb03qu6T/images/70ce5f45786d4716bb6d47d242ee3238a2b4ec4a.jpeg)
+![SSoggySouls Banner](https://cdn.modrinth.com/data/Pb03qu6T/images/70ce5f45786d4716bb6d47d242ee3238a2b4ec4a.jpeg)
 
-**Version 2.1.2** | [Modrinth](https://modrinth.com/project/Pb03qu6T) | [GitHub](https://github.com/polarmc-technologies/PolarSouls-for-Hardcore)
+**Version 2.1.2** | [Modrinth](https://modrinth.com/project/Pb03qu6T) | [GitHub](https://github.com/SSoggy-Group/SSoggySouls-for-Hardcore)
 
 A hardcore lives system plugin for Minecraft 1.21.X (Spigot/Paper/Purpur) designed for Velocity proxy networks. When you die enough times, you get sent to a Limbo server until your teammates bring you back.
 
-> **[Complete Documentation Wiki →](https://polarmc-technologies.github.io/PolarSouls-for-Hardcore/)** - Installation guides, configuration reference, commands, troubleshooting, and more!
+> **[Complete Documentation Wiki →](https://SSoggy-Group.github.io/SSoggySouls-for-Hardcore/)** - Installation guides, configuration reference, commands, troubleshooting, and more!
 
 
 ## Features
@@ -186,7 +186,7 @@ New players get some time to learn before deaths start counting.
 Living players can check out Limbo using `/limbo`.
 
 **How it works:**
-- `/limbo` - teleport to Limbo (needs `polarsouls.visit` permission)
+- `/limbo` - teleport to Limbo (needs `ssoggysouls.visit` permission)
 - `/leavelimbo` (or `/hub`) - come back to Main
 - Living players can go whenever
 - Dead players are stuck until revived
@@ -249,17 +249,17 @@ After setup, test everything:
 4. Run `/psadmin revive <player>` from Main console
 5. Check that you got sent back to Main
 
-> **Note:** BungeeCord/Waterfall not tested but might work. Let us know if you try it! [Open an issue](https://github.com/polarmc-technologies/PolarSouls-for-Hardcore/issues)
+> **Note:** BungeeCord/Waterfall not tested but might work. Let us know if you try it! [Open an issue](https://github.com/SSoggy-Group/SSoggySouls-for-Hardcore/issues)
 
 ## Installation
 
 ### Step 1: Download
-Download the latest release (`PolarSouls-2.1.2.jar`) from the [Releases page](https://github.com/polarmc-technologies/PolarSouls-for-Hardcore/releases).
+Download the latest release (`SSoggySouls-2.1.2.jar`) from the [Releases page](https://github.com/SSoggy-Group/SSoggySouls-for-Hardcore/releases).
 
 ### Step 2: Install Plugin
-Place `PolarSouls-1.3.6.jar` in the `plugins/` folder of **both** servers:
-- Main server: `/plugins/PolarSouls-1.3.6.jar`
-- Limbo server: `/plugins/PolarSouls-1.3.6.jar`
+Place `SSoggySouls-1.3.6.jar` in the `plugins/` folder of **both** servers:
+- Main server: `/plugins/SSoggySouls-1.3.6.jar`
+- Limbo server: `/plugins/SSoggySouls-1.3.6.jar`
 
 ### Step 3: Generate Config
 Start both servers to generate default `config.yml` files. Stop them after generation.
@@ -271,7 +271,7 @@ Edit `config.yml` on **both servers** with **identical** database credentials:
 database:
   host: "localhost"
   port: 3306
-  name: "polarsouls"        # Your database name
+  name: "ssoggysouls"        # Your database name
   username: "root"           # Your MySQL username
   password: "your_password"  # Your MySQL password
   pool-size: 5
@@ -320,7 +320,7 @@ Adjust settings in `config.yml` to match your server's needs:
 - Extra Life recipe
 - Messages and colors
 
-The `config.yml` includes detailed comments explaining each setting. If you need help, feel free to reach out via [GitHub Issues](https://github.com/polarmc-technologies/PolarSouls-for-Hardcore/issues).
+The `config.yml` includes detailed comments explaining each setting. If you need help, feel free to reach out via [GitHub Issues](https://github.com/SSoggy-Group/SSoggySouls-for-Hardcore/issues).
 
 ## Config
 
@@ -344,14 +344,14 @@ limbo-server-name: "limbo"
 limbo-op-security-check: true
 ```
 
-Prevents OP users on the Limbo server from abusing `/revive` and `/psadmin` commands. OPs need the `polarsouls.bypass-limbo-op-security` permission to use admin commands on Limbo. See [Permissions](#permissions) for details.
+Prevents OP users on the Limbo server from abusing `/revive` and `/psadmin` commands. OPs need the `ssoggysouls.bypass-limbo-op-security` permission to use admin commands on Limbo. See [Permissions](#permissions) for details.
 
 #### Database
 ```yaml
 database:
   host: "localhost"
   port: 3306
-  name: "polarsouls"
+  name: "ssoggysouls"
   username: "root"
   password: "changeme"    # CHANGE THIS!
   pool-size: 5
@@ -456,24 +456,24 @@ Variables you can use:
 
 | Command | Description | Permission | Aliases |
 |---------|-------------|------------|---------|
-| `/pstatus [player]` | Check your or another player's lives, death status, and grace period | `polarsouls.status` (default: true) | - |
-| `/revive <player>` | Revive a dead player and return them from Limbo | `polarsouls.revive` (default: op) | - |
-| `/limbo` | Visit the Limbo server as a living player | `polarsouls.visit` (default: true) | `/visitlimbo` |
-| `/leavelimbo` | Return from Limbo to Main (visitors only) | `polarsouls.visit` (default: true) | `/hub` |
+| `/pstatus [player]` | Check your or another player's lives, death status, and grace period | `ssoggysouls.status` (default: true) | - |
+| `/revive <player>` | Revive a dead player and return them from Limbo | `ssoggysouls.revive` (default: op) | - |
+| `/limbo` | Visit the Limbo server as a living player | `ssoggysouls.visit` (default: true) | `/visitlimbo` |
+| `/leavelimbo` | Return from Limbo to Main (visitors only) | `ssoggysouls.visit` (default: true) | `/hub` |
 
 ### Admin Commands
 
 | Command | Description | Permission |
 |---------|-------------|------------|
-| `/psadmin lives <player> <amount>` | Set a player's life count | `polarsouls.admin` |
-| `/psadmin revive <player>` | Revive a dead player (same as `/revive`) | `polarsouls.admin` |
-| `/psadmin kill <player>` | Force-kill a player (sets lives to 0, sends to Limbo) | `polarsouls.admin` |
-| `/psadmin grace <player> <hours>` | Set custom grace period for a player | `polarsouls.admin` |
-| `/psadmin reset <player>` | Reset player to defaults (default lives, clear grace) | `polarsouls.admin` |
-| `/psadmin info <player>` | View detailed player data (UUID, lives, death state, timestamps) | `polarsouls.admin` |
-| `/psadmin reload` | Reload configuration from disk | `polarsouls.admin` |
-| `/psetlives <player> <amount>` | Legacy command - set player's lives (use `/psadmin lives` instead) | `polarsouls.admin` |
-| `/setlimbospawn` | Set Limbo spawn to your current location | `polarsouls.admin` |
+| `/psadmin lives <player> <amount>` | Set a player's life count | `ssoggysouls.admin` |
+| `/psadmin revive <player>` | Revive a dead player (same as `/revive`) | `ssoggysouls.admin` |
+| `/psadmin kill <player>` | Force-kill a player (sets lives to 0, sends to Limbo) | `ssoggysouls.admin` |
+| `/psadmin grace <player> <hours>` | Set custom grace period for a player | `ssoggysouls.admin` |
+| `/psadmin reset <player>` | Reset player to defaults (default lives, clear grace) | `ssoggysouls.admin` |
+| `/psadmin info <player>` | View detailed player data (UUID, lives, death state, timestamps) | `ssoggysouls.admin` |
+| `/psadmin reload` | Reload configuration from disk | `ssoggysouls.admin` |
+| `/psetlives <player> <amount>` | Legacy command - set player's lives (use `/psadmin lives` instead) | `ssoggysouls.admin` |
+| `/setlimbospawn` | Set Limbo spawn to your current location | `ssoggysouls.admin` |
 
 **Aliases:** `/psadmin` can also be used as `/psa`
 
@@ -514,12 +514,12 @@ Variables you can use:
 
 | Permission | Description | Default |
 |------------|-------------|---------|
-| `polarsouls.admin` | Full admin access | op |
-| `polarsouls.revive` | Can revive dead players | op |
-| `polarsouls.status` | Can check player status | true |
-| `polarsouls.visit` | Can visit Limbo as a living player | true |
-| `polarsouls.bypass` | Bypass all death mechanics | false |
-| `polarsouls.bypass-limbo-op-security` | Allow OPs to use admin commands on Limbo server | false |
+| `ssoggysouls.admin` | Full admin access | op |
+| `ssoggysouls.revive` | Can revive dead players | op |
+| `ssoggysouls.status` | Can check player status | true |
+| `ssoggysouls.visit` | Can visit Limbo as a living player | true |
+| `ssoggysouls.bypass` | Bypass all death mechanics | false |
+| `ssoggysouls.bypass-limbo-op-security` | Allow OPs to use admin commands on Limbo server | false |
 
 ### Limbo OP Security
 
@@ -543,13 +543,13 @@ Then run `/psadmin reload` from the **console** or an already whitelisted/bypass
 
 **Option 2: Using LuckPerms**
 ```bash
-/lp user <player> permission set polarsouls.bypass-limbo-op-security true
+/lp user <player> permission set ssoggysouls.bypass-limbo-op-security true
 ```
 
 **Option 3: Remove OP and use explicit permissions**
 ```bash
 /deop <player>
-/lp user <player> permission set polarsouls.admin true
+/lp user <player> permission set ssoggysouls.admin true
 ```
 
 This security check can be disabled with `limbo-op-security-check: false` in config (not recommended).
@@ -577,13 +577,13 @@ This security check can be disabled with `limbo-op-security-check: false` in con
 
 ### Admin commands not working on Limbo server
 - This is normal security behavior! OPs are blocked on Limbo by default
-- Grant bypass permission: `/lp user <player> permission set polarsouls.bypass-limbo-op-security true`
+- Grant bypass permission: `/lp user <player> permission set ssoggysouls.bypass-limbo-op-security true`
 - Or disable the security check: `limbo-op-security-check: false` in config (not recommended)
 - Console commands always work
 - See [Permissions](#permissions) section for full details
 
 ### Version mismatch warnings
-- Both servers MUST run the same PolarSouls version
+- Both servers MUST run the same SSoggySouls version
 - Download the same `.jar` file for both Main and Limbo
 - Check console logs for version numbers
 - Update both servers simultaneously
@@ -615,8 +615,8 @@ If issues persist:
 1. Enable debug mode: `debug: true` in config
 2. Restart servers and reproduce the issue
 3. Check console logs for errors
-4. [Open an issue](https://github.com/polarmc-technologies/PolarSouls-for-Hardcore/issues) with:
-   - PolarSouls version
+4. [Open an issue](https://github.com/SSoggy-Group/SSoggySouls-for-Hardcore/issues) with:
+   - SSoggySouls version
    - Minecraft version
    - Proxy type (Velocity/BungeeCord)
    - Relevant config sections
@@ -624,7 +624,7 @@ If issues persist:
 
 ## Update Checking
 
-PolarSouls includes automatic update checking via Modrinth:
+SSoggySouls includes automatic update checking via Modrinth:
 - Checks for new versions on plugin startup
 - Displays update notifications in console
 - Can be disabled: `check-for-updates: false`
@@ -639,8 +639,8 @@ PolarSouls includes automatic update checking via Modrinth:
 ## Contributing
 
 Issues, suggestions, and pull requests are welcome!
-- Report bugs: [GitHub Issues](https://github.com/polarmc-technologies/PolarSouls-for-Hardcore/issues)
-- Feature requests: [GitHub Issues](https://github.com/polarmc-technologies/PolarSouls-for-Hardcore/issues)
+- Report bugs: [GitHub Issues](https://github.com/SSoggy-Group/SSoggySouls-for-Hardcore/issues)
+- Feature requests: [GitHub Issues](https://github.com/SSoggy-Group/SSoggySouls-for-Hardcore/issues)
 
 ## License
 

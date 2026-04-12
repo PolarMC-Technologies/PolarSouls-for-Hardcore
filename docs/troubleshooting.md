@@ -5,7 +5,7 @@ title: Troubleshooting
 
 # Troubleshooting Guide
 
-This guide covers common issues and their solutions. If you don't find your issue here, check the [FAQ](faq) or [open an issue](https://github.com/polarmc-technologies/PolarSouls-for-Hardcore/issues).
+This guide covers common issues and their solutions. If you don't find your issue here, check the [FAQ](faq) or [open an issue](https://github.com/SSoggy-Group/SSoggySouls-for-Hardcore/issues).
 
 ## Table of Contents
 
@@ -244,7 +244,7 @@ Or simply restart the server to apply the changes.
 
 Use a permissions plugin like LuckPerms:
 ```
-/lp user <player> permission set polarsouls.bypass-limbo-op-security true
+/lp user <player> permission set ssoggysouls.bypass-limbo-op-security true
 ```
 
 This allows the OP to use admin commands on Limbo.
@@ -253,8 +253,8 @@ This allows the OP to use admin commands on Limbo.
 
 ```
 /deop <player>
-/lp user <player> permission set polarsouls.admin true
-/lp user <player> permission set polarsouls.revive true
+/lp user <player> permission set ssoggysouls.admin true
+/lp user <player> permission set ssoggysouls.revive true
 ```
 
 #### - Disable Security Check (Not Recommended)
@@ -287,7 +287,7 @@ Console commands always work on both servers:
 
 #### - Update Both Servers to Same Version
 
-1. Download the latest PolarSouls JAR
+1. Download the latest SSoggySouls JAR
 2. Stop both servers
 3. Replace the JAR on **both** servers
 4. Start both servers
@@ -296,7 +296,7 @@ Console commands always work on both servers:
 
 Check console logs on both servers:
 ```
-[PolarSouls] Version 1.3.6 enabled
+[SSoggySouls] Version 1.3.6 enabled
 ```
 
 Both must show the same version number.
@@ -338,7 +338,7 @@ Check Services for MySQL
 
 Use MySQL client to test:
 ```bash
-mysql -h localhost -P 3306 -u polarsouls_user -p
+mysql -h localhost -P 3306 -u ssoggysouls_user -p
 ```
 
 Enter password when prompted. If this fails, your credentials are wrong.
@@ -365,14 +365,14 @@ database:
 #### - Ensure Database Exists
 
 ```sql
-CREATE DATABASE IF NOT EXISTS polarsouls;
+CREATE DATABASE IF NOT EXISTS ssoggysouls;
 ```
 
 #### - Check User Permissions
 
 ```sql
 -- Restrict to the host your backend uses (e.g. 127.0.0.1 or your server IP)
-GRANT SELECT, INSERT, UPDATE, DELETE ON polarsouls.* TO 'polarsouls_user'@'127.0.0.1';
+GRANT SELECT, INSERT, UPDATE, DELETE ON ssoggysouls.* TO 'ssoggysouls_user'@'127.0.0.1';
 FLUSH PRIVILEGES;
 ```
 
@@ -601,12 +601,12 @@ After enabling:
 
 ```yaml
 permissions:
-  polarsouls.visit: true  # Should default to true
+  ssoggysouls.visit: true  # Should default to true
 ```
 
 Grant permission:
 ```
-/lp user <player> permission set polarsouls.visit true
+/lp user <player> permission set ssoggysouls.visit true
 ```
 
 #### - Verify Limbo Server is Online
@@ -629,7 +629,7 @@ Dead players can't use `/limbo` - they're already there!
 
 ### Symptoms
 - Plugin doesn't show in `/plugins`
-- No console messages from PolarSouls
+- No console messages from SSoggySouls
 - Commands don't work
 
 ### Solutions
@@ -678,7 +678,7 @@ If your issue isn't covered here:
    Restart both servers and reproduce the issue.
 
 2. **Collect Information**
-   - PolarSouls version
+   - SSoggySouls version
    - Minecraft version
    - Proxy type (Velocity/BungeeCord)
    - Relevant config sections
@@ -686,10 +686,10 @@ If your issue isn't covered here:
    - Steps to reproduce
 
 3. **Search Existing Issues**
-   Check [GitHub Issues](https://github.com/polarmc-technologies/PolarSouls-for-Hardcore/issues) for similar problems.
+   Check [GitHub Issues](https://github.com/SSoggy-Group/SSoggySouls-for-Hardcore/issues) for similar problems.
 
 4. **Open a New Issue**
-   [Create an issue](https://github.com/polarmc-technologies/PolarSouls-for-Hardcore/issues/new) with all collected information.
+   [Create an issue](https://github.com/SSoggy-Group/SSoggySouls-for-Hardcore/issues/new) with all collected information.
 
 ## Related Resources
 

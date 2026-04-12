@@ -5,7 +5,7 @@ title: Installation Guide
 
 # Installation Guide
 
-This comprehensive guide covers everything you need to know to properly install and configure PolarSouls on your Velocity proxy network.
+This comprehensive guide covers everything you need to know to properly install and configure SSoggySouls on your Velocity proxy network.
 
 ## Table of Contents
 
@@ -48,7 +48,7 @@ If you already have it enabled:
 
 ## Network Architecture
 
-### How PolarSouls Works
+### How SSoggySouls Works
 
 ```
                     ┌─────────────────┐
@@ -72,14 +72,14 @@ If you already have it enabled:
 
 ### Creating the Database
 
-PolarSouls will automatically create the necessary table, but you need to create the database first.
+SSoggySouls will automatically create the necessary table, but you need to create the database first.
 
 **Using MySQL command line:**
 
 ```sql
-CREATE DATABASE polarsouls CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
-CREATE USER 'polarsouls_user'@'localhost' IDENTIFIED BY 'your_secure_password';
-GRANT SELECT, INSERT, UPDATE, DELETE, CREATE, ALTER ON polarsouls.* TO 'polarsouls_user'@'localhost';
+CREATE DATABASE ssoggysouls CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
+CREATE USER 'ssoggysouls_user'@'localhost' IDENTIFIED BY 'your_secure_password';
+GRANT SELECT, INSERT, UPDATE, DELETE, CREATE, ALTER ON ssoggysouls.* TO 'ssoggysouls_user'@'localhost';
 FLUSH PRIVILEGES;
 ```
 
@@ -97,14 +97,14 @@ Both servers must use **identical** database credentials:
 database:
   host: "localhost"              # Database host (use panel host for Pterodactyl)
   port: 3306                     # Database port
-  name: "polarsouls"             # Database name
-  username: "polarsouls_user"    # Database username
+  name: "ssoggysouls"             # Database name
+  username: "ssoggysouls_user"    # Database username
   password: "your_secure_password" # Database password
   pool-size: 5                   # Connection pool size (5 is recommended)
   table-name: "hardcore_players" # Table name (default is fine)
 ```
 
-> **Tip:** The database can be shared with other plugins like CoreProtect. PolarSouls uses its own table.
+> **Tip:** The database can be shared with other plugins like CoreProtect. SSoggySouls uses its own table.
 
 ### Connection Pool Settings
 
@@ -118,10 +118,10 @@ The `pool-size` setting controls how many database connections are maintained:
 ### Download
 
 Get the latest version:
-- [GitHub Releases](https://github.com/polarmc-technologies/PolarSouls-for-Hardcore/releases)
+- [GitHub Releases](https://github.com/SSoggy-Group/SSoggySouls-for-Hardcore/releases)
 - [Modrinth](https://modrinth.com/project/Pb03qu6T)
 
-Download `PolarSouls-1.3.6.jar` (or latest version).
+Download `SSoggySouls-1.3.6.jar` (or latest version).
 
 ### Installation Steps
 
@@ -129,8 +129,8 @@ Download `PolarSouls-1.3.6.jar` (or latest version).
 
 2. **Place the JAR file** in the `plugins/` folder of both servers:
    ```
-   Main Server:  /plugins/PolarSouls-1.3.6.jar
-   Limbo Server: /plugins/PolarSouls-1.3.6.jar
+   Main Server:  /plugins/SSoggySouls-1.3.6.jar
+   Limbo Server: /plugins/SSoggySouls-1.3.6.jar
    ```
 
 3. **Start both servers** to generate config files
@@ -142,7 +142,7 @@ Download `PolarSouls-1.3.6.jar` (or latest version).
 ### Critical Setup Rules
 
 **DO NOT install on proxy:**
-- PolarSouls is NOT a proxy plugin
+- SSoggySouls is NOT a proxy plugin
 - Install ONLY on backend servers (Main and Limbo)
 - Do NOT place in Velocity/BungeeCord plugins folder
 
@@ -172,7 +172,7 @@ try = [
 
 ### For BungeeCord/Waterfall
 
-> **Note:** BungeeCord/Waterfall support is untested. Please [report](https://github.com/polarmc-technologies/PolarSouls-for-Hardcore/issues) if you test it!
+> **Note:** BungeeCord/Waterfall support is untested. Please [report](https://github.com/SSoggy-Group/SSoggySouls-for-Hardcore/issues) if you test it!
 
 **In BungeeCord `config.yml`:**
 ```yaml
@@ -196,7 +196,7 @@ settings:
 
 ### Main Server Configuration
 
-Edit `/plugins/PolarSouls/config.yml` on the **Main server**:
+Edit `/plugins/SSoggySouls/config.yml` on the **Main server**:
 
 ```yaml
 # SERVER IDENTIFICATION
@@ -210,8 +210,8 @@ limbo-server-name: "limbo"       # Name of Limbo server in proxy config
 database:
   host: "localhost"
   port: 3306
-  name: "polarsouls"
-  username: "polarsouls_user"
+  name: "ssoggysouls"
+  username: "ssoggysouls_user"
   password: "your_secure_password"
   pool-size: 5
   table-name: "hardcore_players"
@@ -235,7 +235,7 @@ main:
 
 ### Limbo Server Configuration
 
-Edit `/plugins/PolarSouls/config.yml` on the **Limbo server**:
+Edit `/plugins/SSoggySouls/config.yml` on the **Limbo server**:
 
 ```yaml
 # SERVER IDENTIFICATION
@@ -249,8 +249,8 @@ limbo-server-name: "limbo"
 database:
   host: "localhost"
   port: 3306
-  name: "polarsouls"
-  username: "polarsouls_user"
+  name: "ssoggysouls"
+  username: "ssoggysouls_user"
   password: "your_secure_password"
   pool-size: 5
   table-name: "hardcore_players"
@@ -282,7 +282,7 @@ The spawn location is saved to config and will be used for all dead players.
 ### Pre-Flight Checklist
 
 Before testing, verify:
-- [ ] Both servers are running PolarSouls (same version)
+- [ ] Both servers are running SSoggySouls (same version)
 - [ ] Both servers have identical database credentials
 - [ ] `is-limbo-server` is set correctly (false on Main, true on Limbo)
 - [ ] Server names match proxy configuration
@@ -335,13 +335,13 @@ If all tests pass, your installation is complete!
 
 Check console logs for:
 - "Database connection established successfully"
-- "PolarSouls version X.X.X enabled"
+- "SSoggySouls version X.X.X enabled"
 - No error messages or warnings
 
 ## Common Mistakes to Avoid
 
 ### Mistake 1: Installing on Proxy
-**Wrong:** Installing PolarSouls on Velocity/BungeeCord
+**Wrong:** Installing SSoggySouls on Velocity/BungeeCord
 **Right:** Install only on backend servers (Main and Limbo)
 
 ### Mistake 2: Different Database Credentials
@@ -374,7 +374,7 @@ Check console logs for:
 
 ## Next Steps
 
-Now that PolarSouls is installed:
+Now that SSoggySouls is installed:
 
 1. **Customize Settings** - Review the [Configuration Reference](configuration)
 2. **Learn Commands** - Check out the [Commands Guide](commands)
@@ -386,7 +386,7 @@ Now that PolarSouls is installed:
 - [Configuration Reference](configuration)
 - [Troubleshooting Guide](troubleshooting)
 - [FAQ](faq)
-- [Report Issues](https://github.com/polarmc-technologies/PolarSouls-for-Hardcore/issues)
+- [Report Issues](https://github.com/SSoggy-Group/SSoggySouls-for-Hardcore/issues)
 
 ---
 
