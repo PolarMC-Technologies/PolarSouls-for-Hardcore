@@ -1,6 +1,6 @@
 # SSoggySouls
 
-![SSoggySouls Banner](https://cdn.modrinth.com/data/Pb03qu6T/images/70ce5f45786d4716bb6d47d242ee3238a2b4ec4a.jpeg)
+![SSoggySouls Banner](https://cdn.modrinth.com/data/Pb03qu6T/images/48a03bf24103dde408dbbcad653a3936b5f5255a.png)
 
 **Version 2.1.2** | [Modrinth](https://modrinth.com/project/Pb03qu6T) | [GitHub](https://github.com/SSoggy-Group/SSoggySouls-for-Hardcore)
 
