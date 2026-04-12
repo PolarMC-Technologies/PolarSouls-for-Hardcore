@@ -1,12 +1,12 @@
-name: PolarSouls
+name: SSoggySouls
 version: ${project.version}
-main: org.polarnl.polarsouls.PolarSouls
+main: org.ssoggy.ssoggysouls.SSoggySouls
 api-version: '1.21'
 author: Mario
 description: Hardcore lives system with cross-server Limbo exile and revival mechanics
 
 # Proxy note:
-# - Install PolarSouls only on backend Spigot/Paper/Purpur servers (Main and Limbo).
+# - Install SSoggySouls only on backend Spigot/Paper/Purpur servers (Main and Limbo).
 # - Do NOT install this plugin on Velocity/BungeeCord/Waterfall proxies.
 # - Configure the proxy to forward player information to backends (Velocity: MODERN forwarding; BungeeCord: IP forwarding).
 
@@ -14,69 +14,69 @@ commands:
   revive:
     description: Revive a dead player and return them from Limbo
     usage: /revive <player>
-    permission: polarsouls.revive
+    permission: ssoggysouls.revive
     permission-message: "&cYou don't have permission to revive players."
 
   setlimbospawn:
     description: Set the Limbo spawn location to your current position
     usage: /setlimbospawn
-    permission: polarsouls.admin
+    permission: ssoggysouls.admin
     permission-message: "&cYou don't have permission to use this command."
 
   pstatus:
     description: Check a player's hardcore status (lives, death state)
     usage: /pstatus [player]
-    permission: polarsouls.status
+    permission: ssoggysouls.status
     permission-message: "&cYou don't have permission to use this command."
 
   psetlives:
     description: Set a player's life count
     usage: /psetlives <player> <lives>
-    permission: polarsouls.admin
+    permission: ssoggysouls.admin
     permission-message: "&cYou don't have permission to use this command."
 
   psadmin:
-    description: PolarSouls admin commands
+    description: SSoggySouls admin commands
     usage: /psadmin <subcommand> [args]
     aliases: [psa]
-    permission: polarsouls.admin
+    permission: ssoggysouls.admin
     permission-message: "&cYou don't have permission to use this command."
 
   limbo:
     description: Visit the Limbo world as a living player
     usage: /limbo
     aliases: [visitlimbo]
-    permission: polarsouls.visit
+    permission: ssoggysouls.visit
     permission-message: "&cYou don't have permission to visit Limbo."
 
   leavelimbo:
     description: Leave Limbo and return to Main (visitors only)
     usage: /leavelimbo
     aliases: [hub]
-    permission: polarsouls.visit
+    permission: ssoggysouls.visit
     permission-message: "&cYou don't have permission to use this command."
 
 permissions:
-  polarsouls.revive:
+  ssoggysouls.revive:
     description: Allows reviving dead players
     default: op
 
-  polarsouls.admin:
-    description: Full admin access to PolarSouls
+  ssoggysouls.admin:
+    description: Full admin access to SSoggySouls
     default: op
 
-  polarsouls.status:
+  ssoggysouls.status:
     description: Check player status
     default: true
 
-  polarsouls.visit:
+  ssoggysouls.visit:
     description: Allows visiting Limbo as a living player
     default: true
 
-  polarsouls.bypass:
+  ssoggysouls.bypass:
     description: Bypass all death and limbo mechanics
     default: false
 
-  polarsouls.bypass-limbo-op-security:
+  ssoggysouls.bypass-limbo-op-security:
     description: Bypass the Limbo OP security check for admin commands
     default: false

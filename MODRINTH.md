@@ -1,12 +1,12 @@
-# PolarSouls
+# SSoggySouls
 
-<img src="https://cdn.modrinth.com/data/Pb03qu6T/images/70ce5f45786d4716bb6d47d242ee3238a2b4ec4a.jpeg" alt="PolarSouls Banner">
+<img src="https://cdn.modrinth.com/data/Pb03qu6T/images/70ce5f45786d4716bb6d47d242ee3238a2b4ec4a.jpeg" alt="SSoggySouls Banner">
 
 **Version 1.3.6** | Minecraft 1.21.X | Spigot/Paper/Purpur
 
 A hardcore lives system plugin for Velocity proxy networks. When you die enough times, you get exiled to a Limbo server until your teammates revive you.
 
-> **[Read the Full Documentation →](https://polarmc-technologies.github.io/PolarSouls-for-Hardcore/)** - Complete installation guides, configuration reference, troubleshooting, and more!
+> **[Read the Full Documentation →](https://SSoggy-Group.github.io/SSoggySouls-for-Hardcore/)** - Complete installation guides, configuration reference, troubleshooting, and more!
 
 ---
 
@@ -107,7 +107,7 @@ Wear a dead player's head = Speed II and Night Vision.
 
 ### Quick Start (8 Steps)
 
-1. **Download** `PolarSouls-1.3.6.jar` from [Releases](https://github.com/polarmc-technologies/PolarSouls-for-Hardcore/releases)
+1. **Download** `SSoggySouls-1.3.6.jar` from [Releases](https://github.com/SSoggy-Group/SSoggySouls-for-Hardcore/releases)
 
 2. **Install** the JAR in `plugins/` folder of **both** servers (Main and Limbo)
 
@@ -118,7 +118,7 @@ Wear a dead player's head = Speed II and Night Vision.
    database:
      host: "localhost"
      port: 3306
-     name: "polarsouls"
+     name: "ssoggysouls"
      username: "root"
      password: "your_password"
    ```
@@ -136,7 +136,7 @@ Wear a dead player's head = Speed II and Night Vision.
    - HRM features (revival structures, heads, recipes)
    - Messages and colors
    
-   See the **Configuration** section below for key settings. If you need help, reach out via [GitHub Issues](https://github.com/polarmc-technologies/PolarSouls-for-Hardcore/issues).
+   See the **Configuration** section below for key settings. If you need help, reach out via [GitHub Issues](https://github.com/SSoggy-Group/SSoggySouls-for-Hardcore/issues).
 
 8. **Restart & test** - Start both servers and test the full death → Limbo → revival flow!
 
@@ -146,7 +146,7 @@ Wear a dead player's head = Speed II and Night Vision.
 
 **For BungeeCord/Waterfall:** Enable IP forwarding in `config.yml` and set `bungeecord: true` in `spigot.yml`
 
-> **Note:** Install PolarSouls ONLY on backend servers, NOT on the proxy!
+> **Note:** Install SSoggySouls ONLY on backend servers, NOT on the proxy!
 
 ---
 
@@ -203,10 +203,10 @@ All messages are customizable with Minecraft color codes!
 ### Player Commands
 | Command | Description | Permission |
 |---------|-------------|------------|
-| `/pstatus [player]` | Check lives and status | `polarsouls.status` |
-| `/revive <player>` | Revive a dead player | `polarsouls.revive` |
-| `/limbo` | Visit Limbo server | `polarsouls.visit` |
-| `/leavelimbo` | Return from Limbo | `polarsouls.visit` |
+| `/pstatus [player]` | Check lives and status | `ssoggysouls.status` |
+| `/revive <player>` | Revive a dead player | `ssoggysouls.revive` |
+| `/limbo` | Visit Limbo server | `ssoggysouls.visit` |
+| `/leavelimbo` | Return from Limbo | `ssoggysouls.visit` |
 
 ### Admin Commands
 | Command | Description |
@@ -228,12 +228,12 @@ All messages are customizable with Minecraft color codes!
 
 | Permission | Description | Default |
 |------------|-------------|---------|
-| `polarsouls.admin` | Full admin access | op |
-| `polarsouls.revive` | Can revive dead players | op |
-| `polarsouls.status` | Can check player status | true |
-| `polarsouls.visit` | Can visit Limbo as living player | true |
-| `polarsouls.bypass` | Bypass all death mechanics | false |
-| `polarsouls.bypass-limbo-op-security` | Allow OPs to use admin commands on Limbo | false |
+| `ssoggysouls.admin` | Full admin access | op |
+| `ssoggysouls.revive` | Can revive dead players | op |
+| `ssoggysouls.status` | Can check player status | true |
+| `ssoggysouls.visit` | Can visit Limbo as living player | true |
+| `ssoggysouls.bypass` | Bypass all death mechanics | false |
+| `ssoggysouls.bypass-limbo-op-security` | Allow OPs to use admin commands on Limbo | false |
 
 ### Limbo OP Security
 
@@ -245,7 +245,7 @@ All messages are customizable with Minecraft color codes!
    limbo-trusted-admins:
      - "your-uuid-here"  # or username
    ```
-2. **Permission**: `/lp user <player> permission set polarsouls.bypass-limbo-op-security true`
+2. **Permission**: `/lp user <player> permission set ssoggysouls.bypass-limbo-op-security true`
 3. **Disable check**: `limbo-op-security-check: false` (not recommended)
 
 ---
@@ -263,20 +263,20 @@ All messages are customizable with Minecraft color codes!
 - Check `detect-hrm-revive: true` in Main config
 
 **Version mismatch warnings?**
-- Both servers MUST run the same PolarSouls version
+- Both servers MUST run the same SSoggySouls version
 - Update both simultaneously
 
 **Need more help?**
-- [Full Documentation Wiki](https://polarmc-technologies.github.io/PolarSouls-for-Hardcore/)
-- [Troubleshooting Guide](https://polarmc-technologies.github.io/PolarSouls-for-Hardcore/troubleshooting.html)
-- [FAQ](https://polarmc-technologies.github.io/PolarSouls-for-Hardcore/faq.html)
-- [Open an issue](https://github.com/polarmc-technologies/PolarSouls-for-Hardcore/issues) with your version, Minecraft version, proxy type, and console errors
+- [Full Documentation Wiki](https://SSoggy-Group.github.io/SSoggySouls-for-Hardcore/)
+- [Troubleshooting Guide](https://SSoggy-Group.github.io/SSoggySouls-for-Hardcore/troubleshooting.html)
+- [FAQ](https://SSoggy-Group.github.io/SSoggySouls-for-Hardcore/faq.html)
+- [Open an issue](https://github.com/SSoggy-Group/SSoggySouls-for-Hardcore/issues) with your version, Minecraft version, proxy type, and console errors
 
 ---
 
 ## Update Checking
 
-PolarSouls includes automatic update checking via Modrinth:
+SSoggySouls includes automatic update checking via Modrinth:
 - Checks for new versions on startup
 - Displays notifications in console
 - Can be disabled: `check-for-updates: false`
@@ -286,7 +286,7 @@ PolarSouls includes automatic update checking via Modrinth:
 
 ## License
 
-**GPL-3.0** - See [LICENSE](https://github.com/polarmc-technologies/PolarSouls-for-Hardcore/blob/main/LICENSE)
+**GPL-3.0** - See [LICENSE](https://github.com/SSoggy-Group/SSoggySouls-for-Hardcore/blob/main/LICENSE)
 
 ---
 
@@ -294,8 +294,8 @@ PolarSouls includes automatic update checking via Modrinth:
 
 - Revival mechanics inspired by [Hardcore Revive Mod](https://modrinth.com/plugin/hardcore-revive-mod)
 - Author: SSoggyTacoMan
-- GitHub: [polarmc-technologies/PolarSouls-for-Hardcore](https://github.com/polarmc-technologies/PolarSouls-for-Hardcore)
+- GitHub: [SSoggy-Group/SSoggySouls-for-Hardcore](https://github.com/SSoggy-Group/SSoggySouls-for-Hardcore)
 
 ---
 
-**Enjoying PolarSouls?** Heart it on Modrinth and star the [GitHub repo](https://github.com/polarmc-technologies/PolarSouls-for-Hardcore)!
+**Enjoying SSoggySouls?** Heart it on Modrinth and star the [GitHub repo](https://github.com/SSoggy-Group/SSoggySouls-for-Hardcore)!

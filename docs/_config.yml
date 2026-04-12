@@ -1,8 +1,8 @@
-# Jekyll Configuration for PolarSouls Documentation
-title: PolarSouls Documentation
+# Jekyll Configuration for SSoggySouls Documentation
+title: SSoggySouls Documentation
 description: Comprehensive hardcore lives system plugin for Minecraft 1.21.X
-baseurl: "/PolarSouls-for-Hardcore"
-url: "https://polarmc-technologies.github.io"
+baseurl: "/SSoggySouls-for-Hardcore"
+url: "https://SSoggy-Group.github.io"
 theme: jekyll-theme-cayman
 
 plugins:

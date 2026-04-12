@@ -5,7 +5,7 @@ title: Commands Reference
 
 # Commands Reference
 
-Complete list of all PolarSouls commands for players and administrators, with examples and permission requirements.
+Complete list of all SSoggySouls commands for players and administrators, with examples and permission requirements.
 
 ## Table of Contents
 
@@ -22,7 +22,7 @@ Player commands are available to all players by default or with minimal permissi
 
 Check your or another player's lives, death status, and grace period remaining.
 
-**Permission:** `polarsouls.status` (default: true)  
+**Permission:** `ssoggysouls.status` (default: true)  
 **Aliases:** None
 
 **Usage:**
@@ -45,7 +45,7 @@ YourUsername - Lives: 2 - Status: Alive
 
 Revive a dead player and return them from Limbo to the Main server. Can be used by players with the appropriate permission or through command blocks.
 
-**Permission:** `polarsouls.revive` (default: op)  
+**Permission:** `ssoggysouls.revive` (default: op)  
 **Aliases:** None
 
 **Usage:**
@@ -63,7 +63,7 @@ Revive a dead player and return them from Limbo to the Main server. Can be used 
 
 Visit the Limbo server as a living player to interact with dead teammates. You can freely come and go.
 
-**Permission:** `polarsouls.visit` (default: true)  
+**Permission:** `ssoggysouls.visit` (default: true)  
 **Aliases:** `/visitlimbo`
 
 **Usage:**
@@ -83,7 +83,7 @@ Visit the Limbo server as a living player to interact with dead teammates. You c
 
 Return from Limbo to Main server. Only works for living players visiting Limbo.
 
-**Permission:** `polarsouls.visit` (default: true)  
+**Permission:** `ssoggysouls.visit` (default: true)  
 **Aliases:** `/hub`
 
 **Usage:**
@@ -97,13 +97,13 @@ Return from Limbo to Main server. Only works for living players visiting Limbo.
 
 ## Admin Commands
 
-Administrator commands require the `polarsouls.admin` permission (op by default).
+Administrator commands require the `ssoggysouls.admin` permission (op by default).
 
 ### `/psadmin lives <player> <amount>`
 
 Set a player's life count to a specific value.
 
-**Permission:** `polarsouls.admin`  
+**Permission:** `ssoggysouls.admin`  
 **Aliases:** `/psa lives`
 
 **Usage:**
@@ -124,7 +124,7 @@ Set a player's life count to a specific value.
 
 Revive a dead player and return them to the Main server with restored lives.
 
-**Permission:** `polarsouls.admin`  
+**Permission:** `ssoggysouls.admin`  
 **Aliases:** `/psa revive`
 
 **Usage:**
@@ -144,7 +144,7 @@ Revive a dead player and return them to the Main server with restored lives.
 
 Force-kill a player by setting their lives to 0 and sending them to Limbo immediately.
 
-**Permission:** `polarsouls.admin`  
+**Permission:** `ssoggysouls.admin`  
 **Aliases:** `/psa kill`
 
 **Usage:**
@@ -164,7 +164,7 @@ Force-kill a player by setting their lives to 0 and sending them to Limbo immedi
 
 Set or modify a player's grace period manually.
 
-**Permission:** `polarsouls.admin`  
+**Permission:** `ssoggysouls.admin`  
 **Aliases:** `/psa grace`
 
 **Usage:**
@@ -189,7 +189,7 @@ Set or modify a player's grace period manually.
 
 Reset a player to defaults: restore default lives count and clear any custom grace period.
 
-**Permission:** `polarsouls.admin`  
+**Permission:** `ssoggysouls.admin`  
 **Aliases:** `/psa reset`
 
 **Usage:**
@@ -209,7 +209,7 @@ Reset a player to defaults: restore default lives count and clear any custom gra
 
 View detailed player information including UUID, lives, death state, timestamps, and grace period.
 
-**Permission:** `polarsouls.admin`  
+**Permission:** `ssoggysouls.admin`  
 **Aliases:** `/psa info`
 
 **Usage:**
@@ -235,7 +235,7 @@ Grace Period Remaining: 18h 45m
 
 Reload the configuration file from disk without restarting the server.
 
-**Permission:** `polarsouls.admin`  
+**Permission:** `ssoggysouls.admin`  
 **Aliases:** `/psa reload`
 
 **Usage:**
@@ -256,7 +256,7 @@ Reload the configuration file from disk without restarting the server.
 
 This command still works but is deprecated in favor of the newer admin command structure.
 
-**Permission:** `polarsouls.admin`
+**Permission:** `ssoggysouls.admin`
 
 **Usage:**
 ```bash
@@ -269,7 +269,7 @@ This command still works but is deprecated in favor of the newer admin command s
 
 Set the Limbo server spawn location to your current position. Must be executed on the Limbo server.
 
-**Permission:** `polarsouls.admin`  
+**Permission:** `ssoggysouls.admin`  
 **Aliases:** None
 
 **Usage:**
@@ -397,30 +397,30 @@ Output: NewPlayer - Lives: 2 - Status: Alive (Grace: 23h 45m remaining)
 
 | Permission | Description | Default | Commands |
 |------------|-------------|---------|----------|
-| `polarsouls.admin` | Full admin access | op | All `/psadmin` commands, `/setlimbospawn` |
-| `polarsouls.revive` | Revive dead players | op | `/revive`, `/psadmin revive` |
-| `polarsouls.status` | Check player status | true | `/pstatus` |
-| `polarsouls.visit` | Visit Limbo as living player | true | `/limbo`, `/leavelimbo`, `/hub` |
-| `polarsouls.bypass` | Bypass all death mechanics | false | (Passive - no commands) |
+| `ssoggysouls.admin` | Full admin access | op | All `/psadmin` commands, `/setlimbospawn` |
+| `ssoggysouls.revive` | Revive dead players | op | `/revive`, `/psadmin revive` |
+| `ssoggysouls.status` | Check player status | true | `/pstatus` |
+| `ssoggysouls.visit` | Visit Limbo as living player | true | `/limbo`, `/leavelimbo`, `/hub` |
+| `ssoggysouls.bypass` | Bypass all death mechanics | false | (Passive - no commands) |
 
 ### Setting Permissions (Example)
 
 **Using LuckPerms:**
 ```bash
 # Give admin permission
-/lp user YourUsername permission set polarsouls.admin true
+/lp user YourUsername permission set ssoggysouls.admin true
 
 # Give revive permission only
-/lp user ModName permission set polarsouls.revive true
+/lp user ModName permission set ssoggysouls.revive true
 
 # Remove admin permission
-/lp user PlayerName permission set polarsouls.admin false
+/lp user PlayerName permission set ssoggysouls.admin false
 ```
 
 **Using PermissionsEx:**
 ```bash
-/pex user YourUsername add polarsouls.admin
-/pex user ModName add polarsouls.revive
+/pex user YourUsername add ssoggysouls.admin
+/pex user ModName add ssoggysouls.revive
 ```
 
 ---
@@ -476,7 +476,7 @@ Monitor new players' grace periods:
 For quick help in-game, many servers support:
 
 ```bash
-/help polarsouls
+/help ssoggysouls
 /help revive
 /help psadmin
 ```

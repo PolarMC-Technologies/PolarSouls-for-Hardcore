@@ -5,7 +5,7 @@ title: Revival System Guide
 
 # Revival System Guide
 
-Complete guide to the multiple revival methods available in PolarSouls, including ritual structures, items, and commands.
+Complete guide to the multiple revival methods available in SSoggySouls, including ritual structures, items, and commands.
 
 ## Table of Contents
 
@@ -19,14 +19,14 @@ Complete guide to the multiple revival methods available in PolarSouls, includin
 
 ## Revival Methods Overview
 
-PolarSouls supports **four ways** to revive dead players:
+SSoggySouls supports **four ways** to revive dead players:
 
 | Method | User | Requirement | Speed | Risk |
 |--------|------|-------------|-------|------|
 | **Ritual Structure** | Any player | Build 3x3x3 structure + head | Slow | None (repeatable) |
 | **Revive Skull** | Any player | Craft item + dead player head | Medium | None (repeatable) |
 | **Revive Command** | Mod/Admin | Permission + command | Instant | None (authority needed) |
-| **Admin Command** | Admin | `polarsouls.admin` permission | Instant | Highest privilege |
+| **Admin Command** | Admin | `ssoggysouls.admin` permission | Instant | Highest privilege |
 
 All methods work together - you can use any combination!
 
@@ -319,7 +319,7 @@ Two permission-based commands for reviving players.
 
 ### `/revive <player>`
 
-**Permission:** `polarsouls.revive` (default: op)
+**Permission:** `ssoggysouls.revive` (default: op)
 
 Regular command for reviving a dead player. Less powerful than admin version.
 
@@ -329,7 +329,7 @@ Regular command for reviving a dead player. Less powerful than admin version.
 
 ### `/psadmin revive <player>`
 
-**Permission:** `polarsouls.admin` (op only)
+**Permission:** `ssoggysouls.admin` (op only)
 
 Admin command for reviving. Same result as `/revive` but requires admin permission.
 
