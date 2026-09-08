@@ -13,3 +13,6 @@
 ## 2026-07-11 - Command Aliases
 **Learning:** In Bukkit/Paper, command aliases must be declaratively defined in the `plugin.yml` configuration using the `aliases: [alias_name]` property under the root command definition, rather than duplicating the Java executor registration as is done in Forge, NeoForge, and Fabric environments.
 **Action:** When porting command aliases from mod loaders to Paper, directly edit `plugin.yml` instead of modifying Java command registration logic.
+## 2026-07-15 - Immutable Component Styling in Forge
+**Learning:** When applying styles (`.withStyle()`) to an existing `Component` returned by a utility like `MessageUtil.get()` in Forge and NeoForge, the returned component is immutable. Calling `.withStyle()` directly causes compilation errors because the method requires a `MutableComponent`.
+**Action:** When applying styles or adding click/hover events to a retrieved base `Component` in Forge/NeoForge, always call `.copy()` first to get a `MutableComponent` before chaining `.withStyle()`.
