@@ -35,6 +35,7 @@ import org.bukkit.event.block.BlockBreakEvent;
 import org.bukkit.event.block.BlockPlaceEvent;
 import org.bukkit.inventory.meta.ItemMeta;
 import org.bukkit.inventory.meta.SkullMeta;
+import net.kyori.adventure.text.minimessage.MiniMessage;
 
 import java.time.Instant;
 import java.util.UUID;
@@ -69,9 +70,9 @@ public class BlockEvents implements Listener {
                 destroyed.setSpectatorTarget(destroyer);
                 RPCommandOutput message = new RPCommandOutput();
                 message.success = COMMANDOUTPUTENUM.INFO;
-                message.message = "Started spectating " + destroyer.getName();
+                message.message = "Started spectating " + (destroyer.getName() != null ? MiniMessage.miniMessage().escapeTags(destroyer.getName()) : "Unknown");
                 destroyed.sendRichMessage(message.toString());
-                destroyed.sendActionBar(Component.text(destroyer.getName() + " is currently carrying your playerhead..."));
+                destroyed.sendActionBar(Component.text((destroyer.getName() != null ? destroyer.getName() : "Unknown") + " is currently carrying your playerhead..."));
             }
         }
     }

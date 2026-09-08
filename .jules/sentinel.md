@@ -27,3 +27,7 @@
 **Vulnerability:** In `LeaveLimboCommand.java`, `RPConfig.java`, and `UpdateChecker.java`, exception messages (`e.getMessage()`) were directly appended to error logs using `logger.severe()` or `logger.warning()`.
 **Learning:** Appending `e.getMessage()` manually instead of passing the entire Exception object can leak sensitive information to the logs without providing a full stack trace, reducing debuggability and posing a potential security risk.
 **Prevention:** Always use `logger.log(Level.SEVERE, "context message", exception)` or equivalent to properly log the context message and the full stack trace securely.
+## 2024-05-24 - OfflinePlayer Name Injection
+**Vulnerability:** XSS/MiniMessage injection via unescaped `OfflinePlayer.getName()` in command responses and action bars.
+**Learning:** In Bukkit/Paper, `Bukkit.getOfflinePlayer(String)` will return an `OfflinePlayer` object with a `getName()` that exactly matches the input string if the player hasn't played before. If a user provides an injection string like `<click:run_command:/op me>`, the `OfflinePlayer.getName()` will return this exact string. Passing this unescaped name into `sendRichMessage()` or action bars evaluates the tags, leading to UI spoofing or unintended command execution upon click.
+**Prevention:** Always escape the result of `OfflinePlayer.getName()` (or any user-provided name variable) using `MiniMessage.miniMessage().escapeTags()` before incorporating it into a MiniMessage formatted string.

@@ -28,6 +28,7 @@ import org.bukkit.Bukkit;
 import org.bukkit.OfflinePlayer;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
+import net.kyori.adventure.text.minimessage.MiniMessage;
 import org.jetbrains.annotations.NotNull;
 import org.jspecify.annotations.Nullable;
 
@@ -43,7 +44,7 @@ public class GhostModeCommand implements CommandExecutor, TabCompleter { // Lazy
 
         if (playerArg.getPlayer() instanceof Player onlinePlayer) {
             result.success = COMMANDOUTPUTENUM.TRUE;
-            result.message = "Updated " + onlinePlayer.getName() + " gamemode to GhostMode!";
+            result.message = "Updated " + (onlinePlayer.getName() != null ? MiniMessage.miniMessage().escapeTags(onlinePlayer.getName()) : "Unknown") + " gamemode to GhostMode!";
             GAMEMODESENUM.setPlayerGameMode(onlinePlayer, GAMEMODESENUM.GHOSTMODE);
         }
 

@@ -15,6 +15,7 @@ import org.bukkit.Tag;
 import org.bukkit.World;
 import org.bukkit.block.Block;
 import org.bukkit.entity.Player;
+import net.kyori.adventure.text.minimessage.MiniMessage;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
@@ -76,7 +77,7 @@ public class RevivalStructureListener implements Listener {
             boolean isDead = db.isPlayerDead(ownerUuid);
 
             if (!isDead) {
-                String name = skullOwner.getName() != null ? skullOwner.getName() : "Player";
+                String name = skullOwner.getName() != null ? MiniMessage.miniMessage().escapeTags(skullOwner.getName()) : "Player";
                 sendError(placer, name + " is not dead!");
                 playErrorEffect(placed);
                 return;
@@ -88,7 +89,7 @@ public class RevivalStructureListener implements Listener {
                 return;
             }
 
-            String name = skullOwner.getName() != null ? skullOwner.getName() : "Player";
+            String name = skullOwner.getName() != null ? MiniMessage.miniMessage().escapeTags(skullOwner.getName()) : "Player";
             plugin.getLogger().log(Level.INFO,
                     "{0} revived {1} via ritual structure!",
                     new Object[]{placer.getName(), name});
