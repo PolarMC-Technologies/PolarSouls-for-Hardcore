@@ -31,3 +31,10 @@
 **Vulnerability:** XSS/MiniMessage injection via unescaped `OfflinePlayer.getName()` in command responses and action bars.
 **Learning:** In Bukkit/Paper, `Bukkit.getOfflinePlayer(String)` will return an `OfflinePlayer` object with a `getName()` that exactly matches the input string if the player hasn't played before. If a user provides an injection string like `<click:run_command:/op me>`, the `OfflinePlayer.getName()` will return this exact string. Passing this unescaped name into `sendRichMessage()` or action bars evaluates the tags, leading to UI spoofing or unintended command execution upon click.
 **Prevention:** Always escape the result of `OfflinePlayer.getName()` (or any user-provided name variable) using `MiniMessage.miniMessage().escapeTags()` before incorporating it into a MiniMessage formatted string.
+## 2024-05-24 - Unsafe Component Manipulation and Null Pointers in UI Commands
+**Vulnerability:** CodeQL and SonarCloud detected potential NullPointerExceptions and incompatible type bugs when resolving ConfigManager properties or attempting to format user-provided strings like `OfflinePlayer.getName()` using `Component.literal()`.
+**Learning:** During cross-platform command extraction, `Component`s are sometimes mutated via chained `.withStyle()` without `copy()`ing them, leading to UI side effects. Furthermore, `ConfigManager.getConfig()` can return null if the config file was malformed or missing, leading to unexpected crashes when `getLimboGracePeriodMinutes()` or other getters are called directly. Finally, the same string injection bugs from Bukkit existed across NeoForge and Fabric platforms.
+**Prevention:**
+1. Null-check the `ConfigManager.getConfig()` return before accessing properties, supplying a safe fallback default value (e.g., `ConfigManager.getConfig() != null ? ConfigManager.getConfig().getLimboGracePeriodMinutes() : 60;`).
+2. Always `.copy()` a Component before applying chained styles (e.g. `MessageUtil.get("key").copy().withStyle(...)`).
+3. Maintain rigorous `escapeTags()` / explicit string fallback parity across Fabric, Forge, and NeoForge command outputs and event listener messages.
