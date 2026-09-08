@@ -460,7 +460,8 @@ public final class DlcCommandRegistration {
     }
 
     private static Text formatDeathComponent(DlcDeathRecord death) {
-        String username = DlcNames.getOrDefault(death.uuid(), death.username());
+        String rawUsername = DlcNames.getOrDefault(death.uuid(), death.username());
+        String username = rawUsername != null ? rawUsername : "Unknown";
         final String finalUsername = (username != null) ? username : "Unknown";
         String coords = death.x() + " " + death.y() + " " + death.z();
 
