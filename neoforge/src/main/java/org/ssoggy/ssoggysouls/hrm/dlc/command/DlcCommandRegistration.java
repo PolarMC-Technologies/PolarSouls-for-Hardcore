@@ -426,7 +426,7 @@ public final class DlcCommandRegistration {
             return new ResolvedPlayer(data.getUuid(), data.getUsername(), null);
         }
         return DlcNames.findUuidByName(name)
-                .map(uuid -> new ResolvedPlayer(uuid, DlcNames.getOrDefault(uuid, name) != null ? DlcNames.getOrDefault(uuid, name) : "Unknown", null))
+                .map(uuid -> new ResolvedPlayer(uuid, DlcNames.getOrDefault(uuid, name), null))
                 .orElse(null);
     }
 

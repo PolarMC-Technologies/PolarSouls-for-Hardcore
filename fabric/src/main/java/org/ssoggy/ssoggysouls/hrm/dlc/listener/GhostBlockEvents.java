@@ -173,7 +173,7 @@ public class GhostBlockEvents {
         DlcDeaths.setHolder(ownerUuid, null);
         DlcDeaths.recordDeath(
                 ownerUuid,
-                DlcNames.getOrDefault(ownerUuid, ownerUuid.toString()) != null ? DlcNames.getOrDefault(ownerUuid, ownerUuid.toString()) : "Unknown",
+                DlcNames.getOrDefault(ownerUuid, ownerUuid.toString()),
                 world.getRegistryKey().getValue().toString(),
                 targetPos.getX(),
                 targetPos.getY(),
