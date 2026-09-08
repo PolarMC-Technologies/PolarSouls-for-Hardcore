@@ -104,11 +104,12 @@ public class RevivalStructureListener {
         new DlcStats(serverPlayer.getUUID()).incrementStat(DlcStat.RITUAL_STARTED, 1);
         CompletableFuture.runAsync(() -> {
             boolean isDead = db.isPlayerDead(ownerUuid);
-            String ownerName = org.ssoggy.ssoggysouls.hrm.dlc.shared.DlcNames.getOrDefault(ownerUuid, "Player");
+            String rawOwnerName = org.ssoggy.ssoggysouls.hrm.dlc.shared.DlcNames.getOrDefault(ownerUuid, "Player");
+            String ownerName = rawOwnerName != null ? rawOwnerName : "Unknown";
 
             if (!isDead) {
                 serverPlayer.server.execute(() -> {
-                    sendError(serverPlayer, ownerName + " is not dead!");
+                    sendError(serverPlayer, (ownerName != null ? ownerName : "Unknown") + " is not dead!");
                     world.playSound(null, placedPos, SoundEvents.FIRE_EXTINGUISH, SoundSource.BLOCKS, 0.4f, 2f);
                     refundHead(serverPlayer, refundedItem);
                 });

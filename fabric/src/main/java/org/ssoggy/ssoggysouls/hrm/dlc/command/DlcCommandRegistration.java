@@ -422,7 +422,7 @@ public final class DlcCommandRegistration {
             return new ResolvedPlayer(data.getUuid(), data.getUsername(), null);
         }
         return DlcNames.findUuidByName(name)
-                .map(uuid -> new ResolvedPlayer(uuid, DlcNames.getOrDefault(uuid, name), null))
+                .map(uuid -> new ResolvedPlayer(uuid, DlcNames.getOrDefault(uuid, name) != null ? DlcNames.getOrDefault(uuid, name) : "Unknown", null))
                 .orElse(null);
     }
 
@@ -460,11 +460,13 @@ public final class DlcCommandRegistration {
     }
 
     private static Text formatDeathComponent(DlcDeathRecord death) {
-        String username = DlcNames.getOrDefault(death.uuid(), death.username());
+        String rawUsername = DlcNames.getOrDefault(death.uuid(), death.username());
+        String username = rawUsername != null ? rawUsername : "Unknown";
+        final String finalUsername = (username != null) ? username : "Unknown";
         String coords = death.x() + " " + death.y() + " " + death.z();
 
-        return Text.literal(username).styled(style -> style.withColor(Formatting.GOLD).withBold(true)
-                        .withClickEvent(new net.minecraft.text.ClickEvent(net.minecraft.text.ClickEvent.Action.SUGGEST_COMMAND, "/pstatus " + username))
+        return Text.literal(finalUsername).styled(style -> style.withColor(Formatting.GOLD).withBold(true)
+                        .withClickEvent(new net.minecraft.text.ClickEvent(net.minecraft.text.ClickEvent.Action.SUGGEST_COMMAND, "/pstatus " + finalUsername))
                         .withHoverEvent(new net.minecraft.text.HoverEvent(net.minecraft.text.HoverEvent.Action.SHOW_TEXT, Text.literal("Click to check player status").styled(s -> s.withColor(Formatting.GRAY)))))
                 .append(Text.literal(" has died at ").styled(style -> style.withColor(Formatting.GRAY).withBold(false)))
                 .append(Text.literal("X" + death.x() + " Y" + death.y() + " Z" + death.z()).styled(style -> style.withColor(Formatting.GOLD).withBold(true)

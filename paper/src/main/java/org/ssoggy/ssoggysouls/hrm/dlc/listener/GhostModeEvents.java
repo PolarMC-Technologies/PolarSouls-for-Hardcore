@@ -31,6 +31,7 @@ import org.bukkit.Location;
 import org.bukkit.Sound;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.Player;
+import net.kyori.adventure.text.minimessage.MiniMessage;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
@@ -77,7 +78,7 @@ public class GhostModeEvents implements Listener {
             player.setSpectatorTarget(target);
             RPCommandOutput message = new RPCommandOutput();
             message.success = COMMANDOUTPUTENUM.INFO;
-            message.message = "Started spectating " + target.getName();
+            message.message = "Started spectating " + (target.getName() != null ? MiniMessage.miniMessage().escapeTags(target.getName()) : "Unknown");
             player.sendRichMessage(message.toString());
             event.setCancelled(true);
         }

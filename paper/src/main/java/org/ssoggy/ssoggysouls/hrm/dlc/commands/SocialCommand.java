@@ -32,6 +32,7 @@ import org.bukkit.OfflinePlayer;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.Player;
+import net.kyori.adventure.text.minimessage.MiniMessage;
 import org.jetbrains.annotations.NotNull;
 import org.jspecify.annotations.Nullable;
 import org.ssoggy.ssoggysouls.util.MessageUtil;
@@ -152,13 +153,13 @@ public class SocialCommand implements CommandExecutor, TabCompleter {
         boolean changed = false;
         if (currentRelation == SOCIALENUM.BLOCKED) {
             ctx.output.success = COMMANDOUTPUTENUM.INFO;
-            ctx.output.message = "You already blocked " + ctx.targetPlayer.getName(); // easter egg: You tryna double-block this dude?
+            ctx.output.message = "You already blocked " + (ctx.targetPlayer.getName() != null ? MiniMessage.miniMessage().escapeTags(ctx.targetPlayer.getName()) : "Unknown"); // easter egg: You tryna double-block this dude?
         } else {
             changed |= ctx.social.setRelationTo(ctx.targetPlayerUUID, SOCIALENUM.BLOCKED);
             if (theirRelation.isTrustworthy()) {
                 changed |= targetSocial.setRelationTo(ctx.playerUUID, SOCIALENUM.UNTRUSTED);
             } // Unbind both players
-            ctx.output.message = "You have blocked " + ctx.targetPlayer.getName();
+            ctx.output.message = "You have blocked " + (ctx.targetPlayer.getName() != null ? MiniMessage.miniMessage().escapeTags(ctx.targetPlayer.getName()) : "Unknown");
         }
         return changed;
     }
@@ -168,10 +169,10 @@ public class SocialCommand implements CommandExecutor, TabCompleter {
         boolean changed = false;
         if (currentRelation == SOCIALENUM.UNTRUSTED) {
             output.success = COMMANDOUTPUTENUM.INFO;
-            output.message = "You have no relations with " + targetPlayer.getName();
+            output.message = "You have no relations with " + (targetPlayer.getName() != null ? MiniMessage.miniMessage().escapeTags(targetPlayer.getName()) : "Unknown");
         } else {
             changed |= social.setRelationTo(targetPlayerUUID, null); // Ensures that you don't get stray "Untrusted" values (saves memory)
-            output.message = "You no longer trust " + targetPlayer.getName();
+            output.message = "You no longer trust " + (targetPlayer.getName() != null ? MiniMessage.miniMessage().escapeTags(targetPlayer.getName()) : "Unknown");
         }
         return changed;
     }
@@ -186,23 +187,23 @@ public class SocialCommand implements CommandExecutor, TabCompleter {
         boolean changed = false;
         if (currentRelation.isTrustworthy()) { // Already Trusted
             ctx.output.success = COMMANDOUTPUTENUM.INFO;
-            ctx.output.message = "You have already entrusted " + ctx.targetPlayer.getName();
+            ctx.output.message = "You have already entrusted " + (ctx.targetPlayer.getName() != null ? MiniMessage.miniMessage().escapeTags(ctx.targetPlayer.getName()) : "Unknown");
         } else if (theirRelation == SOCIALENUM.BLOCKED) { // They Blocked you
             executeFail(ctx.sender, ctx.output, "Player has you blocked.");
         } else if (theirRelation == SOCIALENUM.TRUSTED) { // Make Players Allies
             changed |= ctx.social.setRelationTo(ctx.targetPlayerUUID, SOCIALENUM.FRIENDS);
             changed |= targetSocial.setRelationTo(ctx.playerUUID, SOCIALENUM.FRIENDS);
-            ctx.output.message = "You are now friends with " + ctx.targetPlayer.getName();
+            ctx.output.message = "You are now friends with " + (ctx.targetPlayer.getName() != null ? MiniMessage.miniMessage().escapeTags(ctx.targetPlayer.getName()) : "Unknown");
 
             if (ctx.targetPlayer.getPlayer() instanceof Player targetOnline) {
                 RPCommandOutput targetMessage = new RPCommandOutput();
                 targetMessage.success = COMMANDOUTPUTENUM.TRUE;
-                targetMessage.message =  "You are now friends with " + ctx.player.getName();
+                targetMessage.message =  "You are now friends with " + (ctx.player.getName() != null ? MiniMessage.miniMessage().escapeTags(ctx.player.getName()) : "Unknown");
                 targetOnline.sendRichMessage(targetMessage.toString());
             }
         } else { // Trust Player
             changed |= ctx.social.setRelationTo(ctx.targetPlayerUUID, SOCIALENUM.TRUSTED);
-            ctx.output.message = "You have now entrusted " + ctx.targetPlayer.getName();
+            ctx.output.message = "You have now entrusted " + (ctx.targetPlayer.getName() != null ? MiniMessage.miniMessage().escapeTags(ctx.targetPlayer.getName()) : "Unknown");
         }
         return changed;
     }

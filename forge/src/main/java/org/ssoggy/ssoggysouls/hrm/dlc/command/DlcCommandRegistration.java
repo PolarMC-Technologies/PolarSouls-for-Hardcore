@@ -426,7 +426,7 @@ public final class DlcCommandRegistration {
             return new ResolvedPlayer(data.getUuid(), data.getUsername(), null);
         }
         return DlcNames.findUuidByName(name)
-                .map(uuid -> new ResolvedPlayer(uuid, DlcNames.getOrDefault(uuid, name), null))
+                .map(uuid -> new ResolvedPlayer(uuid, DlcNames.getOrDefault(uuid, name) != null ? DlcNames.getOrDefault(uuid, name) : "Unknown", null))
                 .orElse(null);
     }
 
@@ -461,11 +461,13 @@ public final class DlcCommandRegistration {
     }
 
     private static Component formatDeathComponent(DlcDeathRecord death) {
-        String username = DlcNames.getOrDefault(death.uuid(), death.username());
+        String rawUsername = DlcNames.getOrDefault(death.uuid(), death.username());
+        String username = rawUsername != null ? rawUsername : "Unknown";
+        final String finalUsername = (username != null) ? username : "Unknown";
         String coords = death.x() + " " + death.y() + " " + death.z();
 
-        return Component.literal(username).withStyle(style -> style.withColor(ChatFormatting.GOLD).withBold(true)
-                        .withClickEvent(new ClickEvent(ClickEvent.Action.SUGGEST_COMMAND, "/pstatus " + username))
+        return Component.literal(finalUsername).withStyle(style -> style.withColor(ChatFormatting.GOLD).withBold(true)
+                        .withClickEvent(new ClickEvent(ClickEvent.Action.SUGGEST_COMMAND, "/pstatus " + finalUsername))
                         .withHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT, Component.literal("Click to check player status").withStyle(s -> s.withColor(ChatFormatting.GRAY)))))
                 .append(Component.literal(" has died at ").withStyle(style -> style.withColor(ChatFormatting.GRAY).withBold(false)))
                 .append(Component.literal("X" + death.x() + " Y" + death.y() + " Z" + death.z()).withStyle(style -> style.withColor(ChatFormatting.GOLD).withBold(true)
