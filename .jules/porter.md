@@ -15,4 +15,4 @@
 **Action:** When porting command aliases from mod loaders to Paper, directly edit `plugin.yml` instead of modifying Java command registration logic.
 ## 2026-07-15 - Immutable Component Styling in Forge
 **Learning:** When applying styles (`.withStyle()`) to an existing `Component` returned by a utility like `MessageUtil.get()` in Forge and NeoForge, the returned component is immutable. Calling `.withStyle()` directly causes compilation errors because the method requires a `MutableComponent`.
-**Action:** When applying styles or adding click/hover events to a retrieved base `Component` in Forge/NeoForge, always call `.copy()` first to get a `MutableComponent` before chaining `.withStyle()`.
+**Action:** When applying styles or adding click/hover events to a retrieved base `Component` in Forge/NeoForge, always wrap it using `Component.empty().append(...)` to get a `MutableComponent` before chaining `.withStyle()`.
