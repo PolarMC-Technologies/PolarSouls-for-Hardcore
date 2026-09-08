@@ -108,7 +108,7 @@ public class RevivalStructureListener {
 
             if (!isDead) {
                 serverPlayer.server.execute(() -> {
-                    sendError(serverPlayer, ownerName + " is not dead!");
+                    sendError(serverPlayer, (ownerName != null ? ownerName : "Unknown") + " is not dead!");
                     world.playSound(null, placedPos, SoundEvents.FIRE_EXTINGUISH, SoundSource.BLOCKS, 0.4f, 2f);
                     refundHead(serverPlayer, refundedItem);
                 });

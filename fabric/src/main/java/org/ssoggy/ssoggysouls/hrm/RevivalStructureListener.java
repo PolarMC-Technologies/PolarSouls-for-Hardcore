@@ -12,6 +12,7 @@ import net.minecraft.entity.effect.StatusEffects;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.Items;
 import net.minecraft.server.network.ServerPlayerEntity;
+import net.minecraft.text.Text;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.sound.SoundCategory;
 import net.minecraft.sound.SoundEvents;
@@ -133,7 +134,7 @@ public class RevivalStructureListener {
 
             if (!data.isDead()) {
                 serverPlayer.server.execute(() -> {
-                    sendError(serverPlayer, data.getUsername() + " is not dead!");
+                    sendError(serverPlayer, (data.getUsername() != null ? data.getUsername() : "Unknown") + " is not dead!");
                     world.playSound(null, placedPos, SoundEvents.BLOCK_FIRE_EXTINGUISH, SoundCategory.BLOCKS, 0.4f, 2f);
                     refundHead(serverPlayer, refundedItem);
                 });

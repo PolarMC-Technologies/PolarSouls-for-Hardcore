@@ -127,6 +127,7 @@ public final class DlcTrustService {
 
         relations.forEach((uuid, relation) -> {
             String username = DlcNames.getOrDefault(uuid, uuid.toString());
+            username = (username != null) ? username : "Unknown";
             builder.append('\n').append("- ").append(username).append(": ").append(relation);
         });
         return DlcCommandResult.raw(builder.toString());
