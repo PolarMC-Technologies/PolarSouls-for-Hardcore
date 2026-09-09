@@ -45,6 +45,7 @@ import org.ssoggy.ssoggysouls.util.TabCompleteUtil;
 import org.ssoggy.ssoggysouls.util.MessageUtil;
 
 public class ObituariesCommand implements CommandExecutor, TabCompleter {
+    private static final String BOLD_GOLD_END = "</bold></gold>";
     private static final long DEFAULT_TRUSTED_OBITUARY_DELAY_MINUTES = 60L;
     private static final long DEFAULT_FRIENDS_OBITUARY_DELAY_MINUTES = 600L;
     private static final long DEFAULT_PUBLIC_OBITUARY_DELAY_MINUTES = 3600L;
@@ -66,37 +67,27 @@ public class ObituariesCommand implements CommandExecutor, TabCompleter {
 
         String headerText = "Here is a list of all the current public deaths";
         StringBuilder deathListBuilder = new StringBuilder(headerText);
+        Instant now = Instant.now();
+        Instant publicThreshold = now.minusSeconds(publicAfterMin * 60);
+        Instant friendsThreshold = now.minusSeconds(friendsAfterMin * 60);
+        Instant trustedThreshold = now.minusSeconds(trustedAfterMin * 60);
+
         for (Map.Entry<UUID, Pair<Location, Instant>> death : RPStatic.DEAD_LOCATIONS.entrySet()) {
             Pair<Location, Instant> deathDetails = death.getValue();
-
-            UUID uuid = death.getKey();
-            SOCIALENUM relationship = new RPSocial(uuid).getRelationTo(player.getUniqueId());
-
             Instant deathTime = deathDetails.getRight();
-            Instant now = Instant.now();
-            if (deathTime.isBefore(now.minusSeconds(publicAfterMin * 60))
-                    || (relationship == SOCIALENUM.FRIENDS && deathTime.isBefore(now.minusSeconds(friendsAfterMin * 60)))
-                    || (relationship == SOCIALENUM.TRUSTED && deathTime.isBefore(now.minusSeconds(trustedAfterMin * 60)))) {
-                String username = RPUtil.getUsernameFromCache(uuid);
-                Location deathLocation = deathDetails.getLeft();
-                String coords = deathLocation.getBlockX() + " " + deathLocation.getBlockY() + " " + deathLocation.getBlockZ();
-                String escapedUsername = username != null ? net.kyori.adventure.text.minimessage.MiniMessage.miniMessage().escapeTags(username) : "Unknown";
-                deathListBuilder.append("\n<click:suggest_command:'/pstatus ").append(escapedUsername).append("'>")
-                        .append("<hover:show_text:'<gray>Click to check player status</gray>'>")
-                        .append("<gold><bold>").append(escapedUsername).append("</bold></gold>")
-                        .append("</hover></click>")
-                        .append("<gray> has died at </gray>")
-                        .append("<click:copy_to_clipboard:'").append(coords).append("'>")
-                        .append("<hover:show_text:'<gray>Click to copy coordinates</gray>'>")
-                        .append("<gold><bold>X").append(deathLocation.getBlockX())
-                        .append(" Y").append(deathLocation.getBlockY())
-                        .append(" Z").append(deathLocation.getBlockZ())
-                        .append("</bold></gold>")
-                        .append("</hover></click>")
-                        .append("<gray> in the </gray><gold><bold>")
-                        .append(deathLocation.getWorld().getName()).append("</bold></gold>");
+            UUID uuid = death.getKey();
+
+            boolean show = deathTime.isBefore(publicThreshold);
+            if (!show && (deathTime.isBefore(friendsThreshold) || deathTime.isBefore(trustedThreshold))) {
+                SOCIALENUM relationship = new RPSocial(uuid).getRelationTo(player.getUniqueId());
+                show = checkTrustThresholds(relationship, deathTime, friendsThreshold, trustedThreshold);
+            }
+
+            if (show) {
+                appendDeathInfo(deathListBuilder, uuid, deathDetails.getLeft());
             }
         }
+
 
         if (deathListBuilder.length() <= headerText.length()) {
             result.success = COMMANDOUTPUTENUM.FALSE;
@@ -116,6 +107,34 @@ public class ObituariesCommand implements CommandExecutor, TabCompleter {
             return TabCompleteUtil.getOnlinePlayerNames(args.length > 0 ? args[0] : "");
         }
         return Collections.emptyList();
+    }
+
+
+    private boolean checkTrustThresholds(SOCIALENUM relationship, Instant deathTime, Instant friendsThreshold, Instant trustedThreshold) {
+        if (relationship == SOCIALENUM.FRIENDS && deathTime.isBefore(friendsThreshold)) {
+            return true;
+        }
+        return relationship == SOCIALENUM.TRUSTED && deathTime.isBefore(trustedThreshold);
+    }
+
+    private void appendDeathInfo(StringBuilder deathListBuilder, UUID uuid, Location deathLocation) {
+        String username = RPUtil.getUsernameFromCache(uuid);
+        String coords = deathLocation.getBlockX() + " " + deathLocation.getBlockY() + " " + deathLocation.getBlockZ();
+        String escapedUsername = username != null ? net.kyori.adventure.text.minimessage.MiniMessage.miniMessage().escapeTags(username) : "Unknown";
+        deathListBuilder.append("\n<click:suggest_command:'/pstatus ").append(escapedUsername).append("'>")
+                .append("<hover:show_text:'<gray>Click to check player status</gray>'>")
+                .append("<gold><bold>").append(escapedUsername).append(BOLD_GOLD_END)
+                .append("</hover></click>")
+                .append("<gray> has died at </gray>")
+                .append("<click:copy_to_clipboard:'").append(coords).append("'>")
+                .append("<hover:show_text:'<gray>Click to copy coordinates</gray>'>")
+                .append("<gold><bold>X").append(deathLocation.getBlockX())
+                .append(" Y").append(deathLocation.getBlockY())
+                .append(" Z").append(deathLocation.getBlockZ())
+                .append(BOLD_GOLD_END)
+                .append("</hover></click>")
+                .append("<gray> in the </gray><gold><bold>")
+                .append(deathLocation.getWorld().getName()).append(BOLD_GOLD_END);
     }
 
     private static long getObituaryDelayMinutes(FileConfiguration config, String key, long fallback) {

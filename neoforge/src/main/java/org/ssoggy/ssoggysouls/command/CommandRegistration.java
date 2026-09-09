@@ -28,6 +28,7 @@ import java.io.File;
 import java.util.concurrent.CompletableFuture;
 
 public class CommandRegistration {
+
     
     private CommandRegistration() {
         // Utility class

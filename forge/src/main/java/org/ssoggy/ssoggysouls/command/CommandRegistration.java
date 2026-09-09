@@ -29,6 +29,7 @@ import java.util.concurrent.CompletableFuture;
 
 @Mod.EventBusSubscriber(modid = SSoggySoulsMod.MODID)
 public class CommandRegistration {
+
     
     private CommandRegistration() {
         // Utility class

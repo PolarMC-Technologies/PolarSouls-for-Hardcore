@@ -9,6 +9,8 @@ import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
 
+import org.jetbrains.annotations.NotNull;
+
 public class ConfigManager {
 
     private ConfigManager() {
@@ -56,6 +58,7 @@ public class ConfigManager {
         }
     }
 
+    @NotNull
     public static ModConfig getConfig() {
         if (config == null) load();
         return config;
