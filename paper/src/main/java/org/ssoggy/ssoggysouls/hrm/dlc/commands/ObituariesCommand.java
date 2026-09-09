@@ -66,17 +66,26 @@ public class ObituariesCommand implements CommandExecutor, TabCompleter {
 
         String headerText = "Here is a list of all the current public deaths";
         StringBuilder deathListBuilder = new StringBuilder(headerText);
+        Instant now = Instant.now();
+        Instant publicThreshold = now.minusSeconds(publicAfterMin * 60);
+        Instant friendsThreshold = now.minusSeconds(friendsAfterMin * 60);
+        Instant trustedThreshold = now.minusSeconds(trustedAfterMin * 60);
+
         for (Map.Entry<UUID, Pair<Location, Instant>> death : RPStatic.DEAD_LOCATIONS.entrySet()) {
             Pair<Location, Instant> deathDetails = death.getValue();
-
-            UUID uuid = death.getKey();
-            SOCIALENUM relationship = new RPSocial(uuid).getRelationTo(player.getUniqueId());
-
             Instant deathTime = deathDetails.getRight();
-            Instant now = Instant.now();
-            if (deathTime.isBefore(now.minusSeconds(publicAfterMin * 60))
-                    || (relationship == SOCIALENUM.FRIENDS && deathTime.isBefore(now.minusSeconds(friendsAfterMin * 60)))
-                    || (relationship == SOCIALENUM.TRUSTED && deathTime.isBefore(now.minusSeconds(trustedAfterMin * 60)))) {
+            UUID uuid = death.getKey();
+
+            boolean show = deathTime.isBefore(publicThreshold);
+            if (!show && (deathTime.isBefore(friendsThreshold) || deathTime.isBefore(trustedThreshold))) {
+                SOCIALENUM relationship = new RPSocial(uuid).getRelationTo(player.getUniqueId());
+                if ((relationship == SOCIALENUM.FRIENDS && deathTime.isBefore(friendsThreshold))
+                        || (relationship == SOCIALENUM.TRUSTED && deathTime.isBefore(trustedThreshold))) {
+                    show = true;
+                }
+            }
+
+            if (show) {
                 String username = RPUtil.getUsernameFromCache(uuid);
                 Location deathLocation = deathDetails.getLeft();
                 String coords = deathLocation.getBlockX() + " " + deathLocation.getBlockY() + " " + deathLocation.getBlockZ();
