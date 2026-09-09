@@ -31,3 +31,7 @@
 **Vulnerability:** `Bukkit.getOfflinePlayer(String)` returns an `OfflinePlayer` that exactly matches the provided string argument if the user does not exist. Using its `.getName()` method directly inside MiniMessage chat outputs allows MiniMessage injection/XSS spoofing.
 **Learning:** Data returned from seemingly safe Bukkit APIs like `OfflinePlayer.getName()` might still contain unmodified user input if the player does not exist.
 **Prevention:** Always escape the result of `OfflinePlayer.getName()` using `MiniMessage.miniMessage().escapeTags()` before concatenating it into a MiniMessage component string.
+## 2026-07-28 - [Prevent SonarCloud Failures when Copying]
+**Vulnerability:** Not a direct vulnerability, but a workflow issue.
+**Learning:** When trying to update or fix legacy error markers across platforms, make sure to add `.copy()` before styling `Component` instances.
+**Prevention:** Apply `.copy()` before styling shared `Component` instances like `MessageUtil.get(...)` to avoid SonarCloud failures and compilation errors.
