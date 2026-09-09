@@ -35,6 +35,7 @@ public class CommandRegistration {
     }
 
     private static final String PLAYER = "player";
+    private static final String CLICK_TO_AUTOFILL = "click-to-autofill";
     private static final String LIVES = "lives";
     private static DatabaseManager db;
 
@@ -43,6 +44,13 @@ public class CommandRegistration {
     }
 
     @SubscribeEvent
+
+    private static net.minecraft.network.chat.MutableComponent withSuggestCommandStyle(net.minecraft.network.chat.Component component, String suggestCommand) {
+        return component.copy().withStyle(s -> s.withColor(net.minecraft.ChatFormatting.RED)
+            .withClickEvent(new net.minecraft.network.chat.ClickEvent(net.minecraft.network.chat.ClickEvent.Action.SUGGEST_COMMAND, suggestCommand))
+            .withHoverEvent(new net.minecraft.network.chat.HoverEvent(net.minecraft.network.chat.HoverEvent.Action.SHOW_TEXT, MessageUtil.get(CLICK_TO_AUTOFILL).copy().withStyle(net.minecraft.ChatFormatting.GRAY))));
+    }
+
     public static void onRegisterCommands(RegisterCommandsEvent event) {
         if (db == null) {
             SSoggySoulsMod.LOGGER.error("Cannot register commands: DatabaseManager is null");
@@ -111,10 +119,7 @@ public class CommandRegistration {
         dispatcher.register(Commands.literal("revive")
             .requires(source -> source.hasPermission(2))
             .executes(context -> {
-                context.getSource().sendFailure(MessageUtil.get("usage-revive")
-                    .withStyle(s -> s.withColor(net.minecraft.ChatFormatting.RED)
-                        .withClickEvent(new net.minecraft.network.chat.ClickEvent(net.minecraft.network.chat.ClickEvent.Action.SUGGEST_COMMAND, "/revive "))
-                        .withHoverEvent(new net.minecraft.network.chat.HoverEvent(net.minecraft.network.chat.HoverEvent.Action.SHOW_TEXT, MessageUtil.get("click-to-autofill").withStyle(net.minecraft.ChatFormatting.GRAY)))));
+                context.getSource().sendFailure(withSuggestCommandStyle(MessageUtil.get("usage-revive"), "/revive "));
                 return 0;
             })
             .then(Commands.argument(PLAYER, StringArgumentType.word())
@@ -150,7 +155,7 @@ public class CommandRegistration {
             return;
         }
 
-        int defaultLives = org.ssoggy.ssoggysouls.util.ConfigManager.getConfig().getDefaultLives();
+        int defaultLives = org.ssoggy.ssoggysouls.util.ConfigManager.getConfig() != null ? org.ssoggy.ssoggysouls.util.ConfigManager.getConfig().getDefaultLives() : 3;
         boolean success = db.revivePlayer(targetData.getUuid(), defaultLives);
         if (success) {
             handleReviveSuccess(targetData, source);
@@ -182,10 +187,7 @@ public class CommandRegistration {
         dispatcher.register(Commands.literal("psetlives")
             .requires(source -> source.hasPermission(2))
             .executes(context -> {
-                context.getSource().sendFailure(MessageUtil.get("usage-psetlives")
-                    .withStyle(s -> s.withColor(net.minecraft.ChatFormatting.RED)
-                        .withClickEvent(new net.minecraft.network.chat.ClickEvent(net.minecraft.network.chat.ClickEvent.Action.SUGGEST_COMMAND, "/psetlives "))
-                        .withHoverEvent(new net.minecraft.network.chat.HoverEvent(net.minecraft.network.chat.HoverEvent.Action.SHOW_TEXT, MessageUtil.get("click-to-autofill").withStyle(net.minecraft.ChatFormatting.GRAY)))));
+                context.getSource().sendFailure(withSuggestCommandStyle(MessageUtil.get("usage-psetlives"), "/psetlives "));
                 return 0;
             })
             .then(Commands.argument(PLAYER, StringArgumentType.word())
@@ -193,10 +195,7 @@ public class CommandRegistration {
                         context.getSource().getServer().getPlayerNames(), builder))
                 .executes(context -> {
                     String targetName = StringArgumentType.getString(context, PLAYER);
-                    context.getSource().sendFailure(MessageUtil.get("usage-psetlives-player", PLAYER, targetName)
-                        .withStyle(s -> s.withColor(net.minecraft.ChatFormatting.RED)
-                            .withClickEvent(new net.minecraft.network.chat.ClickEvent(net.minecraft.network.chat.ClickEvent.Action.SUGGEST_COMMAND, "/psetlives " + targetName + " "))
-                            .withHoverEvent(new net.minecraft.network.chat.HoverEvent(net.minecraft.network.chat.HoverEvent.Action.SHOW_TEXT, MessageUtil.get("click-to-autofill").withStyle(net.minecraft.ChatFormatting.GRAY)))));
+                    context.getSource().sendFailure(withSuggestCommandStyle(MessageUtil.get("usage-psetlives-player", PLAYER, targetName), "/psetlives " + targetName + " "));
                     return 0;
                 })
                 .then(Commands.argument(LIVES, IntegerArgumentType.integer(0))

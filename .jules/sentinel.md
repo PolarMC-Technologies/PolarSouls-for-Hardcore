@@ -27,3 +27,15 @@
 **Vulnerability:** In `LeaveLimboCommand.java`, `RPConfig.java`, and `UpdateChecker.java`, exception messages (`e.getMessage()`) were directly appended to error logs using `logger.severe()` or `logger.warning()`.
 **Learning:** Appending `e.getMessage()` manually instead of passing the entire Exception object can leak sensitive information to the logs without providing a full stack trace, reducing debuggability and posing a potential security risk.
 **Prevention:** Always use `logger.log(Level.SEVERE, "context message", exception)` or equivalent to properly log the context message and the full stack trace securely.
+## 2026-07-28 - [Prevent MiniMessage XSS via OfflinePlayer]
+**Vulnerability:** `Bukkit.getOfflinePlayer(String)` returns an `OfflinePlayer` that exactly matches the provided string argument if the user does not exist. Using its `.getName()` method directly inside MiniMessage chat outputs allows MiniMessage injection/XSS spoofing.
+**Learning:** Data returned from seemingly safe Bukkit APIs like `OfflinePlayer.getName()` might still contain unmodified user input if the player does not exist.
+**Prevention:** Always escape the result of `OfflinePlayer.getName()` using `MiniMessage.miniMessage().escapeTags()` before concatenating it into a MiniMessage component string.
+## 2026-07-28 - [Prevent SonarCloud Failures when Copying]
+**Vulnerability:** Not a direct vulnerability, but a workflow issue.
+**Learning:** When trying to update or fix legacy error markers across platforms, make sure to add `.copy()` before styling `Component` instances.
+**Prevention:** Apply `.copy()` before styling shared `Component` instances like `MessageUtil.get(...)` to avoid SonarCloud failures and compilation errors.
+## 2026-07-28 - [Prevent SonarCloud Failures with Duplication]
+**Vulnerability:** Code Smells (Duplication) in newly created cross-platform command syntax logic.
+**Learning:** Repetitive component styling chains trigger "Duplication on New Code" Quality Gate failures in SonarCloud. Additionally, variables initialized with properties from configuration files can cause NullPointerExceptions if the configuration file is null.
+**Prevention:** Extract complex chained style or component builders into dedicated static helper methods to prevent duplication. Add explicit null checks before using configuration objects or chaining method calls.
